@@ -82,7 +82,7 @@
 
 .aegea-preview .e2-smart-title {
   margin-bottom: 1.25rem;
-  font-size: 2.25rem;
+  font-size: var(--noteTitleFontSize);
   line-height: 1.15;
 }
 
@@ -180,9 +180,5 @@
 
   .aegea-preview .flag {
     padding-top: 1rem;
-  }
-
-  .aegea-preview .e2-smart-title {
-    font-size: 1.8rem;
   }
 }

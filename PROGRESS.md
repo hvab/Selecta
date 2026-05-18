@@ -59,7 +59,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Decide and implement the first typography derivation from `titleScale`.
+- [ ] Derive the matching note title line height from `titleScale`.
 
 ## Future backlog
 

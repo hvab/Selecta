@@ -1,4 +1,5 @@
 import { hexToRgba } from './color.js';
+import { scalePixelSize } from './typography.js';
 
 export function getThemeCssVariables(themeState) {
   return {
@@ -28,6 +29,7 @@ export function getThemeCssVariables(themeState) {
     '--inputTextColor': themeState.palette.inputText,
     '--mainFontFamily': themeState.typography.mainFontFamily,
     '--noteMainFontFamily': themeState.typography.noteFontFamily,
+    '--noteTitleFontSize': scalePixelSize(themeState.typography.noteTextSize, themeState.typography.titleScale),
     '--noteTextFontSize': themeState.typography.noteTextSize,
     '--noteTextLineHeight': themeState.typography.noteTextLineHeight,
     '--maxWidth': themeState.layout.maxWidth,

@@ -31,6 +31,7 @@ test('derives shared plain color variables from theme palette', () => {
     '--inputTextColor': '#111111',
     '--mainFontFamily': 'Arial, Helvetica, sans-serif',
     '--noteMainFontFamily': 'Georgia, "Times New Roman", serif',
+    '--noteTitleFontSize': '27px',
     '--noteTextFontSize': '18px',
     '--noteTextLineHeight': 1.6,
     '--maxWidth': '48rem',
