@@ -25,3 +25,13 @@ The preview should use one stable English-language page with:
 - footer text with author name, email, RSS link, and engine text.
 
 This set covers the preview states required by `SPEC.md` without adding extra content categories before the preview surface exists.
+
+## Maintenance checklist
+
+When preview-related code changes:
+
+1. Compare the checked Aegea commit with the current Aegea source.
+2. Recheck the relevant `plain` markup used by the preview.
+3. Recheck the `plain` CSS-variable set used by the preview and exported themes.
+4. Recheck whether the preview still covers all required states from `SPEC.md`.
+5. Update this baseline when the checked Aegea commit or the preview contract changes.

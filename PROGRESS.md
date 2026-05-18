@@ -58,7 +58,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Add the short preview maintenance checklist for future Aegea updates.
+- [ ] Build the first Aegea-based preview surface from the fixed demo content.
 
 ## Future backlog
 
