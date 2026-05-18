@@ -11,5 +11,12 @@ module.exports = {
       files: ['**/*.vue'],
       customSyntax: 'postcss-html',
     },
+    {
+      files: ['src/preview/**/*.css'],
+      rules: {
+        'custom-property-pattern': null,
+        'no-descending-specificity': null,
+      },
+    },
   ],
 };

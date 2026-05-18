@@ -1,0 +1,157 @@
+.aegea-preview {
+  font-family: var(--mainFontFamily);
+  color: var(--foregroundColor);
+  background: var(--backgroundColor);
+}
+
+.aegea-preview .common {
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+}
+
+.aegea-preview .flag {
+  padding: 2rem 0 2.5rem;
+}
+
+.aegea-preview .header-content,
+.aegea-preview .header-menu,
+.aegea-preview .content,
+.aegea-preview .footer {
+  margin-right: 2rem;
+  margin-left: 2rem;
+}
+
+.aegea-preview .title h1,
+.aegea-preview .e2-smart-title {
+  color: var(--headingsColor);
+}
+
+.aegea-preview .title h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.aegea-preview a {
+  color: var(--linkColor);
+}
+
+.aegea-preview .e2-smart-title a,
+.aegea-preview .e2-smart-title a:visited,
+.aegea-preview .title h1 a,
+.aegea-preview .title h1 a:visited {
+  color: inherit;
+}
+
+.aegea-preview .header-menu {
+  margin-top: 1.25rem;
+}
+
+.aegea-preview .e2-band nav {
+  display: flex;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgb(0 0 0 / 15%);
+}
+
+.aegea-preview .band-item-inner {
+  display: block;
+  padding-bottom: 0.35rem;
+}
+
+.aegea-preview .band-item-current .band-item-inner {
+  font-weight: 700;
+  color: var(--activeColor);
+}
+
+.aegea-preview .content {
+  min-height: 20rem;
+}
+
+.aegea-preview .e2-smart-title {
+  margin-bottom: 1.25rem;
+  font-size: 2.25rem;
+  line-height: 1.15;
+}
+
+.aegea-preview .e2-note-text {
+  max-width: 45rem;
+  font-family: var(--noteMainFontFamily);
+  font-size: var(--noteTextFontSize);
+  line-height: 1.55;
+}
+
+.aegea-preview .lead {
+  font-size: 1.3em;
+  line-height: 1.35;
+}
+
+.aegea-preview .e2-text p + p {
+  margin-top: 1rem;
+}
+
+.aegea-preview a.visited {
+  color: var(--linkColorVisited);
+}
+
+.aegea-preview a.hover {
+  color: var(--hoverColor);
+}
+
+.aegea-preview a.tag {
+  color: var(--tagColor);
+}
+
+.aegea-preview mark {
+  background: var(--markedTextBackground);
+}
+
+.aegea-preview .loud {
+  padding-left: 1.5rem;
+  border-left: 1px solid rgb(0 0 0 / 15%);
+}
+
+.aegea-preview label,
+.aegea-preview .e2-text label {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.aegea-preview .label-text {
+  font-size: 0.8em;
+}
+
+.aegea-preview input {
+  max-width: 18rem;
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+  color: var(--inputTextColor);
+  background: var(--inputBackgroundColor);
+  border: 0;
+}
+
+.aegea-preview .footer {
+  padding-bottom: 2rem;
+}
+
+.aegea-preview .engine {
+  margin-top: 0.4rem;
+  color: var(--engineTextColor);
+}
+
+@media (max-width: 48rem) {
+  .aegea-preview .header-content,
+  .aegea-preview .header-menu,
+  .aegea-preview .content,
+  .aegea-preview .footer {
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+
+  .aegea-preview .flag {
+    padding-top: 1rem;
+  }
+
+  .aegea-preview .e2-smart-title {
+    font-size: 1.8rem;
+  }
+}

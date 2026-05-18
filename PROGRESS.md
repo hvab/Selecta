@@ -15,6 +15,7 @@
 
 The app starts locally and shows:
 
+- a first Aegea-based preview surface;
 - the current theme state;
 - generated `styles/main.css`;
 - generated `theme-info.php`.
@@ -58,7 +59,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Build the first Aegea-based preview surface from the fixed demo content.
+- [ ] Connect the preview surface to the exported CSS-variable contract more faithfully.
 
 ## Future backlog
 

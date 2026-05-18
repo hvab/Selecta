@@ -1,4 +1,5 @@
 <script setup>
+import AegeaPreview from './preview/AegeaPreview.vue';
 import { generateThemeCss } from './theme/css.js';
 import { initialThemeState } from './theme/model.js';
 import { generateThemeInfo } from './theme/themeInfo.js';
@@ -12,6 +13,11 @@ const themeInfo = generateThemeInfo(initialThemeState);
   <main class="app">
     <h1>Selecta</h1>
     <p>Theme generator for Aegea.</p>
+
+    <section>
+      <h2>Preview</h2>
+      <AegeaPreview :theme-state="initialThemeState" />
+    </section>
 
     <section>
       <h2>Theme state</h2>
