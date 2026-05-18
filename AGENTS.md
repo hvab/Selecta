@@ -14,6 +14,7 @@
 - `plan.md` is the iteration plan and prompt library.
 - The Aegea repository is the external source of truth for how themes work and for the real markup/CSS-variable contract used by preview.
 - If `AGENTS.local.md` exists, read it for machine-local paths to the Aegea checkout and related local-only context.
+- Keep machine-local paths in `AGENTS.local.md`; do not copy them into tracked project documents.
 - If preview structure, theme inheritance, or CSS variables are in question, inspect current Aegea code instead of guessing.
 
 ## Project decisions

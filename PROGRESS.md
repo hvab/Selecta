@@ -58,7 +58,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Start Stage 2 by choosing fixed preview demo content and recording the checked Aegea source version.
+- [ ] Add the short preview maintenance checklist for future Aegea updates.
 
 ## Future backlog
 
