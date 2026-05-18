@@ -9,7 +9,7 @@
 - [x] Stage 1.3: Separate minimal `styles/main.css` generator.
 - [x] Stage 1.4: Separate minimal `theme-info.php` generator.
 - [x] Stage 1.5: Minimal screen with current theme state and generated file contents.
-- [ ] Stage 1 review against `SPEC.md`.
+- [x] Stage 1 review against `SPEC.md`.
 
 ## Current runnable state
 
@@ -39,9 +39,26 @@ Not included yet:
 - advanced typography controls;
 - preview maintenance docs.
 
+## Stage 1 review
+
+Completed against the intended first-stage scope from `SPEC.md` and `plan.md`:
+
+- one serializable theme state exists;
+- the model keeps `meta`, `palette`, `typography`, and `layout` separate;
+- `styles/main.css` and `theme-info.php` are generated outside the UI layer;
+- the minimal screen shows the state and both generated file contents from that same state.
+
+Deliberately still outside the completed Stage 1 scope:
+
+- derived CSS values;
+- live preview;
+- controls;
+- validation;
+- ZIP export.
+
 ## Next small step
 
-- [ ] Review Stage 1 against `SPEC.md`.
+- [ ] Start Stage 2 by choosing fixed preview demo content and recording the checked Aegea source version.
 
 ## Future backlog
 
