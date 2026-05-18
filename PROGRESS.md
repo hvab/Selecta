@@ -8,14 +8,12 @@
 - [x] Stage 1.2: Initial serializable theme state model.
 - [x] Stage 1.3: Separate minimal `styles/main.css` generator.
 - [x] Stage 1.4: Separate minimal `theme-info.php` generator.
-- [ ] Stage 1.5: Minimal screen with current theme state and generated file contents.
+- [x] Stage 1.5: Minimal screen with current theme state and generated file contents.
 - [ ] Stage 1 review against `SPEC.md`.
 
 ## Current runnable state
 
-The app starts locally and shows a minimal Vue screen.
-
-After Stage 1 is complete, it is expected to show:
+The app starts locally and shows:
 
 - the current theme state;
 - generated `styles/main.css`;
@@ -43,7 +41,7 @@ Not included yet:
 
 ## Next small step
 
-- [ ] Add a minimal screen with current theme state and generated file contents.
+- [ ] Review Stage 1 against `SPEC.md`.
 
 ## Future backlog
 
