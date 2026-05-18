@@ -6,7 +6,7 @@
 - [x] Setup track: runnable project, local tooling, concise `.gitignore`, and UI architecture are documented.
 - [x] Stage 1.1: Vite + Vue + JavaScript project scaffold.
 - [x] Stage 1.2: Initial serializable theme state model.
-- [ ] Stage 1.3: Separate minimal `styles/main.css` generator.
+- [x] Stage 1.3: Separate minimal `styles/main.css` generator.
 - [ ] Stage 1.4: Separate minimal `theme-info.php` generator.
 - [ ] Stage 1.5: Minimal screen with current theme state and generated file contents.
 - [ ] Stage 1 review against `SPEC.md`.
@@ -43,7 +43,7 @@ Not included yet:
 
 ## Next small step
 
-- [ ] Add a separate minimal `styles/main.css` generator.
+- [ ] Add a separate minimal `theme-info.php` generator.
 
 ## Future backlog
 
