@@ -59,7 +59,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Connect the preview surface to the exported CSS-variable contract more faithfully.
+- [ ] Extend the shared CSS-variable contract with the next real `plain` values needed by preview.
 
 ## Future backlog
 
