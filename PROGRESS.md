@@ -59,7 +59,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Add the first derived CSS values needed by the `plain` preview contract.
+- [ ] Extend preview toward more real `plain` text and layout rules.
 
 ## Future backlog
 
