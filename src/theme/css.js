@@ -16,7 +16,10 @@ export function getThemeCssVariables(themeState) {
     '--mainFontFamily': themeState.typography.mainFontFamily,
     '--noteMainFontFamily': themeState.typography.noteFontFamily,
     '--noteTextFontSize': themeState.typography.noteTextSize,
+    '--noteTextLineHeight': themeState.typography.noteTextLineHeight,
     '--maxWidth': themeState.layout.maxWidth,
+    '--marginLeft': themeState.layout.margins,
+    '--marginRight': themeState.layout.margins,
   };
 }
 

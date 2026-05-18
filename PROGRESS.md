@@ -59,7 +59,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Extend the shared CSS-variable contract with the next real `plain` values needed by preview.
+- [ ] Add the first derived CSS values needed by the `plain` preview contract.
 
 ## Future backlog
 

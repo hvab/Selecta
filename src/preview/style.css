@@ -17,8 +17,8 @@
 .aegea-preview .header-menu,
 .aegea-preview .content,
 .aegea-preview .footer {
-  margin-right: 2rem;
-  margin-left: 2rem;
+  margin-right: var(--marginRight);
+  margin-left: var(--marginLeft);
 }
 
 .aegea-preview .title h1,
@@ -76,7 +76,7 @@
   max-width: 45rem;
   font-family: var(--noteMainFontFamily);
   font-size: var(--noteTextFontSize);
-  line-height: 1.55;
+  line-height: var(--noteTextLineHeight);
 }
 
 .aegea-preview .lead {
