@@ -1,0 +1,44 @@
+{
+  "name": "selecta",
+  "version": "0.1.0",
+  "description": "Theme generator for Aegea",
+  "homepage": "https://github.com/hvab/Selecta#readme",
+  "bugs": {
+    "url": "https://github.com/hvab/Selecta/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hvab/Selecta.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:styles": "stylelint \"src/**/*.{css,vue}\"",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-vue": "^10.9.1",
+    "globals": "^17.4.0",
+    "postcss-html": "^1.8.1",
+    "prettier": "^3.8.1",
+    "stylelint": "^17.4.0",
+    "stylelint-config-recess-order": "^7.6.1",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-order": "^7.0.1",
+    "vite": "^6.2.0"
+  }
+}
