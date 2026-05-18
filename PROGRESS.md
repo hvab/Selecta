@@ -59,7 +59,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Extend preview toward more real `plain` text and layout rules.
+- [ ] Decide and implement the first typography derivation from `titleScale`.
 
 ## Future backlog
 
