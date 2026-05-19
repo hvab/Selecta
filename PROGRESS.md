@@ -86,6 +86,7 @@ Deliberately still outside the completed Stage 2 scope:
 - [x] Stage 3.4: System font controls for interface and note text typography.
 - [x] Stage 3.5: Numeric typography controls for note size, title scale, and line height.
 - [x] Stage 3.6: Layout controls for content width and side margins.
+- [x] Stage 3.7: Compact responsive controls panel styling.
 
 ## Future backlog
 

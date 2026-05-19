@@ -160,11 +160,12 @@ function getNumericValue(control, value) {
 
 <template>
   <div class="theme-controls">
-    <div>
+    <div class="control-group">
       <h3>Colors</h3>
-      <label v-for="control in colorControls" :key="control.key">
-        <span>{{ control.label }}</span>
+      <label v-for="control in colorControls" :key="control.key" class="control-row">
+        <span class="control-label">{{ control.label }}</span>
         <input
+          class="color-control"
           type="color"
           :value="palette[control.key]"
           @input="emit('update:palette-field', control.key, $event.target.value)"
@@ -172,11 +173,12 @@ function getNumericValue(control, value) {
       </label>
     </div>
 
-    <div>
+    <div class="control-group">
       <h3>Fonts</h3>
-      <label v-for="control in fontControls" :key="control.key">
-        <span>{{ control.label }}</span>
+      <label v-for="control in fontControls" :key="control.key" class="control-row">
+        <span class="control-label">{{ control.label }}</span>
         <select
+          class="select-control"
           :value="typography[control.key]"
           @change="emit('update:typography-field', control.key, $event.target.value)"
         >
@@ -187,11 +189,12 @@ function getNumericValue(control, value) {
       </label>
     </div>
 
-    <div>
+    <div class="control-group">
       <h3>Typography</h3>
-      <label v-for="control in typographyControls" :key="control.key">
-        <span>{{ control.label }}</span>
+      <label v-for="control in typographyControls" :key="control.key" class="control-row">
+        <span class="control-label">{{ control.label }}</span>
         <input
+          class="range-control"
           type="range"
           :min="control.min"
           :max="control.max"
@@ -199,15 +202,18 @@ function getNumericValue(control, value) {
           :value="getControlValue(control, typography[control.key])"
           @input="emit('update:typography-field', control.key, getNumericValue(control, $event.target.value))"
         />
-        <output>{{ typography[control.key] }}{{ control.unit && control.unit !== 'px' ? control.unit : '' }}</output>
+        <output class="control-value">
+          {{ typography[control.key] }}{{ control.unit && control.unit !== 'px' ? control.unit : '' }}
+        </output>
       </label>
     </div>
 
-    <div>
+    <div class="control-group">
       <h3>Layout</h3>
-      <label v-for="control in layoutControls" :key="control.key">
-        <span>{{ control.label }}</span>
+      <label v-for="control in layoutControls" :key="control.key" class="control-row">
+        <span class="control-label">{{ control.label }}</span>
         <input
+          class="range-control"
           type="range"
           :min="control.min"
           :max="control.max"
@@ -215,7 +221,7 @@ function getNumericValue(control, value) {
           :value="getControlValue(control, layout[control.key])"
           @input="emit('update:layout-field', control.key, getNumericValue(control, $event.target.value))"
         />
-        <output>{{ layout[control.key] }}</output>
+        <output class="control-value">{{ layout[control.key] }}</output>
       </label>
     </div>
   </div>
