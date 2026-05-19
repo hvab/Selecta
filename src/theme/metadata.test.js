@@ -11,3 +11,7 @@ test('suggests folder name from display name', () => {
 test('returns empty folder name suggestion for blank display name', () => {
   assert.equal(suggestFolderName('   '), '');
 });
+
+test('returns empty folder name suggestion for non-latin input', () => {
+  assert.equal(suggestFolderName('Блог'), '');
+});

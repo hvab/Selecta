@@ -12,13 +12,19 @@ test('requires display name and folder name', () => {
     validateMetadata({
       ...initialThemeState.meta,
       displayName: ' ',
-      folderName: '',
+      folderName: '  ',
     }),
     {
       displayName: 'Display name is required.',
       folderName: 'Folder name is required.',
     }
   );
+});
+
+test('rejects leading and trailing folder name spaces with a clear error', () => {
+  assert.deepEqual(validateMetadata({ ...initialThemeState.meta, folderName: ' my-theme ' }), {
+    folderName: 'Remove leading and trailing spaces.',
+  });
 });
 
 test('rejects invalid folder name characters', () => {

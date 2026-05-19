@@ -99,6 +99,10 @@ pre {
   font: inherit;
 }
 
+.metadata-control .text-control {
+  grid-column: 2 / -1;
+}
+
 .control-value {
   font-size: 0.8125rem;
   text-align: right;
@@ -118,6 +122,10 @@ pre {
   .control-row {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
+  }
+
+  .metadata-control .text-control {
+    grid-column: auto;
   }
 
   .control-value {

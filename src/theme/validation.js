@@ -7,6 +7,8 @@ export function validateMetadata(meta) {
 
   if (!meta.folderName.trim()) {
     errors.folderName = 'Folder name is required.';
+  } else if (meta.folderName !== meta.folderName.trim()) {
+    errors.folderName = 'Remove leading and trailing spaces.';
   } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(meta.folderName)) {
     errors.folderName = 'Use lowercase letters, numbers, and hyphens only.';
   }
