@@ -12,6 +12,7 @@
 - [x] Stage 1 review against `SPEC.md`.
 - [x] Stage 2: Aegea-based preview surface with fixed demo content, source version, and maintenance checklist.
 - [x] Stage 3: Main controls with live preview and live file updates.
+- [x] Stage 4: Theme metadata fields and validation.
 
 ## Current runnable state
 
@@ -98,6 +99,23 @@ Deliberately still outside the completed Stage 3 scope:
 - ZIP export;
 - real Aegea install verification.
 
+## Stage 4 review
+
+Completed against the intended fourth-stage scope from `SPEC.md` and `plan.md`:
+
+- theme metadata controls cover the display name and technical folder name;
+- the folder name is automatically suggested from the display name until the user edits it manually;
+- metadata changes update the same theme state model used by `theme-info.php`;
+- metadata validation covers required display name, required folder name, and invalid folder name characters;
+- validation errors are shown inline before the future download step;
+- folder name suggestion and metadata validation are covered by focused tests.
+
+Deliberately still outside the completed Stage 4 scope:
+
+- ZIP export;
+- blocking the download button when validation fails;
+- real Aegea install verification.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -112,11 +130,11 @@ Deliberately still outside the completed Stage 3 scope:
 - [x] Start Stage 4 with read-only planning for metadata fields and validation.
 - [x] Stage 4.1: Editable display name with automatic folder name suggestion.
 - [x] Stage 4.2: Folder name validation and metadata error display.
-- [ ] Stage 4 review against `SPEC.md`.
+- [x] Stage 4 review against `SPEC.md`.
+- [ ] Start Stage 5 with read-only planning for ZIP export.
 
 ## Future backlog
 
-- [ ] Stage 4: Review theme metadata fields and validation.
 - [ ] Stage 5: Client-side ZIP export.
 - [ ] Stage 6: Verification in a real local Aegea instance.
 - [ ] Stage 7: MVP polish and README alignment.
