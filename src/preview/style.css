@@ -104,9 +104,9 @@
 
 .aegea-preview .e2-text .foot {
   max-width: 45rem;
-  font-family: var(--smallFontFamily);
-  font-size: var(--smallFontSize);
-  line-height: var(--smallLineHeight);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .aegea-preview a.visited {
@@ -122,6 +122,11 @@
 .aegea-preview a.tag {
   color: var(--tagColor);
   text-decoration-color: var(--tagUnderlineColor);
+}
+
+.aegea-preview .e2-text a:hover {
+  color: var(--hoverColor);
+  text-decoration-color: var(--hoverUnderlineColor);
 }
 
 .aegea-preview mark {
@@ -141,9 +146,9 @@
 }
 
 .aegea-preview .label-text {
-  font-family: var(--smallFontFamily);
+  font-family: inherit;
   font-size: 0.8em;
-  line-height: var(--smallLineHeight);
+  line-height: 16px;
 }
 
 .aegea-preview input {
