@@ -84,6 +84,7 @@ Deliberately still outside the completed Stage 2 scope:
 - [x] Stage 3.2: Editable heading, visited link, hover, and tag color controls.
 - [x] Stage 3.3: Editable secondary text, active navigation, marked text, and input color controls.
 - [x] Stage 3.4: System font controls for interface and note text typography.
+- [x] Stage 3.5: Numeric typography controls for note size, title scale, and line height.
 
 ## Future backlog
 

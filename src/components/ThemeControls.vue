@@ -74,6 +74,31 @@ const fontControls = [
   },
 ];
 
+const typographyControls = [
+  {
+    key: 'noteTextSize',
+    label: 'Note text size',
+    min: 14,
+    max: 24,
+    step: 1,
+    unit: 'px',
+  },
+  {
+    key: 'titleScale',
+    label: 'Title scale',
+    min: 1.2,
+    max: 2,
+    step: 0.05,
+  },
+  {
+    key: 'noteTextLineHeight',
+    label: 'Line height',
+    min: 1.3,
+    max: 1.9,
+    step: 0.05,
+  },
+];
+
 const systemFonts = [
   {
     value: 'Arial, Helvetica, sans-serif',
@@ -100,6 +125,14 @@ const systemFonts = [
     label: 'Courier New',
   },
 ];
+
+function getControlValue(control, value) {
+  return control.unit === 'px' ? Number.parseFloat(value) : value;
+}
+
+function getTypographyValue(control, value) {
+  return control.unit === 'px' ? `${value}px` : Number(value);
+}
 </script>
 
 <template>
@@ -128,6 +161,22 @@ const systemFonts = [
             {{ font.label }}
           </option>
         </select>
+      </label>
+    </div>
+
+    <div>
+      <h3>Typography</h3>
+      <label v-for="control in typographyControls" :key="control.key">
+        <span>{{ control.label }}</span>
+        <input
+          type="range"
+          :min="control.min"
+          :max="control.max"
+          :step="control.step"
+          :value="getControlValue(control, typography[control.key])"
+          @input="emit('update:typography-field', control.key, getTypographyValue(control, $event.target.value))"
+        />
+        <output>{{ typography[control.key] }}{{ control.unit && control.unit !== 'px' ? control.unit : '' }}</output>
       </label>
     </div>
   </div>
