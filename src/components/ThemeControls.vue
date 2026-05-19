@@ -37,6 +37,26 @@ const colorControls = [
     key: 'tag',
     label: 'Tags',
   },
+  {
+    key: 'engineText',
+    label: 'Secondary text',
+  },
+  {
+    key: 'active',
+    label: 'Active navigation',
+  },
+  {
+    key: 'markedTextBackground',
+    label: 'Marked text',
+  },
+  {
+    key: 'inputBackground',
+    label: 'Input background',
+  },
+  {
+    key: 'inputText',
+    label: 'Input text',
+  },
 ];
 </script>
 
