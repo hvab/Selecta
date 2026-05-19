@@ -14,6 +14,10 @@ const themeInfo = computed(() => generateThemeInfo(themeState));
 function updatePaletteField(key, value) {
   themeState.palette[key] = value;
 }
+
+function updateTypographyField(key, value) {
+  themeState.typography[key] = value;
+}
 </script>
 
 <template>
@@ -27,8 +31,13 @@ function updatePaletteField(key, value) {
     </section>
 
     <section>
-      <h2>Colors</h2>
-      <ThemeControls :palette="themeState.palette" @update:palette-field="updatePaletteField" />
+      <h2>Controls</h2>
+      <ThemeControls
+        :palette="themeState.palette"
+        :typography="themeState.typography"
+        @update:palette-field="updatePaletteField"
+        @update:typography-field="updateTypographyField"
+      />
     </section>
 
     <section>

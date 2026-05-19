@@ -83,6 +83,7 @@ Deliberately still outside the completed Stage 2 scope:
 - [x] Stage 3.1: First editable color controls for background, text, and links.
 - [x] Stage 3.2: Editable heading, visited link, hover, and tag color controls.
 - [x] Stage 3.3: Editable secondary text, active navigation, marked text, and input color controls.
+- [x] Stage 3.4: System font controls for interface and note text typography.
 
 ## Future backlog
 
