@@ -90,6 +90,7 @@ Completed against the intended third-stage scope from `SPEC.md` and `plan.md`:
 
 Deliberately still outside the completed Stage 3 scope:
 
+- admin-specific color editing;
 - theme metadata editing;
 - validation;
 - ZIP export;

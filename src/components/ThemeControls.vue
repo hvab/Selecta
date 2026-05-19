@@ -202,9 +202,7 @@ function getNumericValue(control, value) {
           :value="getControlValue(control, typography[control.key])"
           @input="emit('update:typography-field', control.key, getNumericValue(control, $event.target.value))"
         />
-        <output class="control-value">
-          {{ typography[control.key] }}{{ control.unit && control.unit !== 'px' ? control.unit : '' }}
-        </output>
+        <output class="control-value">{{ typography[control.key] }}</output>
       </label>
     </div>
 
