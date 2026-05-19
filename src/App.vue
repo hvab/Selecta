@@ -3,7 +3,7 @@ import { computed, reactive, ref } from 'vue';
 import ThemeControls from './components/ThemeControls.vue';
 import AegeaPreview from './preview/AegeaPreview.vue';
 import { generateThemeCss } from './theme/css.js';
-import { suggestFolderName } from './theme/metadata.js';
+import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
 import { generateThemeInfo } from './theme/themeInfo.js';
 import { validateMetadata } from './theme/validation.js';
@@ -16,7 +16,7 @@ const themeInfo = computed(() => generateThemeInfo(themeState));
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
 
 function updateMetaField(key, value) {
-  themeState.meta[key] = value;
+  themeState.meta[key] = key === 'folderName' ? normalizeFolderName(value) : value;
 
   if (key === 'displayName' && !folderNameEdited.value) {
     themeState.meta.folderName = suggestFolderName(value);

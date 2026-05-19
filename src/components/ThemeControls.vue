@@ -1,4 +1,6 @@
 <script setup>
+import { normalizeFolderName } from '../theme/metadata.js';
+
 defineProps({
   meta: {
     type: Object,
@@ -180,6 +182,13 @@ function getControlValue(control, value) {
 function getNumericValue(control, value) {
   return control.unit ? `${value}${control.unit}` : Number(value);
 }
+
+function updateMetadataField(control, event) {
+  const value = control.key === 'folderName' ? normalizeFolderName(event.target.value) : event.target.value;
+
+  event.target.value = value;
+  emit('update:meta-field', control.key, value);
+}
 </script>
 
 <template>
@@ -196,7 +205,7 @@ function getNumericValue(control, value) {
             :value="meta[control.key]"
             :aria-describedby="metadataErrors[control.key] ? `metadata-${control.key}-error` : undefined"
             :aria-invalid="metadataErrors[control.key] ? 'true' : undefined"
-            @input="emit('update:meta-field', control.key, $event.target.value)"
+            @input="updateMetadataField(control, $event)"
           />
         </label>
         <p v-if="metadataErrors[control.key]" :id="`metadata-${control.key}-error`" class="control-error">

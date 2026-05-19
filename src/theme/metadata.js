@@ -1,3 +1,7 @@
+export function normalizeFolderName(folderName) {
+  return folderName.trim();
+}
+
 export function suggestFolderName(displayName) {
   return displayName
     .trim()

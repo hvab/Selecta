@@ -21,12 +21,6 @@ test('requires display name and folder name', () => {
   );
 });
 
-test('rejects leading and trailing folder name spaces with a clear error', () => {
-  assert.deepEqual(validateMetadata({ ...initialThemeState.meta, folderName: ' my-theme ' }), {
-    folderName: 'Remove leading and trailing spaces.',
-  });
-});
-
 test('rejects invalid folder name characters', () => {
   assert.deepEqual(
     validateMetadata({

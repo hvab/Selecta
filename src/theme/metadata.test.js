@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { suggestFolderName } from './metadata.js';
+import { normalizeFolderName, suggestFolderName } from './metadata.js';
+
+test('normalizes folder name from user input', () => {
+  assert.equal(normalizeFolderName(' my-theme '), 'my-theme');
+});
 
 test('suggests folder name from display name', () => {
   assert.equal(suggestFolderName('My Theme'), 'my-theme');
