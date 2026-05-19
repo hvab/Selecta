@@ -18,8 +18,24 @@ const colorControls = [
     label: 'Text',
   },
   {
+    key: 'headings',
+    label: 'Headings',
+  },
+  {
     key: 'link',
     label: 'Links',
+  },
+  {
+    key: 'linkVisited',
+    label: 'Visited links',
+  },
+  {
+    key: 'hover',
+    label: 'Hover',
+  },
+  {
+    key: 'tag',
+    label: 'Tags',
   },
 ];
 </script>

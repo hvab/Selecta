@@ -81,6 +81,7 @@ Deliberately still outside the completed Stage 2 scope:
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
+- [x] Stage 3.2: Editable heading, visited link, hover, and tag color controls.
 
 ## Future backlog
 
