@@ -59,7 +59,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Add preview coverage for a small-text/footer-like state from the `plain` typography contract.
+- [ ] Review Stage 2 against `SPEC.md` and the preview baseline.
 
 ## Future backlog
 

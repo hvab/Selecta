@@ -56,6 +56,7 @@ const themeCssVariables = computed(() => getThemeCssVariables(props.themeState))
               Theme work also needs a <a class="tag" href="#">secondary tag</a>, <mark>marked text</mark>, and enough
               body copy to judge the reading tone.
             </p>
+            <p class="foot">Small supporting text should stay quiet and readable.</p>
             <p class="loud">A quoted fragment should still feel like part of the same page.</p>
             <label>
               <span class="label-text">Email</span>

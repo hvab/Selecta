@@ -102,6 +102,13 @@
   margin-top: 1rem;
 }
 
+.aegea-preview .e2-text .foot {
+  max-width: 45rem;
+  font-family: var(--smallFontFamily);
+  font-size: var(--smallFontSize);
+  line-height: var(--smallLineHeight);
+}
+
 .aegea-preview a.visited {
   color: var(--linkColorVisited);
   text-decoration-color: var(--linkUnderlineColorVisited);
@@ -134,7 +141,9 @@
 }
 
 .aegea-preview .label-text {
+  font-family: var(--smallFontFamily);
   font-size: 0.8em;
+  line-height: var(--smallLineHeight);
 }
 
 .aegea-preview input {
