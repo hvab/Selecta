@@ -11,6 +11,7 @@
 - [x] Stage 1.5: Minimal screen with current theme state and generated file contents.
 - [x] Stage 1 review against `SPEC.md`.
 - [x] Stage 2: Aegea-based preview surface with fixed demo content, source version, and maintenance checklist.
+- [x] Stage 3: Main controls with live preview and live file updates.
 
 ## Current runnable state
 
@@ -77,6 +78,23 @@ Deliberately still outside the completed Stage 2 scope:
 - ZIP export;
 - final install verification in a real Aegea instance.
 
+## Stage 3 review
+
+Completed against the intended third-stage scope from `SPEC.md` and `plan.md`:
+
+- main color controls cover background, text, headings, links, visited links, hover, secondary/tag-related text, active navigation, marked text, and input colors;
+- typography controls cover interface font, note text font, note text size, title scale, and note text line height;
+- layout controls cover content width and side margins;
+- controls update the same theme state model used by preview, `styles/main.css`, and `theme-info.php`;
+- the controls panel is compact and responsive.
+
+Deliberately still outside the completed Stage 3 scope:
+
+- theme metadata editing;
+- validation;
+- ZIP export;
+- real Aegea install verification.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -87,11 +105,10 @@ Deliberately still outside the completed Stage 2 scope:
 - [x] Stage 3.5: Numeric typography controls for note size, title scale, and line height.
 - [x] Stage 3.6: Layout controls for content width and side margins.
 - [x] Stage 3.7: Compact responsive controls panel styling.
+- [x] Stage 3 review against `SPEC.md`.
 
 ## Future backlog
 
-- [ ] Continue Stage 3 with the next focused controls slice.
-- [ ] Stage 3: Main controls with live preview and live file updates.
 - [ ] Stage 4: Theme metadata fields and validation.
 - [ ] Stage 5: Client-side ZIP export.
 - [ ] Stage 6: Verification in a real local Aegea instance.
