@@ -6,12 +6,14 @@ import { generateThemeCss } from './theme/css.js';
 import { suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
 import { generateThemeInfo } from './theme/themeInfo.js';
+import { validateMetadata } from './theme/validation.js';
 
 const themeState = reactive(structuredClone(initialThemeState));
 const folderNameEdited = ref(false);
 const themeStateJson = computed(() => JSON.stringify(themeState, null, 2));
 const themeCss = computed(() => generateThemeCss(themeState));
 const themeInfo = computed(() => generateThemeInfo(themeState));
+const metadataErrors = computed(() => validateMetadata(themeState.meta));
 
 function updateMetaField(key, value) {
   themeState.meta[key] = value;
@@ -52,6 +54,7 @@ function updateLayoutField(key, value) {
       <h2>Controls</h2>
       <ThemeControls
         :meta="themeState.meta"
+        :metadata-errors="metadataErrors"
         :palette="themeState.palette"
         :typography="themeState.typography"
         :layout="themeState.layout"

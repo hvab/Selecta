@@ -4,6 +4,10 @@ defineProps({
     type: Object,
     required: true,
   },
+  metadataErrors: {
+    type: Object,
+    required: true,
+  },
   palette: {
     type: Object,
     required: true,
@@ -182,15 +186,23 @@ function getNumericValue(control, value) {
   <div class="theme-controls">
     <div class="control-group">
       <h3>Metadata</h3>
-      <label v-for="control in metadataControls" :key="control.key" class="control-row">
-        <span class="control-label">{{ control.label }}</span>
-        <input
-          class="text-control"
-          type="text"
-          :value="meta[control.key]"
-          @input="emit('update:meta-field', control.key, $event.target.value)"
-        />
-      </label>
+      <div v-for="control in metadataControls" :key="control.key" class="metadata-control">
+        <label class="control-row" :for="`metadata-${control.key}`">
+          <span class="control-label">{{ control.label }}</span>
+          <input
+            :id="`metadata-${control.key}`"
+            class="text-control"
+            type="text"
+            :value="meta[control.key]"
+            :aria-describedby="metadataErrors[control.key] ? `metadata-${control.key}-error` : undefined"
+            :aria-invalid="metadataErrors[control.key] ? 'true' : undefined"
+            @input="emit('update:meta-field', control.key, $event.target.value)"
+          />
+        </label>
+        <p v-if="metadataErrors[control.key]" :id="`metadata-${control.key}-error`" class="control-error">
+          {{ metadataErrors[control.key] }}
+        </p>
+      </div>
     </div>
 
     <div class="control-group">

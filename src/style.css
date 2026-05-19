@@ -73,6 +73,10 @@ pre {
   margin-top: 0.5rem;
 }
 
+.metadata-control + .metadata-control {
+  margin-top: 0.5rem;
+}
+
 .control-label {
   min-width: 0;
 }
@@ -98,6 +102,12 @@ pre {
 .control-value {
   font-size: 0.8125rem;
   text-align: right;
+}
+
+.control-error {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: #b00020;
 }
 
 @media (max-width: 40rem) {
