@@ -1,12 +1,19 @@
 <script setup>
+import { computed, reactive } from 'vue';
+import ThemeControls from './components/ThemeControls.vue';
 import AegeaPreview from './preview/AegeaPreview.vue';
 import { generateThemeCss } from './theme/css.js';
 import { initialThemeState } from './theme/model.js';
 import { generateThemeInfo } from './theme/themeInfo.js';
 
-const themeStateJson = JSON.stringify(initialThemeState, null, 2);
-const themeCss = generateThemeCss(initialThemeState);
-const themeInfo = generateThemeInfo(initialThemeState);
+const themeState = reactive(structuredClone(initialThemeState));
+const themeStateJson = computed(() => JSON.stringify(themeState, null, 2));
+const themeCss = computed(() => generateThemeCss(themeState));
+const themeInfo = computed(() => generateThemeInfo(themeState));
+
+function updatePaletteField(key, value) {
+  themeState.palette[key] = value;
+}
 </script>
 
 <template>
@@ -16,7 +23,12 @@ const themeInfo = generateThemeInfo(initialThemeState);
 
     <section>
       <h2>Preview</h2>
-      <AegeaPreview :theme-state="initialThemeState" />
+      <AegeaPreview :theme-state="themeState" />
+    </section>
+
+    <section>
+      <h2>Colors</h2>
+      <ThemeControls :palette="themeState.palette" @update:palette-field="updatePaletteField" />
     </section>
 
     <section>

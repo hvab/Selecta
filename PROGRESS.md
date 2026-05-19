@@ -17,6 +17,7 @@
 The app starts locally and shows:
 
 - a first Aegea-based preview surface;
+- first editable color controls for background, text, and links;
 - the current theme state;
 - generated `styles/main.css`;
 - generated `theme-info.php`.
@@ -78,10 +79,12 @@ Deliberately still outside the completed Stage 2 scope:
 
 ## Next small step
 
-- [ ] Start Stage 3 with read-only planning for the first controls slice.
+- [x] Start Stage 3 with read-only planning for the first controls slice.
+- [x] Stage 3.1: First editable color controls for background, text, and links.
 
 ## Future backlog
 
+- [ ] Continue Stage 3 with the next focused controls slice.
 - [ ] Stage 3: Main controls with live preview and live file updates.
 - [ ] Stage 4: Theme metadata fields and validation.
 - [ ] Stage 5: Client-side ZIP export.
