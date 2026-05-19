@@ -18,7 +18,8 @@
 The app starts locally and shows:
 
 - a first Aegea-based preview surface;
-- first editable color controls for background, text, and links;
+- editable theme metadata fields;
+- editable color, typography, and layout controls;
 - the current theme state;
 - generated `styles/main.css`;
 - generated `theme-info.php`.
@@ -107,10 +108,13 @@ Deliberately still outside the completed Stage 3 scope:
 - [x] Stage 3.6: Layout controls for content width and side margins.
 - [x] Stage 3.7: Compact responsive controls panel styling.
 - [x] Stage 3 review against `SPEC.md`.
+- [x] Start Stage 4 with read-only planning for metadata fields and validation.
+- [x] Stage 4.1: Editable display name with automatic folder name suggestion.
+- [ ] Stage 4.2: Folder name validation and metadata error display.
 
 ## Future backlog
 
-- [ ] Stage 4: Theme metadata fields and validation.
+- [ ] Stage 4: Finish theme metadata validation.
 - [ ] Stage 5: Client-side ZIP export.
 - [ ] Stage 6: Verification in a real local Aegea instance.
 - [ ] Stage 7: MVP polish and README alignment.

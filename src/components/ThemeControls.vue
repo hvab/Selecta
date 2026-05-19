@@ -1,5 +1,9 @@
 <script setup>
 defineProps({
+  meta: {
+    type: Object,
+    required: true,
+  },
   palette: {
     type: Object,
     required: true,
@@ -14,7 +18,23 @@ defineProps({
   },
 });
 
-const emit = defineEmits(['update:palette-field', 'update:typography-field', 'update:layout-field']);
+const emit = defineEmits([
+  'update:meta-field',
+  'update:palette-field',
+  'update:typography-field',
+  'update:layout-field',
+]);
+
+const metadataControls = [
+  {
+    key: 'displayName',
+    label: 'Display name',
+  },
+  {
+    key: 'folderName',
+    label: 'Folder name',
+  },
+];
 
 const colorControls = [
   {
@@ -160,6 +180,19 @@ function getNumericValue(control, value) {
 
 <template>
   <div class="theme-controls">
+    <div class="control-group">
+      <h3>Metadata</h3>
+      <label v-for="control in metadataControls" :key="control.key" class="control-row">
+        <span class="control-label">{{ control.label }}</span>
+        <input
+          class="text-control"
+          type="text"
+          :value="meta[control.key]"
+          @input="emit('update:meta-field', control.key, $event.target.value)"
+        />
+      </label>
+    </div>
+
     <div class="control-group">
       <h3>Colors</h3>
       <label v-for="control in colorControls" :key="control.key" class="control-row">

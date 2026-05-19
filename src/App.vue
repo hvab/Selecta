@@ -1,15 +1,29 @@
 <script setup>
-import { computed, reactive } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import ThemeControls from './components/ThemeControls.vue';
 import AegeaPreview from './preview/AegeaPreview.vue';
 import { generateThemeCss } from './theme/css.js';
+import { suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
 import { generateThemeInfo } from './theme/themeInfo.js';
 
 const themeState = reactive(structuredClone(initialThemeState));
+const folderNameEdited = ref(false);
 const themeStateJson = computed(() => JSON.stringify(themeState, null, 2));
 const themeCss = computed(() => generateThemeCss(themeState));
 const themeInfo = computed(() => generateThemeInfo(themeState));
+
+function updateMetaField(key, value) {
+  themeState.meta[key] = value;
+
+  if (key === 'displayName' && !folderNameEdited.value) {
+    themeState.meta.folderName = suggestFolderName(value);
+  }
+
+  if (key === 'folderName') {
+    folderNameEdited.value = true;
+  }
+}
 
 function updatePaletteField(key, value) {
   themeState.palette[key] = value;
@@ -37,9 +51,11 @@ function updateLayoutField(key, value) {
     <section>
       <h2>Controls</h2>
       <ThemeControls
+        :meta="themeState.meta"
         :palette="themeState.palette"
         :typography="themeState.typography"
         :layout="themeState.layout"
+        @update:meta-field="updateMetaField"
         @update:palette-field="updatePaletteField"
         @update:typography-field="updateTypographyField"
         @update:layout-field="updateLayoutField"

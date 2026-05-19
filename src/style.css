@@ -84,12 +84,14 @@ pre {
 }
 
 .select-control,
-.range-control {
+.range-control,
+.text-control {
   width: 100%;
   min-width: 0;
 }
 
-.select-control {
+.select-control,
+.text-control {
   font: inherit;
 }
 
