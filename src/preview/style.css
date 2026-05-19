@@ -83,7 +83,7 @@
 .aegea-preview .e2-smart-title {
   margin-bottom: 1.25rem;
   font-size: var(--noteTitleFontSize);
-  line-height: 1.15;
+  line-height: var(--noteTitleLineHeight);
 }
 
 .aegea-preview .e2-note-text {

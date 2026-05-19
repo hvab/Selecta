@@ -59,7 +59,7 @@ Deliberately still outside the completed Stage 1 scope:
 
 ## Next small step
 
-- [ ] Derive the matching note title line height from `titleScale`.
+- [ ] Add preview coverage for a small-text/footer-like state from the `plain` typography contract.
 
 ## Future backlog
 

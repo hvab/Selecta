@@ -32,6 +32,7 @@ test('derives shared plain color variables from theme palette', () => {
     '--mainFontFamily': 'Arial, Helvetica, sans-serif',
     '--noteMainFontFamily': 'Georgia, "Times New Roman", serif',
     '--noteTitleFontSize': '27px',
+    '--noteTitleLineHeight': '31.5px',
     '--noteTextFontSize': '18px',
     '--noteTextLineHeight': 1.6,
     '--maxWidth': '48rem',

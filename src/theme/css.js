@@ -1,7 +1,9 @@
 import { hexToRgba } from './color.js';
-import { scalePixelSize } from './typography.js';
+import { getNoteTitleLineHeight, scalePixelSize } from './typography.js';
 
 export function getThemeCssVariables(themeState) {
+  const noteTitleFontSize = scalePixelSize(themeState.typography.noteTextSize, themeState.typography.titleScale);
+
   return {
     '--backgroundColor': themeState.palette.background,
     '--backgroundTransparentColor': hexToRgba(themeState.palette.background, 0.8),
@@ -29,7 +31,8 @@ export function getThemeCssVariables(themeState) {
     '--inputTextColor': themeState.palette.inputText,
     '--mainFontFamily': themeState.typography.mainFontFamily,
     '--noteMainFontFamily': themeState.typography.noteFontFamily,
-    '--noteTitleFontSize': scalePixelSize(themeState.typography.noteTextSize, themeState.typography.titleScale),
+    '--noteTitleFontSize': noteTitleFontSize,
+    '--noteTitleLineHeight': getNoteTitleLineHeight(noteTitleFontSize),
     '--noteTextFontSize': themeState.typography.noteTextSize,
     '--noteTextLineHeight': themeState.typography.noteTextLineHeight,
     '--maxWidth': themeState.layout.maxWidth,
