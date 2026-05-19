@@ -10,6 +10,7 @@
 - [x] Stage 1.4: Separate minimal `theme-info.php` generator.
 - [x] Stage 1.5: Minimal screen with current theme state and generated file contents.
 - [x] Stage 1 review against `SPEC.md`.
+- [x] Stage 2: Aegea-based preview surface with fixed demo content, source version, and maintenance checklist.
 
 ## Current runnable state
 
@@ -57,13 +58,30 @@ Deliberately still outside the completed Stage 1 scope:
 - validation;
 - ZIP export.
 
+## Stage 2 review
+
+Completed against the intended second-stage scope from `SPEC.md`, `plan.md`, and `PREVIEW-BASELINE.md`:
+
+- fixed English preview demo content is documented;
+- the checked Aegea commit and `plain` baseline theme are documented;
+- preview maintenance checklist is documented;
+- the first Aegea-like preview surface is implemented separately from the generator shell;
+- preview covers the required blog title, subtitle, menu, note title, body text, lead, regular link, visited link, secondary/tag link, forced hover state, marked fragment, quotation-style fragment, input, footer, and engine text;
+- preview uses the shared CSS-variable contract that also generates `styles/main.css`.
+
+Deliberately still outside the completed Stage 2 scope:
+
+- editable controls;
+- live user edits;
+- ZIP export;
+- final install verification in a real Aegea instance.
+
 ## Next small step
 
-- [ ] Review Stage 2 against `SPEC.md` and the preview baseline.
+- [ ] Start Stage 3 with read-only planning for the first controls slice.
 
 ## Future backlog
 
-- [ ] Stage 2: Aegea-based preview surface with fixed demo content, source version, and maintenance checklist.
 - [ ] Stage 3: Main controls with live preview and live file updates.
 - [ ] Stage 4: Theme metadata fields and validation.
 - [ ] Stage 5: Client-side ZIP export.
