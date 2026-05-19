@@ -18,6 +18,10 @@ function updatePaletteField(key, value) {
 function updateTypographyField(key, value) {
   themeState.typography[key] = value;
 }
+
+function updateLayoutField(key, value) {
+  themeState.layout[key] = value;
+}
 </script>
 
 <template>
@@ -35,8 +39,10 @@ function updateTypographyField(key, value) {
       <ThemeControls
         :palette="themeState.palette"
         :typography="themeState.typography"
+        :layout="themeState.layout"
         @update:palette-field="updatePaletteField"
         @update:typography-field="updateTypographyField"
+        @update:layout-field="updateLayoutField"
       />
     </section>
 

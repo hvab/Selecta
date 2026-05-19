@@ -8,9 +8,13 @@ defineProps({
     type: Object,
     required: true,
   },
+  layout: {
+    type: Object,
+    required: true,
+  },
 });
 
-const emit = defineEmits(['update:palette-field', 'update:typography-field']);
+const emit = defineEmits(['update:palette-field', 'update:typography-field', 'update:layout-field']);
 
 const colorControls = [
   {
@@ -99,6 +103,25 @@ const typographyControls = [
   },
 ];
 
+const layoutControls = [
+  {
+    key: 'maxWidth',
+    label: 'Content width',
+    min: 36,
+    max: 64,
+    step: 1,
+    unit: 'rem',
+  },
+  {
+    key: 'margins',
+    label: 'Side margins',
+    min: 1,
+    max: 4,
+    step: 0.25,
+    unit: 'rem',
+  },
+];
+
 const systemFonts = [
   {
     value: 'Arial, Helvetica, sans-serif',
@@ -127,11 +150,11 @@ const systemFonts = [
 ];
 
 function getControlValue(control, value) {
-  return control.unit === 'px' ? Number.parseFloat(value) : value;
+  return control.unit ? Number.parseFloat(value) : value;
 }
 
-function getTypographyValue(control, value) {
-  return control.unit === 'px' ? `${value}px` : Number(value);
+function getNumericValue(control, value) {
+  return control.unit ? `${value}${control.unit}` : Number(value);
 }
 </script>
 
@@ -174,9 +197,25 @@ function getTypographyValue(control, value) {
           :max="control.max"
           :step="control.step"
           :value="getControlValue(control, typography[control.key])"
-          @input="emit('update:typography-field', control.key, getTypographyValue(control, $event.target.value))"
+          @input="emit('update:typography-field', control.key, getNumericValue(control, $event.target.value))"
         />
         <output>{{ typography[control.key] }}{{ control.unit && control.unit !== 'px' ? control.unit : '' }}</output>
+      </label>
+    </div>
+
+    <div>
+      <h3>Layout</h3>
+      <label v-for="control in layoutControls" :key="control.key">
+        <span>{{ control.label }}</span>
+        <input
+          type="range"
+          :min="control.min"
+          :max="control.max"
+          :step="control.step"
+          :value="getControlValue(control, layout[control.key])"
+          @input="emit('update:layout-field', control.key, getNumericValue(control, $event.target.value))"
+        />
+        <output>{{ layout[control.key] }}</output>
       </label>
     </div>
   </div>
