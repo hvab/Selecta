@@ -10,7 +10,7 @@ npm start
 ```
 
 After startup, the project will be available at the local URL printed by Vite,
-usually `http://localhost:5173`.
+usually `http://localhost:5173/Selecta/`.
 
 ## Use
 

@@ -17,6 +17,7 @@
 - [x] Stage 6: Theme install verification in a live Aegea blog.
 - [x] Stage 7.1: First MVP polish pass and README alignment.
 - [x] Stage 7.2: Browser QA for long names and metadata boundary values.
+- [x] Stage 7.3: Final MVP review and cleanup.
 
 ## Current runnable state
 
@@ -202,6 +203,26 @@ Deliberately still outside this Stage 7 slice:
 - broader visual redesign;
 - any post-MVP features.
 
+## Stage 7.3 review
+
+Completed as the final MVP review against `SPEC.md` and `plan.md`:
+
+- the documented MVP stages are complete;
+- the app keeps one theme state feeding preview, generated CSS, generated `theme-info.php`, and ZIP export;
+- the generated theme remains a `plain` child theme with `theme-info.php` and `styles/main.css`;
+- metadata validation guards the download path;
+- `README.md` matches the actual Vite local path with the configured `/Selecta/` base.
+
+Deliberately still outside the completed MVP:
+
+- dark mode;
+- presets;
+- i18n;
+- Google Fonts or bundled fonts;
+- JSON import/export;
+- existing-theme import;
+- arbitrary CSS editing.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -223,7 +244,8 @@ Deliberately still outside this Stage 7 slice:
 - [x] Stage 6: Verification in a live Aegea blog.
 - [x] Stage 7.1: First MVP polish pass and README alignment.
 - [x] Stage 7.2: Browser QA for long names and metadata boundary values.
+- [x] Stage 7.3: Final MVP review and cleanup.
 
 ## Future backlog
 
-- [ ] Stage 7.3: Final MVP review and cleanup.
+- [ ] Post-MVP planning.
