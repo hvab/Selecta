@@ -16,6 +16,7 @@
 - [x] Stage 5: Client-side ZIP export.
 - [x] Stage 6: Theme install verification in a live Aegea blog.
 - [x] Stage 7.1: First MVP polish pass and README alignment.
+- [x] Stage 7.2: Browser QA for long names and metadata boundary values.
 
 ## Current runnable state
 
@@ -185,6 +186,22 @@ Deliberately still outside this first Stage 7 slice:
 - deeper empty and boundary value audit;
 - any post-MVP features.
 
+## Stage 7.2 review
+
+Completed as a browser QA slice against `SPEC.md` and `plan.md`:
+
+- long display names auto-generate long folder names without horizontal overflow on a narrow viewport;
+- empty display name and folder name show metadata errors and block download;
+- invalid folder names show metadata errors and block download;
+- the guarded download button stays enabled only for valid metadata;
+- the first Stage 7 layout polish keeps the page within the viewport at the checked narrow width.
+
+Deliberately still outside this Stage 7 slice:
+
+- changing the theme generation contract;
+- broader visual redesign;
+- any post-MVP features.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -205,7 +222,8 @@ Deliberately still outside this first Stage 7 slice:
 - [x] Stage 5 review against `SPEC.md`.
 - [x] Stage 6: Verification in a live Aegea blog.
 - [x] Stage 7.1: First MVP polish pass and README alignment.
+- [x] Stage 7.2: Browser QA for long names and metadata boundary values.
 
 ## Future backlog
 
-- [ ] Stage 7.2: Browser QA for long names and boundary values.
+- [ ] Stage 7.3: Final MVP review and cleanup.
