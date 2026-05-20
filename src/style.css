@@ -13,7 +13,7 @@ body {
 }
 
 .app {
-  max-width: 48rem;
+  width: min(100%, 72rem);
   padding: 2rem;
   margin: 0 auto;
 }
@@ -79,6 +79,7 @@ pre {
 
 .control-label {
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .color-control {
@@ -112,6 +113,7 @@ pre {
   margin: 0.25rem 0 0;
   font-size: 0.8125rem;
   color: #b00020;
+  overflow-wrap: anywhere;
 }
 
 .download-button {

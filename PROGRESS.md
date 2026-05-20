@@ -15,6 +15,7 @@
 - [x] Stage 4: Theme metadata fields and validation.
 - [x] Stage 5: Client-side ZIP export.
 - [x] Stage 6: Theme install verification in a live Aegea blog.
+- [x] Stage 7.1: First MVP polish pass and README alignment.
 
 ## Current runnable state
 
@@ -167,6 +168,23 @@ Deliberately still outside the completed Stage 6 scope:
 - broader MVP polish;
 - README alignment with the completed install/export flow.
 
+## Stage 7.1 review
+
+Completed as the first final-polish slice against `SPEC.md` and `plan.md`:
+
+- the generator shell has more room for the completed preview and controls;
+- long control labels and validation errors can wrap on narrow screens;
+- preview navigation can wrap instead of overflowing;
+- long words in preview body copy can wrap inside the preview surface;
+- preview inputs shrink to their container on narrow screens;
+- `README.md` now describes the actual run, edit, download, and install flow.
+
+Deliberately still outside this first Stage 7 slice:
+
+- deeper browser QA for long names and boundary values;
+- deeper empty and boundary value audit;
+- any post-MVP features.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -186,7 +204,8 @@ Deliberately still outside the completed Stage 6 scope:
 - [x] Stage 5.1: Client-side ZIP archive generation and guarded download button.
 - [x] Stage 5 review against `SPEC.md`.
 - [x] Stage 6: Verification in a live Aegea blog.
+- [x] Stage 7.1: First MVP polish pass and README alignment.
 
 ## Future backlog
 
-- [ ] Stage 7: MVP polish and README alignment.
+- [ ] Stage 7.2: Browser QA for long names and boundary values.
