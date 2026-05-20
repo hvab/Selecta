@@ -24,3 +24,15 @@ export const systemFonts = [
     label: 'Courier New',
   },
 ];
+
+const fontFamilyValuePattern = /^[A-Za-z0-9 "'_,.-]+$/;
+
+export function normalizeFontFamily(value, fallbackValue) {
+  if (typeof value !== 'string') {
+    return fallbackValue;
+  }
+
+  const fontFamily = value.trim().replace(/ {2,}/g, ' ');
+
+  return fontFamily && fontFamilyValuePattern.test(fontFamily) ? fontFamily : fallbackValue;
+}

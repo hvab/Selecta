@@ -22,8 +22,8 @@ export const initialThemeState = {
     inputText: '#111111',
   },
   typography: {
-    mainFontFamily: 'Arial, Helvetica, sans-serif',
-    noteFontFamily: 'Georgia, "Times New Roman", serif',
+    mainFontFamily: '',
+    noteFontFamily: '',
     noteTextSize: '18px',
     noteTextLineHeight: 1.6,
     titleScale: 1.5,

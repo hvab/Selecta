@@ -1,4 +1,5 @@
 import { hexToRgba } from './color.js';
+import { normalizeFontFamily } from './fonts.js';
 import { getNoteTitleLineHeight, scalePixelSize } from './typography.js';
 
 export function getThemeCssVariables(themeState) {
@@ -29,8 +30,11 @@ export function getThemeCssVariables(themeState) {
     '--markedTextBackground': themeState.palette.markedTextBackground,
     '--inputBackgroundColor': themeState.palette.inputBackground,
     '--inputTextColor': themeState.palette.inputText,
-    '--mainFontFamily': themeState.typography.mainFontFamily,
-    '--noteMainFontFamily': themeState.typography.noteFontFamily,
+    '--mainFontFamily': normalizeFontFamily(themeState.typography.mainFontFamily, 'Arial, Helvetica, sans-serif'),
+    '--noteMainFontFamily': normalizeFontFamily(
+      themeState.typography.noteFontFamily,
+      'Georgia, "Times New Roman", serif'
+    ),
     '--noteTitleFontSize': noteTitleFontSize,
     '--noteTitleLineHeight': getNoteTitleLineHeight(noteTitleFontSize),
     '--noteTextFontSize': themeState.typography.noteTextSize,

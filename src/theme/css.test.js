@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getThemeCssVariables } from './css.js';
+import { generateThemeCss, getThemeCssVariables } from './css.js';
 import { initialThemeState } from './model.js';
 
 test('derives shared plain color variables from theme palette', () => {
@@ -39,4 +39,25 @@ test('derives shared plain color variables from theme palette', () => {
     '--marginLeft': '2rem',
     '--marginRight': '2rem',
   });
+});
+
+test('keeps custom font stacks and falls back from unsafe font-family values', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.typography.mainFontFamily = 'Aptos, "Segoe UI", system-ui, sans-serif';
+  themeState.typography.noteFontFamily = 'Georgia;\nbody { color: red }';
+
+  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], 'Aptos, "Segoe UI", system-ui, sans-serif');
+  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], 'Georgia, "Times New Roman", serif');
+  assert.equal(generateThemeCss(themeState).includes('body { color: red }'), false);
+
+  themeState.typography.mainFontFamily = undefined;
+  themeState.typography.noteFontFamily = null;
+
+  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], 'Arial, Helvetica, sans-serif');
+  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], 'Georgia, "Times New Roman", serif');
+
+  themeState.typography.mainFontFamily = '   ';
+
+  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], 'Arial, Helvetica, sans-serif');
 });

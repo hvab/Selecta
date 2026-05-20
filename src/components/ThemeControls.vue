@@ -98,10 +98,12 @@ const fontControls = [
   {
     key: 'mainFontFamily',
     label: 'Interface font',
+    placeholder: 'Aptos, Arial, sans-serif',
   },
   {
     key: 'noteFontFamily',
     label: 'Note text font',
+    placeholder: 'Georgia, "Times New Roman", serif',
   },
 ];
 
@@ -192,16 +194,18 @@ function updateMetadataField(control, event) {
       <h3>Fonts</h3>
       <label v-for="control in fontControls" :key="control.key" class="control-row">
         <span class="control-label">{{ control.label }}</span>
-        <select
-          class="select-control"
+        <input
+          class="text-control"
+          type="text"
+          list="system-font-suggestions"
+          :placeholder="control.placeholder"
           :value="typography[control.key]"
-          @change="emit('update:typography-field', control.key, $event.target.value)"
-        >
-          <option v-for="font in systemFonts" :key="font.value" :value="font.value">
-            {{ font.label }}
-          </option>
-        </select>
+          @input="emit('update:typography-field', control.key, $event.target.value)"
+        />
       </label>
+      <datalist id="system-font-suggestions">
+        <option v-for="font in systemFonts" :key="font.value" :value="font.value" :label="font.label"></option>
+      </datalist>
     </div>
 
     <div class="control-group">
