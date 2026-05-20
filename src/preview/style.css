@@ -39,7 +39,8 @@
 
 .aegea-preview a {
   color: var(--linkColor);
-  text-decoration-color: var(--linkUnderlineColor);
+  text-decoration: none;
+  border-bottom: 1px solid var(--linkUnderlineColor);
 }
 
 .aegea-preview .e2-smart-title a,
@@ -47,13 +48,13 @@
 .aegea-preview .title h1 a,
 .aegea-preview .title h1 a:visited {
   color: inherit;
-  text-decoration-color: var(--headingsUnderlineColor);
+  border-color: var(--headingsUnderlineColor);
 }
 
 .aegea-preview .title h1 a:hover,
 .aegea-preview .title h1 a.hover {
   color: var(--hoverColor);
-  text-decoration-color: var(--hoverUnderlineColor);
+  border-color: var(--hoverUnderlineColor);
 }
 
 .aegea-preview .header-menu {
@@ -117,22 +118,22 @@
 
 .aegea-preview a.visited {
   color: var(--linkColorVisited);
-  text-decoration-color: var(--linkUnderlineColorVisited);
+  border-color: var(--linkUnderlineColorVisited);
 }
 
 .aegea-preview a.hover {
   color: var(--hoverColor);
-  text-decoration-color: var(--hoverUnderlineColor);
+  border-color: var(--hoverUnderlineColor);
 }
 
 .aegea-preview a.tag {
   color: var(--tagColor);
-  text-decoration-color: var(--tagUnderlineColor);
+  border-color: var(--tagUnderlineColor);
 }
 
 .aegea-preview .e2-text a:hover {
   color: var(--hoverColor);
-  text-decoration-color: var(--hoverUnderlineColor);
+  border-color: var(--hoverUnderlineColor);
 }
 
 .aegea-preview mark {
@@ -174,7 +175,7 @@
 .aegea-preview .footer a,
 .aegea-preview .footer a:visited {
   color: var(--foregroundColor);
-  text-decoration-color: var(--thinRuleColor);
+  border-color: var(--thinRuleColor);
 }
 
 .aegea-preview .engine {
@@ -185,7 +186,7 @@
 .aegea-preview .engine a,
 .aegea-preview .engine a:visited {
   color: var(--engineTextColor);
-  text-decoration-color: var(--engineTextUnderlineColor);
+  border-color: var(--engineTextUnderlineColor);
 }
 
 @media (max-width: 48rem) {

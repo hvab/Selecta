@@ -19,6 +19,7 @@
 - [x] Stage 7.2: Browser QA for long names and metadata boundary values.
 - [x] Stage 7.3: Final MVP review and cleanup.
 - [x] Pre-release Random button for quick theme sampling.
+- [x] Pre-release Aegea 11.5 target audit.
 
 ## Current runnable state
 
@@ -250,3 +251,4 @@ Deliberately still outside the completed MVP:
 ## Future backlog
 
 - [ ] Post-MVP planning.
+- [ ] Support multiple Aegea target versions for preview and generated theme compatibility.
