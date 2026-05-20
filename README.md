@@ -1,6 +1,6 @@
 # Selecta
 
-Selecta is a small browser-based theme generator for the Aegea blog engine.
+Selecta is a small browser-based theme generator for the [Aegea](https://blogengine.ru) blog engine.
 
 The project is an experiment in making Aegea theme customization more visual and convenient: change theme settings, preview the result, and prepare theme files for further use.
 
