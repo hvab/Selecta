@@ -13,6 +13,8 @@
 - [x] Stage 2: Aegea-based preview surface with fixed demo content, source version, and maintenance checklist.
 - [x] Stage 3: Main controls with live preview and live file updates.
 - [x] Stage 4: Theme metadata fields and validation.
+- [x] Stage 5: Client-side ZIP export.
+- [x] Stage 6: Theme install verification in a live Aegea blog.
 
 ## Current runnable state
 
@@ -150,6 +152,21 @@ Deliberately still outside the completed Stage 5 scope:
 - comparing the installed theme with the generator preview;
 - broader MVP polish and README alignment.
 
+## Stage 6 review
+
+Completed by manual verification in a live Aegea blog:
+
+- the downloaded ZIP can be installed as an Aegea theme;
+- the generated child theme is accepted by Aegea;
+- `based_on = plain` works for inheritance;
+- the generated `styles/main.css` is enough to apply the exported CSS variables;
+- the resulting blog appearance matches the generator preview closely enough for the MVP install flow.
+
+Deliberately still outside the completed Stage 6 scope:
+
+- broader MVP polish;
+- README alignment with the completed install/export flow.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -168,8 +185,8 @@ Deliberately still outside the completed Stage 5 scope:
 - [x] Start Stage 5 with read-only planning for ZIP export.
 - [x] Stage 5.1: Client-side ZIP archive generation and guarded download button.
 - [x] Stage 5 review against `SPEC.md`.
+- [x] Stage 6: Verification in a live Aegea blog.
 
 ## Future backlog
 
-- [ ] Stage 6: Verification in a real local Aegea instance.
 - [ ] Stage 7: MVP polish and README alignment.
