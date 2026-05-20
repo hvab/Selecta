@@ -85,3 +85,4 @@
 - Do not stage, commit, switch branches, or push unless explicitly requested.
 - Commit only files related to the current iteration when the user asks for a commit.
 - Do not rewrite history or run destructive git commands unless explicitly requested.
+- For release steps, follow `RELEASE.md`.
