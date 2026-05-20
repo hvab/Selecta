@@ -161,7 +161,8 @@ pre {
   overflow-wrap: anywhere;
 }
 
-.download-button {
+.download-button,
+.random-button {
   min-height: 2rem;
   padding: 0.35rem 0.75rem;
   font: inherit;
@@ -172,12 +173,16 @@ pre {
 }
 
 .download-error {
+  flex-basis: 100%;
   margin-top: 0.5rem;
   font-size: 0.875rem;
   color: #b00020;
 }
 
 .export-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   padding: 1rem 2rem;
   background: #fff;
   border-top: 1px solid #ddd;

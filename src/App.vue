@@ -4,6 +4,7 @@ import ThemeControls from './components/ThemeControls.vue';
 import AegeaPreview from './preview/AegeaPreview.vue';
 import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
+import { getRandomThemeState } from './theme/random.js';
 import { validateMetadata } from './theme/validation.js';
 import { generateThemeZip, getThemeZipFileName } from './theme/zip.js';
 
@@ -53,6 +54,16 @@ function updateTypographyField(key, value) {
 
 function updateLayoutField(key, value) {
   themeState.layout[key] = value;
+}
+
+function randomizeTheme() {
+  const randomThemeState = getRandomThemeState();
+
+  Object.assign(themeState.meta, randomThemeState.meta);
+  Object.assign(themeState.palette, randomThemeState.palette);
+  Object.assign(themeState.typography, randomThemeState.typography);
+  Object.assign(themeState.layout, randomThemeState.layout);
+  folderNameEdited.value = false;
 }
 
 function resizeControlsPane(event) {
@@ -141,6 +152,7 @@ function downloadThemeZip() {
       </div>
 
       <section class="export-section" aria-label="Export">
+        <button class="random-button" type="button" @click="randomizeTheme">Random</button>
         <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
           Download theme ZIP
         </button>

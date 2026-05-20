@@ -18,6 +18,7 @@
 - [x] Stage 7.1: First MVP polish pass and README alignment.
 - [x] Stage 7.2: Browser QA for long names and metadata boundary values.
 - [x] Stage 7.3: Final MVP review and cleanup.
+- [x] Pre-release Random button for quick theme sampling.
 
 ## Current runnable state
 
