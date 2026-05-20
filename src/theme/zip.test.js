@@ -19,8 +19,11 @@ test('builds archive entries inside the theme folder', () => {
 
 test('generates a ZIP archive with theme-info.php and styles/main.css', () => {
   const archive = unzipSync(generateThemeZip(initialThemeState));
+  const entries = getThemeZipEntries(initialThemeState);
+  const themeInfoPath = `${initialThemeState.meta.folderName}/theme-info.php`;
+  const themeCssPath = `${initialThemeState.meta.folderName}/styles/main.css`;
 
-  assert.deepEqual(Object.keys(archive).sort(), ['my-theme/styles/main.css', 'my-theme/theme-info.php']);
-  assert.equal(strFromU8(archive['my-theme/theme-info.php']), generateThemeInfo(initialThemeState));
-  assert.equal(strFromU8(archive['my-theme/styles/main.css']), generateThemeCss(initialThemeState));
+  assert.deepEqual(Object.keys(archive).sort(), Object.keys(entries).sort());
+  assert.equal(strFromU8(archive[themeInfoPath]), entries[themeInfoPath]);
+  assert.equal(strFromU8(archive[themeCssPath]), entries[themeCssPath]);
 });
