@@ -133,6 +133,23 @@ Deliberately still outside this first Stage 5 slice:
 - final Stage 5 review against `SPEC.md`;
 - broader export UX polish.
 
+## Stage 5 review
+
+Completed against the intended fifth-stage scope from `SPEC.md` and `plan.md`:
+
+- the download path creates a client-side ZIP archive;
+- the archive structure is `theme-name/theme-info.php` and `theme-name/styles/main.css`;
+- the archive filename uses the validated `meta.folderName`;
+- the archive contents are generated from the same theme state as the preview and read-only file outputs;
+- metadata validation blocks download before archive generation;
+- the ZIP file name, archive paths, and extracted file contents are covered by focused tests.
+
+Deliberately still outside the completed Stage 5 scope:
+
+- installing the exported theme in a real local Aegea instance;
+- comparing the installed theme with the generator preview;
+- broader MVP polish and README alignment.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -150,9 +167,9 @@ Deliberately still outside this first Stage 5 slice:
 - [x] Stage 4 review against `SPEC.md`.
 - [x] Start Stage 5 with read-only planning for ZIP export.
 - [x] Stage 5.1: Client-side ZIP archive generation and guarded download button.
+- [x] Stage 5 review against `SPEC.md`.
 
 ## Future backlog
 
-- [ ] Stage 5 review against `SPEC.md`.
 - [ ] Stage 6: Verification in a real local Aegea instance.
 - [ ] Stage 7: MVP polish and README alignment.
