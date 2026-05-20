@@ -13,9 +13,10 @@ body {
 }
 
 .app {
-  width: min(100%, 72rem);
-  padding: 2rem;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: var(--controls-pane-width, 26rem) 0.5rem minmax(0, 1fr);
+  height: 100vh;
+  overflow: hidden;
 }
 
 h1,
@@ -24,11 +25,54 @@ p {
   margin: 0;
 }
 
-p {
+.app-header p {
   margin-top: 0.75rem;
 }
 
-.app > section {
+.app-controls-pane {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+.app-controls-scroll,
+.app-preview-pane {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.app-controls-scroll {
+  padding: 2rem;
+}
+
+.app-preview-pane {
+  background: #fff;
+}
+
+.app-pane-resizer {
+  position: relative;
+  touch-action: none;
+  cursor: col-resize;
+  background: #fff;
+}
+
+.app-pane-resizer::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  content: '';
+  background: #ddd;
+  transform: translateX(-50%);
+}
+
+.app-pane-resizer:hover::before,
+.app-pane-resizer:focus-visible::before {
+  background: #999;
+}
+
+.controls-section {
   margin-top: 2rem;
 }
 
@@ -51,7 +95,7 @@ pre {
 
 .theme-controls {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 
@@ -62,7 +106,7 @@ pre {
 
 .control-row {
   display: grid;
-  grid-template-columns: minmax(7rem, 1fr) minmax(0, 10rem) 3.5rem;
+  grid-template-columns: minmax(7rem, 12rem) minmax(0, 1fr) auto;
   gap: 0.75rem;
   align-items: center;
   min-height: 2rem;
@@ -105,6 +149,7 @@ pre {
 }
 
 .control-value {
+  min-width: 3.5rem;
   font-size: 0.8125rem;
   text-align: right;
 }
@@ -132,8 +177,39 @@ pre {
   color: #b00020;
 }
 
+.export-section {
+  padding: 1rem 2rem;
+  background: #fff;
+  border-top: 1px solid #ddd;
+}
+
 @media (max-width: 40rem) {
   .app {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .app-controls-pane {
+    display: block;
+    border-right: 0;
+  }
+
+  .app-pane-resizer {
+    display: none;
+  }
+
+  .app-controls-scroll {
+    padding: 1rem;
+    overflow-y: visible;
+  }
+
+  .app-preview-pane {
+    overflow-y: visible;
+  }
+
+  .export-section {
     padding: 1rem;
   }
 

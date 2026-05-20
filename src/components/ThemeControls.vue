@@ -215,19 +215,6 @@ function updateMetadataField(control, event) {
     </div>
 
     <div class="control-group">
-      <h3>Colors</h3>
-      <label v-for="control in colorControls" :key="control.key" class="control-row">
-        <span class="control-label">{{ control.label }}</span>
-        <input
-          class="color-control"
-          type="color"
-          :value="palette[control.key]"
-          @input="emit('update:palette-field', control.key, $event.target.value)"
-        />
-      </label>
-    </div>
-
-    <div class="control-group">
       <h3>Fonts</h3>
       <label v-for="control in fontControls" :key="control.key" class="control-row">
         <span class="control-label">{{ control.label }}</span>
@@ -274,6 +261,19 @@ function updateMetadataField(control, event) {
           @input="emit('update:layout-field', control.key, getNumericValue(control, $event.target.value))"
         />
         <output class="control-value">{{ layout[control.key] }}</output>
+      </label>
+    </div>
+
+    <div class="control-group">
+      <h3>Colors</h3>
+      <label v-for="control in colorControls" :key="control.key" class="control-row">
+        <span class="control-label">{{ control.label }}</span>
+        <input
+          class="color-control"
+          type="color"
+          :value="palette[control.key]"
+          @input="emit('update:palette-field', control.key, $event.target.value)"
+        />
       </label>
     </div>
   </div>
