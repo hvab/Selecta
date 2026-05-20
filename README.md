@@ -1,8 +1,26 @@
 # Selecta
 
-Browser-based theme generator for Aegea.
+Selecta is a small browser-based theme generator for the Aegea blog engine.
 
-## Run
+The project is an experiment in making Aegea theme customization more visual and convenient: change theme settings, preview the result, and prepare theme files for further use.
+
+## Preview
+
+![Selecta preview](./docs/selecta-preview.gif)
+
+Selecta is a work-in-progress tool for creating and testing visual themes for Aegea. It runs in the browser and is deployed as a static site with GitHub Pages.
+
+## Status
+
+Early development.
+
+The project is public, but the interface, generated output, and internal structure may still change.
+
+## Demo
+
+https://hvab.github.io/Selecta/
+
+## Development
 
 ```bash
 npm install
@@ -12,20 +30,32 @@ npm start
 After startup, the project will be available at the local URL printed by Vite,
 usually `http://localhost:5173/Selecta/`.
 
-## Use
+Build:
 
-1. Edit the theme metadata, colors, fonts, typography, and layout controls.
-2. Check the live Aegea preview and generated files on the same page.
-3. Download the ZIP archive.
-4. Install the folder inside the ZIP as an Aegea theme.
-
-The generated theme is a child theme based on `plain`. The archive contains:
-
-```text
-theme-name/
-  theme-info.php
-  styles/
-    main.css
+```bash
+npm run build
 ```
 
-The download button is disabled until the theme display name and folder name are valid.
+Preview production build locally:
+
+```bash
+npm run preview
+```
+
+## Project Flow
+
+The `main` branch is used for active development and GitHub Pages deployment.
+
+For changes, use short-lived branches:
+
+```text
+feature/theme-export
+fix/pages-build
+docs/readme
+```
+
+After merging into `main`, GitHub Actions builds the project and deploys it to GitHub Pages.
+
+## License
+
+MIT
