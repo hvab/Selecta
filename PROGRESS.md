@@ -22,6 +22,7 @@ The app starts locally and shows:
 - editable theme metadata fields;
 - metadata validation errors for required names and invalid folder names;
 - editable color, typography, and layout controls;
+- a guarded download button that exports a ZIP archive with the theme folder inside;
 - the current theme state;
 - generated `styles/main.css`;
 - generated `theme-info.php`.
@@ -116,6 +117,22 @@ Deliberately still outside the completed Stage 4 scope:
 - blocking the download button when validation fails;
 - real Aegea install verification.
 
+## Stage 5.1 review
+
+Completed as the first ZIP export slice against `SPEC.md` and `plan.md`:
+
+- ZIP generation runs client-side;
+- the archive contains the theme folder with `theme-info.php` and `styles/main.css`;
+- the archive name comes from `meta.folderName`;
+- the download button is disabled while metadata validation has errors;
+- ZIP structure is covered by focused tests.
+
+Deliberately still outside this first Stage 5 slice:
+
+- real Aegea install verification;
+- final Stage 5 review against `SPEC.md`;
+- broader export UX polish.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -131,10 +148,11 @@ Deliberately still outside the completed Stage 4 scope:
 - [x] Stage 4.1: Editable display name with automatic folder name suggestion.
 - [x] Stage 4.2: Folder name validation and metadata error display.
 - [x] Stage 4 review against `SPEC.md`.
-- [ ] Start Stage 5 with read-only planning for ZIP export.
+- [x] Start Stage 5 with read-only planning for ZIP export.
+- [x] Stage 5.1: Client-side ZIP archive generation and guarded download button.
 
 ## Future backlog
 
-- [ ] Stage 5: Client-side ZIP export.
+- [ ] Stage 5 review against `SPEC.md`.
 - [ ] Stage 6: Verification in a real local Aegea instance.
 - [ ] Stage 7: MVP polish and README alignment.

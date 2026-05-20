@@ -114,6 +114,22 @@ pre {
   color: #b00020;
 }
 
+.download-button {
+  min-height: 2rem;
+  padding: 0.35rem 0.75rem;
+  font: inherit;
+}
+
+.download-button:disabled {
+  cursor: not-allowed;
+}
+
+.download-error {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #b00020;
+}
+
 @media (max-width: 40rem) {
   .app {
     padding: 1rem;

@@ -7,6 +7,7 @@ import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
 import { generateThemeInfo } from './theme/themeInfo.js';
 import { validateMetadata } from './theme/validation.js';
+import { generateThemeZip, getThemeZipFileName } from './theme/zip.js';
 
 const themeState = reactive(structuredClone(initialThemeState));
 const folderNameEdited = ref(false);
@@ -14,6 +15,7 @@ const themeStateJson = computed(() => JSON.stringify(themeState, null, 2));
 const themeCss = computed(() => generateThemeCss(themeState));
 const themeInfo = computed(() => generateThemeInfo(themeState));
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
+const canDownloadTheme = computed(() => Object.keys(metadataErrors.value).length === 0);
 
 function updateMetaField(key, value) {
   themeState.meta[key] = key === 'folderName' ? normalizeFolderName(value) : value;
@@ -37,6 +39,23 @@ function updateTypographyField(key, value) {
 
 function updateLayoutField(key, value) {
   themeState.layout[key] = value;
+}
+
+function downloadThemeZip() {
+  if (!canDownloadTheme.value) {
+    return;
+  }
+
+  const blob = new Blob([generateThemeZip(themeState)], { type: 'application/zip' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = getThemeZipFileName(themeState);
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 </script>
 
@@ -63,6 +82,14 @@ function updateLayoutField(key, value) {
         @update:typography-field="updateTypographyField"
         @update:layout-field="updateLayoutField"
       />
+    </section>
+
+    <section>
+      <h2>Export</h2>
+      <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
+        Download theme ZIP
+      </button>
+      <p v-if="!canDownloadTheme" class="download-error">Fix metadata errors to download the theme.</p>
     </section>
 
     <section>
