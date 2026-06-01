@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { getThemeCssVariables } from '../theme/css.js';
+import { aegeaDemoContent } from './demoContent.js';
 import './style.css';
 
 const props = defineProps({
@@ -11,6 +12,8 @@ const props = defineProps({
 });
 
 const themeCssVariables = computed(() => getThemeCssVariables(props.themeState));
+const visibleMainMenuItems = computed(() => aegeaDemoContent.mainMenu.filter((item) => item.visible));
+const p0Note = computed(() => aegeaDemoContent.notes[0]);
 </script>
 
 <template>
@@ -21,9 +24,13 @@ const themeCssVariables = computed(() => getThemeCssVariables(props.themeState))
           <div class="header-description">
             <div class="title">
               <div class="title-inner">
-                <h1><a href="#">Northbound Notes</a></h1>
+                <h1>
+                  <a :href="aegeaDemoContent.blog.href">
+                    <span id="e2-blog-title">{{ aegeaDemoContent.blog.title }}</span>
+                  </a>
+                </h1>
               </div>
-              <div>Field notes on design, cities, and small routines</div>
+              <div id="e2-blog-description">{{ aegeaDemoContent.blog.subtitle }}</div>
             </div>
           </div>
         </div>
@@ -31,12 +38,18 @@ const themeCssVariables = computed(() => getThemeCssVariables(props.themeState))
         <div class="header-menu">
           <div class="e2-band e2-band-full-size">
             <nav>
-              <div class="band-item band-item-current">
-                <span class="band-item-inner">Notes</span>
+              <div
+                v-for="item in visibleMainMenuItems"
+                :key="item.title"
+                class="band-item"
+                :class="{
+                  'band-item-current': item.current,
+                  'band-item-parent': item.parent,
+                }"
+              >
+                <span v-if="item.current" class="band-item-inner">{{ item.title }}</span>
+                <a v-else class="band-item-inner" :class="{ hover: item.hover }" :href="item.href">{{ item.title }}</a>
               </div>
-              <div class="band-item"><a class="band-item-inner" href="#">Projects</a></div>
-              <div class="band-item"><a class="band-item-inner" href="#">Archive</a></div>
-              <div class="band-item"><a class="band-item-inner" href="#">About</a></div>
             </nav>
           </div>
         </div>
@@ -44,32 +57,21 @@ const themeCssVariables = computed(() => getThemeCssVariables(props.themeState))
 
       <main class="content">
         <article class="e2-note">
-          <h1 class="e2-smart-title"><a href="#">A quiet page for testing themes</a></h1>
+          <h1 class="e2-smart-title">
+            <a :href="p0Note.href">{{ p0Note.title }}</a>
+          </h1>
 
-          <div class="e2-note-text e2-text">
-            <p class="lead">This preview keeps the important states visible while the theme stays simple.</p>
-            <p>
-              A regular <a href="#">link</a>, a <a class="visited" href="#">visited link</a>, and a
-              <a class="hover" href="#">hover example</a> should all be easy to compare.
-            </p>
-            <p>
-              Theme work also needs a <a class="tag" href="#">secondary tag</a>, <mark>marked text</mark>, and enough
-              body copy to judge the reading tone.
-            </p>
-            <p class="foot">Small supporting text should stay quiet and readable.</p>
-            <p class="loud">A quoted fragment should still feel like part of the same page.</p>
-            <label>
-              <span class="label-text">Email</span>
-              <input type="email" value="reader@example.com" />
-            </label>
-          </div>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div class="e2-note-text e2-text" v-html="p0Note.p0Text"></div>
         </article>
       </main>
 
       <footer class="footer">
-        © Mira North, 2026 · <a href="mailto:mira@example.com">mira@example.com</a> ·
-        <a href="#">RSS</a>
-        <div class="engine">Powered by Aegea</div>
+        © <span id="e2-blog-author">{{ aegeaDemoContent.footer.author }}</span
+        >, {{ aegeaDemoContent.footer.yearsRange }} ·
+        <a :href="`mailto:${aegeaDemoContent.footer.email}`">{{ aegeaDemoContent.footer.email }}</a> ·
+        <a class="e2-rss-button" :href="aegeaDemoContent.footer.rssHref">{{ aegeaDemoContent.footer.rssText }}</a>
+        <div class="engine">{{ aegeaDemoContent.footer.engineText }}</div>
       </footer>
     </div>
   </section>

@@ -258,6 +258,23 @@ Deliberately still outside this Stage 8.2 slice:
 - changing preview CSS;
 - replacing the current preview surface.
 
+## Stage 8.3 review
+
+Completed as the P0 rendering slice for the simplified Aegea demo preview transfer:
+
+- `AegeaPreview.vue` now renders header, main menu, one note, and footer from `src/preview/demoContent.js`;
+- the main menu includes regular, parent, forced hover, and current states;
+- the rendered note includes lead text, regular link, visited link, forced hover link, `mark`, `foot`, and `loud`;
+- the preview still consumes theme CSS variables through `getThemeCssVariables()`;
+- a small footer spacing adjustment keeps the P0 surface readable.
+
+Deliberately still outside this Stage 8.3 slice:
+
+- sample image assets and captions;
+- note meta band, tags, favourite note, and simple form;
+- tables, lists, search snippets, thumbnails, and pagination;
+- broader `plain` CSS subset transfer.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -282,7 +299,8 @@ Deliberately still outside this Stage 8.2 slice:
 - [x] Stage 7.3: Final MVP review and cleanup.
 - [x] Stage 8.1: Simplified Aegea demo preview baseline.
 - [x] Stage 8.2: Move static Aegea demo content into preview data.
-- [ ] Stage 8.3: Render P0 Aegea preview surface from demo data.
+- [x] Stage 8.3: Render P0 Aegea preview surface from demo data.
+- [ ] Stage 8.4: Add P1 Aegea preview states.
 
 ## Future backlog
 

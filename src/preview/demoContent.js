@@ -12,6 +12,7 @@ export const aegeaDemoContent = {
       href: selfHref,
       current: false,
       parent: false,
+      hover: true,
       visible: true,
     },
     {
@@ -63,6 +64,14 @@ export const aegeaDemoContent = {
       title: 'A sample post',
       href: selfHref,
       hrefComments: selfHref,
+      p0Text: `
+        <p class="lead">This post has a lead paragraph.</p>
+        <p>This is what a post looks like. This post is starred — in the built-in theme its title is big, but you may do something else.</p>
+        <p>A regular <a href="${selfHref}">hyperlink</a>, a <a class="visited" href="${selfHref}">visited link</a>, and a <a class="hover" href="${selfHref}">hover example</a> should all be easy to compare.</p>
+        <p>Theme work also needs <mark>highlighted text</mark> and enough body copy to judge the reading tone.</p>
+        <p class="foot">¹ By the way, this is an example of a footnote. It’s remarkable.</p>
+        <p class="loud">God created man in his own image</p>
+      `,
       text: `
         <p>This is what a post looks like. This post is starred — in the built-in theme its title is big, but you may do something else.</p>
         <p>This paragraph has just a filler text. The theory of empathy is free. The rhythm has an elegant factographic chthonic myth. Artistic mediation is a catharsis. The liturgical drama has psychological parallelism.</p>

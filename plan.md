@@ -253,7 +253,7 @@ theme-name.zip
   - создать JS-структуру для header, main menu, notes, tags, footer и простой формы;
   - сохранить тексты и sample image references из `system/preview/en.php`;
   - не подмешивать пользовательский ввод в HTML-фрагменты.
-- [ ] Stage 8.3: Перенести P0 preview surface.
+- [x] Stage 8.3: Перенести P0 preview surface.
   - real `plain` layout skeleton: `.common`, `.flag`, `.header-content`, `.content`, `.footer`;
   - header с blog title, subtitle и ссылкой на главную;
   - main menu с обычным, текущим и forced hover состояниями;

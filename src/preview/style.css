@@ -78,6 +78,10 @@
   color: var(--activeColor);
 }
 
+.aegea-preview .band-item-parent .band-item-inner {
+  color: var(--foregroundColor);
+}
+
 .aegea-preview .content {
   min-height: 20rem;
 }
@@ -170,6 +174,7 @@
 
 .aegea-preview .footer {
   padding-bottom: 2rem;
+  margin-top: 2rem;
 }
 
 .aegea-preview .footer a,
