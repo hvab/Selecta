@@ -242,6 +242,22 @@ Deliberately still outside this Stage 8.1 slice:
 - copying sample image assets;
 - changing preview CSS.
 
+## Stage 8.2 review
+
+Completed as the static data slice for the simplified Aegea demo preview transfer:
+
+- `src/preview/demoContent.js` now contains structured preview data based on Aegea `system/preview/en.php`;
+- the data includes blog metadata, main menu items, demo notes, tags, pagination, a simple form, and footer metadata;
+- sample image and thumbnail references are preserved as Aegea source paths for the later asset path slice;
+- P3 states remain out of the data model for this simplified transfer.
+
+Deliberately still outside this Stage 8.2 slice:
+
+- rendering the new data in Vue;
+- copying sample image assets into Selecta;
+- changing preview CSS;
+- replacing the current preview surface.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -265,7 +281,8 @@ Deliberately still outside this Stage 8.1 slice:
 - [x] Stage 7.2: Browser QA for long names and metadata boundary values.
 - [x] Stage 7.3: Final MVP review and cleanup.
 - [x] Stage 8.1: Simplified Aegea demo preview baseline.
-- [ ] Stage 8.2: Move static Aegea demo content into preview data.
+- [x] Stage 8.2: Move static Aegea demo content into preview data.
+- [ ] Stage 8.3: Render P0 Aegea preview surface from demo data.
 
 ## Future backlog
 

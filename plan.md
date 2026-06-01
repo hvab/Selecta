@@ -249,7 +249,7 @@ theme-name.zip
   - обновить `PREVIEW-BASELINE.md`;
   - указать Aegea source file, release target и список переносимых блоков;
   - явно отметить, что P3-состояния остаются в future backlog.
-- [ ] Stage 8.2: Перенести статический demo content.
+- [x] Stage 8.2: Перенести статический demo content.
   - создать JS-структуру для header, main menu, notes, tags, footer и простой формы;
   - сохранить тексты и sample image references из `system/preview/en.php`;
   - не подмешивать пользовательский ввод в HTML-фрагменты.
