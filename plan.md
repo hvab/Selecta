@@ -225,6 +225,67 @@ theme-name.zip
 - привести README к фактическому сценарию запуска и использования;
 - обновить `PROGRESS.md`, если он к этому моменту уже заведён.
 
+## Этап 8. Упрощённый перенос демо-превью Эгеи
+
+Цель: заменить компактный ручной mock на узнаваемое превью из настоящей страницы предпросмотра темы Эгеи, не перенося весь renderer и все редкие состояния.
+
+Источник:
+
+- демо-контент: `system/preview/en.php` из Эгеи;
+- структура страницы: реальные шаблоны `plain`, но только для выбранных блоков;
+- sample assets: `system/theme/images/sample-*`;
+- пользовательский интерфейс Selecta остаётся англоязычным, поэтому берём английский demo content.
+
+Не делать в этом этапе:
+
+- не переносить полный compiled `plain/styles/main.css`;
+- не переносить админские, draft, scheduled, sharing и прочие редкие состояния;
+- не добавлять i18n;
+- не менять контракт экспортируемой темы, если для превью это не требуется.
+
+Чекпоинты:
+
+- [x] Stage 8.1: Зафиксировать новый preview baseline.
+  - обновить `PREVIEW-BASELINE.md`;
+  - указать Aegea source file, release target и список переносимых блоков;
+  - явно отметить, что P3-состояния остаются в future backlog.
+- [ ] Stage 8.2: Перенести статический demo content.
+  - создать JS-структуру для header, main menu, notes, tags, footer и простой формы;
+  - сохранить тексты и sample image references из `system/preview/en.php`;
+  - не подмешивать пользовательский ввод в HTML-фрагменты.
+- [ ] Stage 8.3: Перенести P0 preview surface.
+  - real `plain` layout skeleton: `.common`, `.flag`, `.header-content`, `.content`, `.footer`;
+  - header с blog title, subtitle и ссылкой на главную;
+  - main menu с обычным, текущим и forced hover состояниями;
+  - одну полноценную заметку с title, lead, body, regular link, visited link, forced hover link, `mark`, `foot`, `loud`;
+  - footer с author, email, RSS и engine text.
+- [ ] Stage 8.4: Добавить P1-состояния.
+  - sample image с caption;
+  - note meta band: comments/read count/tags/current tag;
+  - favourite note;
+  - простую форму с input, textarea и button.
+- [ ] Stage 8.5: Добавить P2-состояния, если preview остаётся читаемым.
+  - `h2`, `h3`, `b`, `i`, `tt`;
+  - ordered/unordered lists;
+  - table;
+  - `hr`;
+  - search snippet с highlighted `mark` и thumbnails;
+  - simple pagination.
+- [ ] Stage 8.6: Перенести только нужный scoped CSS subset.
+  - layout;
+  - notes;
+  - text;
+  - band;
+  - tags;
+  - pages;
+  - form controls;
+  - comments only if they are included in the selected P2 slice.
+- [ ] Stage 8.7: Проверить результат в браузере.
+  - preview остаётся responsive внутри существующей preview pane;
+  - shell styles не протекают в preview и обратно;
+  - изменяемые CSS-переменные продолжают приходить из `getThemeCssVariables()`;
+  - пользователь видит знакомый Aegea-like блог, а не generic mockup.
+
 ## Рекомендуемый порядок модулей
 
 ```text

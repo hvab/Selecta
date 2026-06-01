@@ -225,6 +225,23 @@ Deliberately still outside the completed MVP:
 - existing-theme import;
 - arbitrary CSS editing.
 
+## Stage 8.1 review
+
+Completed as the preparation slice for the simplified Aegea demo preview transfer:
+
+- `PREVIEW-BASELINE.md` now uses Aegea `system/preview/en.php` as the source for the next preview;
+- the checked release target remains Aegea `11.5`, build `v4199`, commit `e1d058356e5426bb1878785c6f4ab4e68b6c4995`;
+- sample assets are explicitly sourced from `system/theme/images/sample-*`;
+- the transfer scope is split into P0, P1, and P2;
+- P3 states stay deferred in the future backlog.
+
+Deliberately still outside this Stage 8.1 slice:
+
+- moving preview content into JavaScript;
+- changing Vue preview components;
+- copying sample image assets;
+- changing preview CSS.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -247,8 +264,16 @@ Deliberately still outside the completed MVP:
 - [x] Stage 7.1: First MVP polish pass and README alignment.
 - [x] Stage 7.2: Browser QA for long names and metadata boundary values.
 - [x] Stage 7.3: Final MVP review and cleanup.
+- [x] Stage 8.1: Simplified Aegea demo preview baseline.
+- [ ] Stage 8.2: Move static Aegea demo content into preview data.
 
 ## Future backlog
 
 - [ ] Post-MVP planning.
 - [ ] Support multiple Aegea target versions for preview and generated theme compatibility.
+- [ ] Рассмотреть глубокие состояния превью Эгеи только если появится конкретный пользовательский пробел в предпросмотре:
+  - полная форма комментария с логином, подпиской и состояниями вокруг валидации;
+  - админские иконки, меню автора, sticky admin links и controls редактирования;
+  - sharing buttons и Likely widgets;
+  - скрытые, непубличные, черновые, запланированные и другие author-only состояния заметок;
+  - подключение полного compiled `plain/styles/main.css` вместо scoped preview subset.

@@ -5,6 +5,8 @@
 - Release target: Aegea `11.5`, build `v4199`
 - Commit: `e1d058356e5426bb1878785c6f4ab4e68b6c4995`
 - Baseline theme: `system/themes/plain`
+- Preview source: `system/preview/en.php`
+- Sample assets source: `system/theme/images/sample-*`
 
 ## Deferred Aegea source
 
@@ -18,34 +20,48 @@
 - Aegea `11.5` uses border-based link underlines; the deferred `12.0a` source switches the main link contract to `text-decoration-color`.
 - The deferred `12.0a` source adds bundled Inter and JetBrains Mono fonts. Selecta MVP still intentionally generates only system web-safe font choices.
 
-## Fixed demo content
+## Demo content source
 
-The preview should use one stable English-language page with:
+The preview should use the English-language Aegea theme preview content from `system/preview/en.php`. Selecta keeps the UI English-only for MVP, so the Russian preview source stays out of scope for this transfer.
 
-- blog title: `Northbound Notes`;
-- blog subtitle: `Field notes on design, cities, and small routines`;
-- main menu items: `Notes`, `Projects`, `Archive`, `About`;
-- note title: `A quiet page for testing themes`;
-- lead paragraph;
-- two body paragraphs;
-- one regular link;
-- one visited link;
-- one secondary/tag link;
-- one forced hover example;
-- one marked fragment;
-- one quotation-style fragment;
-- one text input;
-- footer text with author name, email, RSS link, and engine text.
+The transfer should be simplified: keep the page familiar to Aegea users without porting the whole Aegea renderer.
 
-This set covers the preview states required by `SPEC.md` without adding extra content categories before the preview surface exists.
+## Transfer scope
+
+P0:
+
+- real `plain` layout skeleton: `.common`, `.flag`, `.header-content`, `.content`, `.footer`;
+- header with blog title, subtitle, and home link;
+- main menu with regular, current, and forced hover states;
+- one full note with title, lead, body text, regular link, visited link, forced hover link, `mark`, `foot`, and `loud`;
+- footer with author, email, RSS, and engine text.
+
+P1:
+
+- sample image with caption from `system/theme/images/sample-image.jpg`;
+- note meta band with comments, read count, tags, and current tag;
+- favourite note;
+- simple form with input, textarea, and button.
+
+P2:
+
+- `h2`, `h3`, `b`, `i`, and `tt`;
+- ordered and unordered lists;
+- table;
+- `hr`;
+- search snippet with highlighted `mark` and thumbnails from `system/theme/images/sample-thumb-*`;
+- simple pagination.
+
+P3 is intentionally deferred to the future backlog in `PROGRESS.md`. Do not include full comment-form states, admin controls, sharing widgets, author-only note states, or full compiled `plain/styles/main.css` in the simplified transfer.
 
 ## Maintenance checklist
 
 When preview-related code changes:
 
 1. Compare the checked Aegea release target with the user-available Aegea source.
-2. Recheck the relevant `plain` markup used by the preview.
-3. Recheck the `plain` CSS-variable set used by the preview and exported themes.
-4. Recheck link underline behavior for the selected Aegea target version.
-5. Recheck whether the preview still covers all required states from `SPEC.md`.
-6. Update this baseline when the checked Aegea release target or the preview contract changes.
+2. Recheck `system/preview/en.php` for demo content changes.
+3. Recheck the relevant `plain` templates and markup used by the selected P0/P1/P2 blocks.
+4. Recheck the `plain` CSS-variable set used by the preview and exported themes.
+5. Recheck link underline behavior for the selected Aegea target version.
+6. Recheck whether the preview still covers all required states from `SPEC.md`.
+7. Update this baseline when the checked Aegea release target or the preview contract changes.
