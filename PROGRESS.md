@@ -275,6 +275,24 @@ Deliberately still outside this Stage 8.3 slice:
 - tables, lists, search snippets, thumbnails, and pagination;
 - broader `plain` CSS subset transfer.
 
+## Stage 8.4 review
+
+Completed as the P1 states slice for the simplified Aegea demo preview transfer:
+
+- the preview now includes the Aegea sample image and caption;
+- the sample image is served from `public/preview/sample-image.jpg`;
+- note meta bands render comments, read counts, tags, and a current tag state;
+- the preview now shows the favourite-note example;
+- a simple comment-like form renders input, textarea, and submit button states;
+- the preview shell allows the preview pane to shrink without horizontal overflow.
+
+Deliberately still outside this Stage 8.4 slice:
+
+- P2 tables, lists, headings, search snippets, thumbnails, and pagination;
+- full comment-form states;
+- admin controls and sharing widgets;
+- broader `plain` CSS subset transfer.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -300,7 +318,8 @@ Deliberately still outside this Stage 8.3 slice:
 - [x] Stage 8.1: Simplified Aegea demo preview baseline.
 - [x] Stage 8.2: Move static Aegea demo content into preview data.
 - [x] Stage 8.3: Render P0 Aegea preview surface from demo data.
-- [ ] Stage 8.4: Add P1 Aegea preview states.
+- [x] Stage 8.4: Add P1 Aegea preview states.
+- [ ] Stage 8.5: Add selected P2 Aegea preview states.
 
 ## Future backlog
 

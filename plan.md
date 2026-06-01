@@ -259,7 +259,7 @@ theme-name.zip
   - main menu с обычным, текущим и forced hover состояниями;
   - одну полноценную заметку с title, lead, body, regular link, visited link, forced hover link, `mark`, `foot`, `loud`;
   - footer с author, email, RSS и engine text.
-- [ ] Stage 8.4: Добавить P1-состояния.
+- [x] Stage 8.4: Добавить P1-состояния.
   - sample image с caption;
   - note meta band: comments/read count/tags/current tag;
   - favourite note;

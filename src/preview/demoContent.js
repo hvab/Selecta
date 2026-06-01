@@ -1,4 +1,5 @@
 const selfHref = '#';
+const previewAssetPath = `${import.meta.env.BASE_URL}preview/`;
 
 export const aegeaDemoContent = {
   blog: {
@@ -72,6 +73,22 @@ export const aegeaDemoContent = {
         <p class="foot">¹ By the way, this is an example of a footnote. It’s remarkable.</p>
         <p class="loud">God created man in his own image</p>
       `,
+      p1Text: `
+        <p class="lead">This post has a lead paragraph.</p>
+        <p>This is what a post looks like. This post is starred — in the built-in theme its title is big, but you may do something else.</p>
+        <p>A regular <a href="${selfHref}">hyperlink</a>, a <a class="visited" href="${selfHref}">visited link</a>, and a <a class="hover" href="${selfHref}">hover example</a> should all be easy to compare.</p>
+        <p>Theme work also needs <mark>highlighted text</mark> and enough body copy to judge the reading tone.</p>
+        <div class="e2-text-picture">
+          <div style="width: 800px; max-width: 100%">
+            <div class="e2-text-proportional-wrapper" style="padding-bottom: 44.375%">
+              <img src="${previewAssetPath}sample-image.jpg" width="800" height="355" alt="">
+            </div>
+          </div>
+          <div class="e2-text-caption">La creazione di Adamo. Michelangelo Buonarroti, c. 1511</div>
+        </div>
+        <p class="foot">¹ By the way, this is an example of a footnote. It’s remarkable.</p>
+        <p class="loud">God created man in his own image</p>
+      `,
       text: `
         <p>This is what a post looks like. This post is starred — in the built-in theme its title is big, but you may do something else.</p>
         <p>This paragraph has just a filler text. The theory of empathy is free. The rhythm has an elegant factographic chthonic myth. Artistic mediation is a catharsis. The liturgical drama has psychological parallelism.</p>
@@ -134,13 +151,14 @@ export const aegeaDemoContent = {
       ],
       readCount: 42,
       commentsCount: 0,
+      commentsText: 'No comments',
       newCommentsCount: 0,
       newCommentsCountText: '0 new',
     },
     {
       id: 2,
       title: 'A sample favourite post',
-      href: selfHref,
+      href: '',
       text: `
         <p class="lead">This post has a lead paragraph.</p>
         <p>This is a second example¹ to help you adjust the distance between the posts in a feed. The title is not a link here — as if we were on the posts’ page. It also has a highlighed tag — as if we were on that tag’s page.</p>

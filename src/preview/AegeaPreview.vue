@@ -13,7 +13,11 @@ const props = defineProps({
 
 const themeCssVariables = computed(() => getThemeCssVariables(props.themeState));
 const visibleMainMenuItems = computed(() => aegeaDemoContent.mainMenu.filter((item) => item.visible));
-const p0Note = computed(() => aegeaDemoContent.notes[0]);
+const p1Notes = computed(() => aegeaDemoContent.notes.slice(0, 2));
+
+function getNoteText(note) {
+  return note.p1Text || note.text;
+}
 </script>
 
 <template>
@@ -56,14 +60,55 @@ const p0Note = computed(() => aegeaDemoContent.notes[0]);
       </header>
 
       <main class="content">
-        <article class="e2-note">
+        <article
+          v-for="note in p1Notes"
+          :key="note.id"
+          class="e2-note"
+          :class="{
+            'e2-note-favourite': note.favourite,
+          }"
+        >
           <h1 class="e2-smart-title">
-            <a :href="p0Note.href">{{ p0Note.title }}</a>
+            <a v-if="note.href" :href="note.href">{{ note.title }}</a>
+            <span v-else>{{ note.title }}</span>
           </h1>
 
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <div class="e2-note-text e2-text" v-html="p0Note.p0Text"></div>
+          <div class="e2-note-text e2-text" v-html="getNoteText(note)"></div>
+
+          <div class="e2-band e2-band-meta-size e2-note-meta">
+            <nav>
+              <div v-if="typeof note.commentsCount === 'number'" class="band-item">
+                <a class="band-item-inner" :href="note.hrefComments">{{ note.commentsText }}</a>
+              </div>
+              <div v-if="note.readCount" class="band-item">
+                <div class="band-item-inner">{{ note.readCount }} views</div>
+              </div>
+              <div v-for="tag in note.tags" :key="tag.name" class="band-item">
+                <span v-if="tag.current" class="band-item-inner"
+                  ><mark>{{ tag.name }}</mark></span
+                >
+                <a v-else class="e2-tag band-item-inner" :href="tag.href">{{ tag.name }}</a>
+              </div>
+            </nav>
+          </div>
         </article>
+
+        <form class="e2-comment-form">
+          <label>
+            <span class="label-text">Name</span>
+            <input type="text" :value="aegeaDemoContent.simpleForm.name" />
+          </label>
+          <label>
+            <span class="label-text">Email</span>
+            <input type="email" :value="aegeaDemoContent.simpleForm.email" />
+          </label>
+          <label>
+            <span class="label-text">Comment</span>
+            <textarea :value="aegeaDemoContent.simpleForm.text"></textarea>
+          </label>
+          <button type="button">{{ aegeaDemoContent.simpleForm.submitText }}</button>
+        </form>
       </main>
 
       <footer class="footer">

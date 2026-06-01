@@ -86,6 +86,11 @@
   min-height: 20rem;
 }
 
+.aegea-preview .e2-note + .e2-note,
+.aegea-preview .e2-comment-form {
+  margin-top: 3rem;
+}
+
 .aegea-preview .e2-smart-title {
   margin-bottom: 1.25rem;
   font-size: var(--noteTitleFontSize);
@@ -120,6 +125,23 @@
   line-height: 16px;
 }
 
+.aegea-preview .e2-text-picture {
+  margin-top: 1rem;
+}
+
+.aegea-preview .e2-text-picture img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.aegea-preview .e2-text-caption {
+  margin-top: 0.4rem;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--engineTextColor);
+}
+
 .aegea-preview a.visited {
   color: var(--linkColorVisited);
   border-color: var(--linkUnderlineColorVisited);
@@ -144,13 +166,21 @@
   background: var(--markedTextBackground);
 }
 
+.aegea-preview .e2-note-meta {
+  margin-top: 1rem;
+  font-family: var(--mainFontFamily);
+  font-size: 12px;
+  line-height: 16px;
+}
+
 .aegea-preview .loud {
   padding-left: 1.5rem;
   border-left: 1px solid var(--thinRuleColor);
 }
 
 .aegea-preview label,
-.aegea-preview .e2-text label {
+.aegea-preview .e2-text label,
+.aegea-preview .e2-comment-form label {
   display: grid;
   gap: 0.35rem;
   margin-top: 1rem;
@@ -162,10 +192,25 @@
   line-height: 16px;
 }
 
-.aegea-preview input {
+.aegea-preview input,
+.aegea-preview textarea {
   width: 100%;
   max-width: 18rem;
   padding: 0.5rem 0.65rem;
+  font: inherit;
+  color: var(--inputTextColor);
+  background: var(--inputBackgroundColor);
+  border: 0;
+}
+
+.aegea-preview textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.aegea-preview button {
+  padding: 0.5rem 0.8rem;
+  margin-top: 1rem;
   font: inherit;
   color: var(--inputTextColor);
   background: var(--inputBackgroundColor);
