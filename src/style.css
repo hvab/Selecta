@@ -165,21 +165,40 @@ pre {
   overflow-wrap: anywhere;
 }
 
-.palette-control .control-warning {
+.control-warnings .control-warning {
   margin: 0.25rem 0 0;
   font-size: 0.8125rem;
   color: #8a5a00;
   overflow-wrap: anywhere;
 }
 
+.control-row-actions {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-self: end;
+}
+
+.field-lock {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+}
+
+.field-lock-input {
+  margin: 0;
+}
+
 .download-button,
-.random-button {
+.random-button,
+.unlock-button {
   min-height: 2rem;
   padding: 0.35rem 0.75rem;
   font: inherit;
 }
 
-.download-button:disabled {
+.download-button:disabled,
+.unlock-button:disabled {
   cursor: not-allowed;
 }
 

@@ -27,6 +27,7 @@ test('derives shared plain color variables from theme palette', () => {
     '--adminUnderlineColor': 'rgba(204, 51, 0, 0.15)',
     '--activeColor': '#cc3300',
     '--markedTextBackground': '#fff2a8',
+    '--markedImageBorderColor': '#fff2a8',
     '--inputBackgroundColor': '#f0f0f0',
     '--inputTextColor': '#111111',
     '--mainFontFamily': 'Arial, Helvetica, sans-serif',

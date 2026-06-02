@@ -28,6 +28,7 @@ export function getThemeCssVariables(themeState) {
     '--adminUnderlineColor': hexToRgba(themeState.palette.admin, 0.15),
     '--activeColor': themeState.palette.active,
     '--markedTextBackground': themeState.palette.markedTextBackground,
+    '--markedImageBorderColor': themeState.palette.markedTextBackground,
     '--inputBackgroundColor': themeState.palette.inputBackground,
     '--inputTextColor': themeState.palette.inputText,
     '--mainFontFamily': normalizeFontFamily(themeState.typography.mainFontFamily, 'Arial, Helvetica, sans-serif'),

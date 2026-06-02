@@ -354,7 +354,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Stage 9.2: Per-field locks for Random (`ROADMAP.md`, target `0.3.0`).
+- [ ] Stage 9 review: contrast + locks QA (`ROADMAP.md`, target `0.3.0`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -391,7 +391,7 @@ Deliberately still outside this Stage 8.7 slice:
 Planned releases (detail in `ROADMAP.md`):
 
 - [x] Stage 9.1: Non-blocking contrast warnings (WCAG 3:1 threshold, `src/theme/contrast.js`).
-- [ ] Stage 9.2: Per-field locks for Random.
+- [x] Stage 9.2: Per-field locks for Random (`src/theme/fieldLocks.js`, Unlock all).
 - [ ] Stage 9 review (`0.3.0`): locks + contrast QA together.
 - [ ] Stage 10 (`0.4.0`): presets.
 - [ ] Stage 11 (`0.5.0`): URL state and/or JSON export/import.

@@ -1,9 +1,10 @@
 import { getContrastRatio, getRelativeLuminance, normalizeHexColor } from './color.js';
 import { isAccentPairDistinguishable, isPaletteContrastValid, MIN_CONTRAST_RATIO } from './contrast.js';
-import { initialThemeState } from './model.js';
+import { createEmptyFieldLocks } from './fieldLocks.js';
 import { systemFonts } from './fonts.js';
 
 const MAX_COLOR_ATTEMPTS = 64;
+const MAX_PALETTE_ATTEMPTS = 32;
 
 function getRandomItem(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -51,26 +52,27 @@ function pickHoverColor(background, link, linkVisited) {
   return pickContrastingColor(background, [link, linkVisited]);
 }
 
-export function buildRandomPalette() {
-  const background = getRandomColor();
-  const foreground = pickContrastingColor(background);
-  const headings = pickContrastingColor(background);
-  const link = pickContrastingColor(background);
-  const linkVisited = pickContrastingColor(background, [link]);
-  const hover = pickHoverColor(background, link, linkVisited);
-  const tag = pickContrastingColor(background);
-  const engineText = pickContrastingColor(background);
-  const active = pickContrastingColor(background);
-  let markedTextBackground = getRandomColor();
+function buildRandomPaletteAttempt(basePalette, paletteLocks = {}) {
+  const locked = (key) => paletteLocks[key] === true;
+  const background = locked('background') ? basePalette.background : getRandomColor();
+  const foreground = locked('foreground') ? basePalette.foreground : pickContrastingColor(background);
+  const headings = locked('headings') ? basePalette.headings : pickContrastingColor(background);
+  const link = locked('link') ? basePalette.link : pickContrastingColor(background);
+  const linkVisited = locked('linkVisited') ? basePalette.linkVisited : pickContrastingColor(background, [link]);
+  const hover = locked('hover') ? basePalette.hover : pickHoverColor(background, link, linkVisited);
+  const tag = locked('tag') ? basePalette.tag : pickContrastingColor(background);
+  const engineText = locked('engineText') ? basePalette.engineText : pickContrastingColor(background);
+  const active = locked('active') ? basePalette.active : pickContrastingColor(background);
+  let markedTextBackground = locked('markedTextBackground') ? basePalette.markedTextBackground : getRandomColor();
 
-  if (getContrastRatio(foreground, markedTextBackground) < MIN_CONTRAST_RATIO) {
+  if (!locked('markedTextBackground') && getContrastRatio(foreground, markedTextBackground) < MIN_CONTRAST_RATIO) {
     markedTextBackground = pickContrastingColor(foreground);
   }
 
-  const inputBackground = getRandomColor();
-  const inputText = pickContrastingColor(inputBackground);
+  const inputBackground = locked('inputBackground') ? basePalette.inputBackground : getRandomColor();
+  const inputText = locked('inputText') ? basePalette.inputText : pickContrastingColor(inputBackground);
 
-  const palette = {
+  return {
     background,
     foreground,
     headings,
@@ -84,33 +86,51 @@ export function buildRandomPalette() {
     inputBackground,
     inputText,
   };
-
-  if (!isPaletteContrastValid(palette)) {
-    return { ...initialThemeState.palette };
-  }
-
-  return palette;
 }
 
-export function getRandomThemeState() {
+export function buildRandomPalette(basePalette, paletteLocks = {}) {
+  let lastPalette = buildRandomPaletteAttempt(basePalette, paletteLocks);
+
+  for (let attempt = 0; attempt < MAX_PALETTE_ATTEMPTS; attempt += 1) {
+    lastPalette = buildRandomPaletteAttempt(basePalette, paletteLocks);
+
+    if (isPaletteContrastValid(lastPalette)) {
+      return lastPalette;
+    }
+  }
+
+  return lastPalette;
+}
+
+export function getRandomThemeState(currentState, fieldLocks = createEmptyFieldLocks()) {
   const themeNumber = Math.floor(Math.random() * 9000) + 1000;
 
   return {
     meta: {
-      folderName: `random-theme-${themeNumber}`,
-      displayName: `Random Theme ${themeNumber}`,
+      displayName: fieldLocks.meta.displayName ? currentState.meta.displayName : `Random Theme ${themeNumber}`,
+      folderName: fieldLocks.meta.folderName ? currentState.meta.folderName : `random-theme-${themeNumber}`,
     },
-    palette: buildRandomPalette(),
+    palette: buildRandomPalette(currentState.palette, fieldLocks.palette),
     typography: {
-      mainFontFamily: getRandomItem(systemFonts).value,
-      noteFontFamily: getRandomItem(systemFonts).value,
-      noteTextSize: `${getRandomNumber(14, 24, 1)}px`,
-      noteTextLineHeight: Number(getRandomNumber(1.3, 1.9, 0.05).toFixed(2)),
-      titleScale: Number(getRandomNumber(1.2, 2, 0.05).toFixed(2)),
+      mainFontFamily: fieldLocks.typography.mainFontFamily
+        ? currentState.typography.mainFontFamily
+        : getRandomItem(systemFonts).value,
+      noteFontFamily: fieldLocks.typography.noteFontFamily
+        ? currentState.typography.noteFontFamily
+        : getRandomItem(systemFonts).value,
+      noteTextSize: fieldLocks.typography.noteTextSize
+        ? currentState.typography.noteTextSize
+        : `${getRandomNumber(14, 24, 1)}px`,
+      noteTextLineHeight: fieldLocks.typography.noteTextLineHeight
+        ? currentState.typography.noteTextLineHeight
+        : Number(getRandomNumber(1.3, 1.9, 0.05).toFixed(2)),
+      titleScale: fieldLocks.typography.titleScale
+        ? currentState.typography.titleScale
+        : Number(getRandomNumber(1.2, 2, 0.05).toFixed(2)),
     },
     layout: {
-      maxWidth: `${getRandomNumber(36, 64, 1)}rem`,
-      margins: `${getRandomNumber(1, 4, 0.25)}rem`,
+      maxWidth: fieldLocks.layout.maxWidth ? currentState.layout.maxWidth : `${getRandomNumber(36, 64, 1)}rem`,
+      margins: fieldLocks.layout.margins ? currentState.layout.margins : `${getRandomNumber(1, 4, 0.25)}rem`,
     },
   };
 }

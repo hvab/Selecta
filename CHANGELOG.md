@@ -11,10 +11,13 @@ The project follows semantic versioning where practical.
 - Non-blocking palette contrast warnings under the related color fields (WCAG 3:1 threshold).
 - `src/theme/contrast.js` and color luminance helpers in `src/theme/color.js`.
 - Random theme generation now builds contrast-safe palettes only.
+- Per-field lock checkboxes for Random; Unlock all in the export bar.
 
 ### Changed
 
 ### Fixed
+
+- Search-result thumbnail highlight in preview now follows the theme `Marked text` color via `--markedImageBorderColor`.
 
 ## 0.2.0 - 2026-06-02
 
