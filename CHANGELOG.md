@@ -12,6 +12,12 @@ The project follows semantic versioning where practical.
 
 ### Fixed
 
+## 0.3.3 - 2026-06-02
+
+### Fixed
+
+- Preview footer RSS badge and Aegea engine link with lemon icon, aligned with Aegea `plain` markup and styles.
+
 ## 0.3.2 - 2026-06-02
 
 ### Fixed

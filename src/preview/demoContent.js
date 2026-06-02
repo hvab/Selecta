@@ -218,6 +218,8 @@ export const aegeaDemoContent = {
     email: 'author@example.com',
     rssHref: selfHref,
     rssText: 'RSS',
-    engineText: 'Powered by Aegea',
+    enginePoweredBy: 'Powered by',
+    engineName: 'Aegea',
+    engineHref: 'https://blogengine.me/',
   },
 };

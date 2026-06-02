@@ -650,6 +650,30 @@
     inset 0 0 0 1px rgb(0 0 0 / 20%);
 }
 
+.aegea-preview a.e2-rss-button,
+.aegea-preview a.e2-rss-button:visited {
+  position: relative;
+  top: -1px;
+  padding: 0 2px 1px 3px !important;
+  font-family: var(--smallFontFamily);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: bold;
+  line-height: 12px;
+  color: var(--boldColor);
+  letter-spacing: 1px;
+  text-decoration: none;
+  border: 1px solid var(--thinRuleColor);
+  border-bottom: 1px solid var(--thinRuleColor);
+  border-radius: 3px;
+}
+
+.aegea-preview a.e2-rss-button:hover,
+.aegea-preview a.e2-rss-button.hover {
+  color: var(--hoverColor);
+  border-color: var(--hoverUnderlineColor);
+}
+
 .aegea-preview .footer {
   padding-bottom: 2rem;
   margin-top: 2rem;
@@ -667,16 +691,26 @@
 }
 
 .aegea-preview .engine a,
-.aegea-preview .engine a:visited {
+.aegea-preview .engine a:visited,
+.aegea-preview .engine a.nu u {
   color: var(--engineTextColor);
   border-color: var(--engineTextUnderlineColor);
+}
+
+.aegea-preview .engine a.nu u {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--engineTextUnderlineColor);
 }
 
 .aegea-preview .footer a:hover,
 .aegea-preview .footer a.hover,
 .aegea-preview .engine a:hover,
-.aegea-preview .engine a.hover {
+.aegea-preview .engine a.hover,
+.aegea-preview .engine a.nu:hover u,
+.aegea-preview .engine a.nu.hover u {
   color: var(--hoverColor);
+  text-decoration-color: var(--hoverUnderlineColor);
   border-color: var(--hoverUnderlineColor);
 }
 
