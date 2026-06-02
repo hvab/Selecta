@@ -101,6 +101,11 @@
   text-indent: 0;
 }
 
+.aegea-preview .e2-svgi-lock-nano {
+  width: 8px;
+  height: 12px;
+}
+
 .aegea-preview .content {
   min-height: 20rem;
 }
@@ -244,6 +249,34 @@
 .aegea-preview a.tag {
   color: var(--tagColor);
   border-color: var(--tagUnderlineColor);
+}
+
+.aegea-preview a.e2-tag,
+.aegea-preview a:link.e2-tag,
+.aegea-preview a:visited.e2-tag,
+.aegea-preview .e2-tag a,
+.aegea-preview .e2-tag a:link,
+.aegea-preview .e2-tag a:visited {
+  color: var(--tagColor);
+  border-color: var(--tagUnderlineColor);
+}
+
+.aegea-preview a:hover.e2-tag,
+.aegea-preview a.hover.e2-tag,
+.aegea-preview a:active.e2-tag,
+.aegea-preview .e2-tag a:hover,
+.aegea-preview .e2-tag a.hover,
+.aegea-preview .e2-tag a:active {
+  color: var(--hoverColor);
+  border-color: var(--hoverUnderlineColor);
+}
+
+.aegea-preview .e2-tag {
+  white-space: nowrap;
+}
+
+.aegea-preview mark .e2-tag {
+  padding: 0 0.17em;
 }
 
 .aegea-preview .e2-text a:hover {

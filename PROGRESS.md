@@ -309,6 +309,25 @@ Deliberately still outside this Stage 8.5 slice:
 - admin controls and sharing widgets;
 - broader `plain` CSS subset transfer beyond styles needed by the selected preview states.
 
+## Stage 8.6 review
+
+Completed as the scoped CSS reconciliation slice for the selected Aegea preview states:
+
+- image proportional wrappers now follow the Aegea `plain` aspect-ratio pattern;
+- marked thumbnail images use the real `mark img` border color behavior;
+- search-result thumbnails render before snippet text and align by their bottom edge;
+- note meta bands use the Aegea-style one-pixel item underline;
+- read counts and comment links include the Aegea inline SVG icons;
+- hidden tags include the Aegea lock icon;
+- meta tags use the `e2-tag` color and underline rules from `plain`.
+
+Deliberately still outside this Stage 8.6 slice:
+
+- full compiled `plain/styles/main.css`;
+- full comment-form states;
+- admin controls and sharing widgets;
+- author-only note states.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -336,7 +355,8 @@ Deliberately still outside this Stage 8.5 slice:
 - [x] Stage 8.3: Render P0 Aegea preview surface from demo data.
 - [x] Stage 8.4: Add P1 Aegea preview states.
 - [x] Stage 8.5: Add selected P2 Aegea preview states.
-- [ ] Stage 8.6: Reconcile the scoped preview CSS subset with Aegea `plain`.
+- [x] Stage 8.6: Reconcile the scoped preview CSS subset with Aegea `plain`.
+- [ ] Stage 8.7: Browser QA for responsive preview and shell/preview style isolation.
 
 ## Future backlog
 

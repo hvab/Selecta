@@ -271,7 +271,7 @@ theme-name.zip
   - `hr`;
   - search snippet с highlighted `mark` и thumbnails;
   - simple pagination.
-- [ ] Stage 8.6: Перенести только нужный scoped CSS subset.
+- [x] Stage 8.6: Перенести только нужный scoped CSS subset.
   - layout;
   - notes;
   - text;
