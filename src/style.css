@@ -148,10 +148,6 @@ pre {
   font: inherit;
 }
 
-.metadata-control .text-control {
-  grid-column: 2 / -1;
-}
-
 .control-value {
   min-width: 3.5rem;
   font-size: 0.8125rem;

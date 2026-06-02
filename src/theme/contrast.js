@@ -115,7 +115,11 @@ export function getContrastWarnings(palette) {
     ]);
   }
 
-  if (hasLowContrast(palette.hover, palette.link) && areAccentColorsConfusable(palette.hover, palette.link)) {
+  if (
+    !hasSameColor(palette.hover, palette.link) &&
+    hasLowContrast(palette.hover, palette.link) &&
+    areAccentColorsConfusable(palette.hover, palette.link)
+  ) {
     addWarning(warnings, 'hoverVsLink', 'Hover color is hard to distinguish from link color.', ['hover', 'link']);
   }
 

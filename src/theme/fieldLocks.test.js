@@ -16,3 +16,11 @@ test('clearAllFieldLocks resets every section', () => {
   clearAllFieldLocks(fieldLocks);
   assert.equal(hasAnyFieldLocked(fieldLocks), false);
 });
+
+test('hasAnyFieldLocked returns true when a field is locked', () => {
+  const fieldLocks = createEmptyFieldLocks();
+
+  assert.equal(hasAnyFieldLocked(fieldLocks), false);
+  fieldLocks.palette.link = true;
+  assert.equal(hasAnyFieldLocked(fieldLocks), true);
+});

@@ -1,7 +1,6 @@
 <script setup>
 import { PALETTE_COLOR_CONTROLS } from '../theme/fieldLocks.js';
 import { systemFonts } from '../theme/fonts.js';
-import { normalizeFolderName } from '../theme/metadata.js';
 
 defineProps({
   meta: {
@@ -119,10 +118,7 @@ function getNumericValue(control, value) {
 }
 
 function updateMetadataField(control, event) {
-  const value = control.key === 'folderName' ? normalizeFolderName(event.target.value) : event.target.value;
-
-  event.target.value = value;
-  emit('update:meta-field', control.key, value);
+  emit('update:meta-field', control.key, event.target.value);
 }
 </script>
 

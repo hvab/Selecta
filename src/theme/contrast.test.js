@@ -87,3 +87,17 @@ test('warns when link and hover are similar hues with low contrast', () => {
 
   assert.ok(warnings.some((warning) => warning.id === 'hoverVsLink'));
 });
+
+test('does not duplicate warnings when hover equals link', () => {
+  const warnings = getContrastWarnings({
+    ...initialThemeState.palette,
+    link: '#0066cc',
+    hover: '#0066cc',
+  });
+
+  assert.ok(warnings.some((warning) => warning.id === 'linkSameAsHover'));
+  assert.equal(
+    warnings.find((warning) => warning.id === 'hoverVsLink'),
+    undefined
+  );
+});

@@ -12,6 +12,15 @@ The project follows semantic versioning where practical.
 
 ### Fixed
 
+## 0.3.1 - 2026-06-02
+
+### Fixed
+
+- Metadata lock checkboxes align inline with text fields in the controls grid.
+- Removed redundant random palette build before the contrast retry loop.
+- Folder name normalization happens only in `App.vue`, not in `ThemeControls`.
+- Contrast warnings no longer duplicate when hover and link use the same color.
+
 ## 0.3.0 - 2026-06-02
 
 ### Added

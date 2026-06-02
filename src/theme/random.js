@@ -89,7 +89,7 @@ function buildRandomPaletteAttempt(basePalette, paletteLocks = {}) {
 }
 
 export function buildRandomPalette(basePalette, paletteLocks = {}) {
-  let lastPalette = buildRandomPaletteAttempt(basePalette, paletteLocks);
+  let lastPalette = null;
 
   for (let attempt = 0; attempt < MAX_PALETTE_ATTEMPTS; attempt += 1) {
     lastPalette = buildRandomPaletteAttempt(basePalette, paletteLocks);
