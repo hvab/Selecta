@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getContrastRatio, normalizeHexColor } from './color.js';
-import { getContrastWarnings } from './contrast.js';
+import { getContrastWarnings, getContrastWarningsByField, isPaletteContrastValid } from './contrast.js';
 import { initialThemeState } from './model.js';
 
 test('default palette has no contrast warnings', () => {
@@ -16,6 +16,24 @@ test('warns when text matches background', () => {
   });
 
   assert.ok(warnings.some((warning) => warning.id === 'textOnBackground'));
+  assert.ok(
+    getContrastWarningsByField({
+      ...initialThemeState.palette,
+      background: '#ffffff',
+      foreground: '#ffffff',
+    }).foreground?.includes('Text may be hard to read on the background.')
+  );
+});
+
+test('isPaletteContrastValid mirrors warning presence', () => {
+  const invalidPalette = {
+    ...initialThemeState.palette,
+    foreground: '#ffffff',
+    background: '#ffffff',
+  };
+
+  assert.equal(isPaletteContrastValid(initialThemeState.palette), true);
+  assert.equal(isPaletteContrastValid(invalidPalette), false);
 });
 
 test('warns when link and visited link use the same color', () => {

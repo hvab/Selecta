@@ -8,8 +8,9 @@ The project follows semantic versioning where practical.
 
 ### Added
 
-- Non-blocking palette contrast warnings in the Colors panel (WCAG 3:1 threshold).
+- Non-blocking palette contrast warnings under the related color fields (WCAG 3:1 threshold).
 - `src/theme/contrast.js` and color luminance helpers in `src/theme/color.js`.
+- Random theme generation now builds contrast-safe palettes only.
 
 ### Changed
 

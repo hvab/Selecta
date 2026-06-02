@@ -11,8 +11,8 @@ defineProps({
     type: Object,
     required: true,
   },
-  contrastWarnings: {
-    type: Array,
+  contrastWarningsByField: {
+    type: Object,
     required: true,
   },
   palette: {
@@ -248,24 +248,27 @@ function updateMetadataField(control, event) {
 
     <div class="control-group">
       <h3>Colors</h3>
-      <ul
-        v-if="contrastWarnings.length"
-        class="contrast-warnings"
-        role="status"
-        aria-live="polite"
-        aria-label="Contrast warnings"
-      >
-        <li v-for="warning in contrastWarnings" :key="warning.id">{{ warning.message }}</li>
-      </ul>
-      <label v-for="control in colorControls" :key="control.key" class="control-row">
-        <span class="control-label">{{ control.label }}</span>
-        <input
-          class="color-control"
-          type="color"
-          :value="palette[control.key]"
-          @input="emit('update:palette-field', control.key, $event.target.value)"
-        />
-      </label>
+      <div v-for="control in colorControls" :key="control.key" class="palette-control">
+        <label class="control-row" :for="`palette-${control.key}`">
+          <span class="control-label">{{ control.label }}</span>
+          <input
+            :id="`palette-${control.key}`"
+            class="color-control"
+            type="color"
+            :value="palette[control.key]"
+            :aria-describedby="contrastWarningsByField[control.key] ? `palette-${control.key}-warning` : undefined"
+            @input="emit('update:palette-field', control.key, $event.target.value)"
+          />
+        </label>
+        <p
+          v-for="(message, index) in contrastWarningsByField[control.key] || []"
+          :id="index === 0 ? `palette-${control.key}-warning` : undefined"
+          :key="`${control.key}-${message}`"
+          class="control-warning"
+        >
+          {{ message }}
+        </p>
+      </div>
     </div>
   </div>
 </template>

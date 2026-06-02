@@ -165,9 +165,8 @@ pre {
   overflow-wrap: anywhere;
 }
 
-.contrast-warnings {
-  margin: 0 0 0.75rem;
-  padding-left: 1.1rem;
+.palette-control .control-warning {
+  margin: 0.25rem 0 0;
   font-size: 0.8125rem;
   color: #8a5a00;
   overflow-wrap: anywhere;
