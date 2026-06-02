@@ -32,7 +32,7 @@ P0:
 
 - real `plain` layout skeleton: `.common`, `.flag`, `.header-content`, `.content`, `.footer`;
 - header with blog title, subtitle, and home link;
-- main menu with regular, current, and forced hover states;
+- main menu with regular, parent, current, and icon states;
 - one full note with title, lead, body text, regular link, visited link, forced hover link, `mark`, `foot`, and `loud`;
 - footer with author, email, RSS, and engine text.
 

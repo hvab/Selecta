@@ -11,14 +11,15 @@ export const aegeaDemoContent = {
     {
       title: 'Main menu',
       href: selfHref,
+      svgId: 'favourite-on',
       current: false,
       parent: false,
-      hover: true,
       visible: true,
     },
     {
       title: 'Preferences',
       href: selfHref,
+      svgId: 'settings',
       current: false,
       parent: true,
       visible: true,
@@ -26,6 +27,7 @@ export const aegeaDemoContent = {
     {
       title: 'Tags',
       href: selfHref,
+      svgId: 'tags',
       current: false,
       parent: false,
       visible: true,
@@ -150,10 +152,6 @@ export const aegeaDemoContent = {
         },
       ],
       readCount: 42,
-      commentsCount: 0,
-      commentsText: 'No comments',
-      newCommentsCount: 0,
-      newCommentsCountText: '0 new',
     },
     {
       id: 2,
@@ -198,6 +196,7 @@ export const aegeaDemoContent = {
       `,
       favourite: false,
       readCount: 31,
+      hasHighlightedThumbs: true,
       thumbs: [
         {
           src: `${previewAssetPath}sample-thumb-1@2x.jpg`,

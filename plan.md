@@ -256,7 +256,7 @@ theme-name.zip
 - [x] Stage 8.3: Перенести P0 preview surface.
   - real `plain` layout skeleton: `.common`, `.flag`, `.header-content`, `.content`, `.footer`;
   - header с blog title, subtitle и ссылкой на главную;
-  - main menu с обычным, текущим и forced hover состояниями;
+  - main menu с обычным, parent, текущим состояниями и иконками;
   - одну полноценную заметку с title, lead, body, regular link, visited link, forced hover link, `mark`, `foot`, `loud`;
   - footer с author, email, RSS и engine text.
 - [x] Stage 8.4: Добавить P1-состояния.

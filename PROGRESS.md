@@ -263,7 +263,7 @@ Deliberately still outside this Stage 8.2 slice:
 Completed as the P0 rendering slice for the simplified Aegea demo preview transfer:
 
 - `AegeaPreview.vue` now renders header, main menu, one note, and footer from `src/preview/demoContent.js`;
-- the main menu includes regular, parent, forced hover, and current states;
+- the main menu includes regular, parent, current, and icon states;
 - the rendered note includes lead text, regular link, visited link, forced hover link, `mark`, `foot`, and `loud`;
 - the preview still consumes theme CSS variables through `getThemeCssVariables()`;
 - a small footer spacing adjustment keeps the P0 surface readable.
@@ -362,6 +362,7 @@ Deliberately still outside this Stage 8.6 slice:
 
 - [ ] Post-MVP planning.
 - [ ] Support multiple Aegea target versions for preview and generated theme compatibility.
+- [ ] В будущей версии конструктора расширить theme contract и настройки для элементов, которые сейчас только preview-local или вне MVP: размеры/отступы шапки, blog title, logo/userpic, compact layout, follow/search/admin/menu states.
 - [ ] Рассмотреть глубокие состояния превью Эгеи только если появится конкретный пользовательский пробел в предпросмотре:
   - полная форма комментария с логином, подпиской и состояниями вокруг валидации;
   - админские иконки, меню автора, sticky admin links и controls редактирования;
