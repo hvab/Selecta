@@ -17,7 +17,7 @@
 
 - The `plain` layout template is unchanged between Aegea `11.5` and the deferred `12.0a` source checked here.
 - The `plain` CSS-variable set is unchanged between these sources.
-- Aegea `11.5` uses border-based link underlines; the deferred `12.0a` source switches the main link contract to `text-decoration-color`.
+- Aegea `11.5` body links use `text-decoration` with `text-decoration-color`; the deferred `12.0a` source keeps the same contract but refines it further. Selecta preview may approximate some link states with a scoped border-bottom subset where that is enough for theme tuning.
 - The deferred `12.0a` source adds bundled Inter and JetBrains Mono fonts. Selecta MVP still intentionally generates only system web-safe font choices.
 
 ## Demo content source
@@ -33,7 +33,7 @@ P0:
 - real `plain` layout skeleton: `.common`, `.flag`, `.header-content`, `.content`, `.footer`;
 - header with blog title, subtitle, and home link;
 - main menu with regular, parent, current, and icon states;
-- one full note with title, lead, body text, regular link, visited link, forced hover link, `mark`, `foot`, and `loud`;
+- preview notes together cover title, lead, body text, regular link, visited link, forced hover link, `mark`, `foot`, and `loud`; after the P2 merge the first note keeps the link and `mark` examples, the favourite note keeps lead and `foot`, and the search snippet keeps highlighted `mark` in title and text;
 - footer with author, email, RSS, and engine text.
 
 P1:

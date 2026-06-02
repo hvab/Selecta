@@ -67,31 +67,12 @@ export const aegeaDemoContent = {
       title: 'A sample post',
       href: selfHref,
       hrefComments: selfHref,
-      p0Text: `
-        <p class="lead">This post has a lead paragraph.</p>
-        <p>This is what a post looks like. This post is starred — in the built-in theme its title is big, but you may do something else.</p>
-        <p>A regular <a href="${selfHref}">hyperlink</a>, a <a class="visited" href="${selfHref}">visited link</a>, and a <a class="hover" href="${selfHref}">hover example</a> should all be easy to compare.</p>
-        <p>Theme work also needs <mark>highlighted text</mark> and enough body copy to judge the reading tone.</p>
-        <p class="foot">¹ By the way, this is an example of a footnote. It’s remarkable.</p>
-        <p class="loud">God created man in his own image</p>
-      `,
-      p1Text: `
-        <p class="lead">This post has a lead paragraph.</p>
-        <p>This is what a post looks like. This post is starred — in the built-in theme its title is big, but you may do something else.</p>
-        <p>A regular <a href="${selfHref}">hyperlink</a>, a <a class="visited" href="${selfHref}">visited link</a>, and a <a class="hover" href="${selfHref}">hover example</a> should all be easy to compare.</p>
-        <p>Theme work also needs <mark>highlighted text</mark> and enough body copy to judge the reading tone.</p>
-        <div class="e2-text-picture">
-          <div style="width: 800px; max-width: 100%">
-            <div class="e2-text-proportional-wrapper" style="padding-bottom: 44.375%">
-              <img src="${previewAssetPath}sample-image.jpg" width="800" height="355" alt="">
-            </div>
-          </div>
-          <div class="e2-text-caption">La creazione di Adamo. Michelangelo Buonarroti, c. 1511</div>
-        </div>
-        <p class="foot">¹ By the way, this is an example of a footnote. It’s remarkable.</p>
-        <p class="loud">God created man in his own image</p>
-      `,
+      commentsCount: 0,
+      commentsText: 'No comments',
       text: `
+        <p class="lead">This post has a lead paragraph.</p>
+        <p>A regular <a href="${selfHref}">hyperlink</a>, a <a class="visited" href="${selfHref}">visited link</a>, and a <a class="hover" href="${selfHref}">hover example</a> should all be easy to compare.</p>
+        <p>Theme work also needs <mark>highlighted text</mark> and enough body copy to judge the reading tone.</p>
         <p>This is what a post looks like. This post is starred — in the built-in theme its title is big, but you may do something else.</p>
         <p>This paragraph has just a filler text. The theory of empathy is free. The rhythm has an elegant factographic chthonic myth. Artistic mediation is a catharsis. The liturgical drama has psychological parallelism.</p>
         <h2>Subheadings, text formatting and images</h2>
@@ -191,9 +172,8 @@ export const aegeaDemoContent = {
       href: selfHref,
       hrefComments: selfHref,
       text: '',
-      snippetText: `
-        <p>This is what a post looks like in the <mark>search</mark> results page. The query text would be <mark>highlighted</mark>, and all the images from the post would be previewed below. Some of them may also be <mark>highlighted</mark>. The <tt>mark</tt> tag is used for all <mark>highlighting</mark>, including the tag in the post above.</p>
-      `,
+      snippetText:
+        'This is what a post looks like in the <mark>search</mark> results page. The query text would be <mark>highlighted</mark>, and all the images from the post would be previewed below. Some of them may also be <mark>highlighted</mark>. The <tt>mark</tt> tag is used for all <mark>highlighting</mark>, including the tag in the post above.',
       favourite: false,
       readCount: 31,
       hasHighlightedThumbs: true,

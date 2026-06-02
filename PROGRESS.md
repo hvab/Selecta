@@ -264,7 +264,7 @@ Completed as the P0 rendering slice for the simplified Aegea demo preview transf
 
 - `AegeaPreview.vue` now renders header, main menu, one note, and footer from `src/preview/demoContent.js`;
 - the main menu includes regular, parent, current, and icon states;
-- the rendered note includes lead text, regular link, visited link, forced hover link, `mark`, `foot`, and `loud`;
+- the preview notes together cover lead text, regular link, visited link, forced hover link, `mark`, `foot`, and `loud`; after the later P2 merge these states are split across note 1, the favourite note, and the search snippet;
 - the preview still consumes theme CSS variables through `getThemeCssVariables()`;
 - a small footer spacing adjustment keeps the P0 surface readable.
 

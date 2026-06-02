@@ -22,10 +22,6 @@ const menuIconSvgById = {
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path stroke="none" fill-rule="evenodd" clip-rule="evenodd" d="M8.018 1.747a6.248 6.248 0 0 0-6.249 6.25 6.25 6.25 0 1 0 6.249-6.25zm0 11a4.75 4.75 0 0 1-4.75-4.75 4.75 4.75 0 1 1 4.75 4.75z"/><path d="m2.098 13.285 1.75-.839L2.63 10.86l-1.263 1.474zm12.534-9.618-.73-.952-1.751.84 1.217 1.586zM.246 9.626l1.935.149-.261-1.983-1.831.645zM15.91 7.564l-.156-1.19-1.937-.148.261 1.983zM.472 5.532l1.601 1.096.766-1.848L.93 4.423zm14.596 6.046.46-1.109-1.603-1.097-.765 1.848zM2.715 2.098l.839 1.75L5.14 2.631 3.666 1.367zm9.618 12.535.952-.73-.84-1.752-1.586 1.218zM6.374.247l-.149 1.935 1.983-.261L7.563.089zM8.436 15.91l1.19-.155.148-1.937-1.983.261zM10.468.472 9.372 2.074l1.848.765.357-1.908zM4.422 15.069l1.109.46 1.097-1.603-1.848-.766z" stroke="none" fill-rule="evenodd" clip-rule="evenodd"/></svg>',
   tags: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 16 16" xml:space="preserve"><path stroke="none" d="M6.938 16.001c-.43 0-.891-.16-1.32-.59L.607 10.38C-.406 9.367.037 8.191.581 7.647l6.538-6.501C7.145 1.116 8.176 0 9.427 0h4.044c1.153 0 2.5.659 2.5 2.516v3.991c0 1.167-1.029 2.229-1.146 2.347L8.32 15.415c-.308.309-.818.586-1.382.586zM9.427 1c-.801 0-1.578.828-1.586.837L1.287 8.354c-.146.152-.587.706.027 1.319l5.011 5.031c.589.59 1.137.15 1.29.003l6.501-6.559c.238-.241.855-1.002.855-1.642v-3.99c0-1.318-.94-1.516-1.5-1.516H9.427zm1.571 5.754c-.468 0-.907-.183-1.238-.515a1.765 1.765 0 0 1 0-2.487c.661-.664 1.814-.664 2.475 0 .331.332.513.774.513 1.243 0 .469-.182.911-.513 1.243a1.73 1.73 0 0 1-1.237.516z"/></svg>',
 };
-
-function getNoteText(note) {
-  return note.snippetText || note.text;
-}
 </script>
 
 <template>
@@ -85,7 +81,24 @@ function getNoteText(note) {
             'e2-note-snippet': note.snippetText,
           }"
         >
-          <div v-if="note.thumbs" class="e2-note-thumbs">
+          <a v-if="note.thumbs && note.href" class="nu" :href="note.href">
+            <div class="e2-note-thumbs">
+              <div v-for="thumb in note.thumbs" :key="thumb.src" class="e2-note-thumb">
+                <mark v-if="thumb.highlighted">
+                  <img :src="thumb.src" :width="thumb.width" :height="thumb.height" alt="" />
+                </mark>
+                <img
+                  v-else
+                  :class="{ 'e2-note-thumb-dimmed': note.hasHighlightedThumbs }"
+                  :src="thumb.src"
+                  :width="thumb.width"
+                  :height="thumb.height"
+                  alt=""
+                />
+              </div>
+            </div>
+          </a>
+          <div v-else-if="note.thumbs" class="e2-note-thumbs">
             <div v-for="thumb in note.thumbs" :key="thumb.src" class="e2-note-thumb">
               <mark v-if="thumb.highlighted">
                 <img :src="thumb.src" :width="thumb.width" :height="thumb.height" alt="" />
@@ -110,8 +123,12 @@ function getNoteText(note) {
             <span v-else :class="{ 'e2-note-favourite-title': note.favourite }" v-html="note.title"></span>
           </h1>
 
+          <div v-if="note.snippetText" class="e2-note-snippet-text">
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <p v-html="note.snippetText"></p>
+          </div>
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <div class="e2-note-text e2-text" v-html="getNoteText(note)"></div>
+          <div v-else class="e2-note-text e2-text" v-html="note.text"></div>
 
           <div class="e2-band e2-band-meta-size e2-note-meta">
             <nav>
@@ -218,6 +235,7 @@ function getNoteText(note) {
 
         <div v-if="aegeaDemoContent.pages.timeline" class="e2-pages">
           <a :href="aegeaDemoContent.pages.earlierHref">{{ aegeaDemoContent.pages.earlierTitle }}</a>
+          <span class="e2-keyboard-shortcut e2-keyboard-shortcut_visible">&#x2325; &darr;</span>
         </div>
 
         <form class="e2-comment-form">

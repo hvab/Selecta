@@ -6,6 +6,10 @@
   --marginLeftCompact: 4%;
   --marginRightCompact: 4%;
   --markedImageBorderColor: #fff5a0;
+  --smallFontFamily: inherit;
+  --smallFontSize: 12px;
+  --smallLineHeight: 16px;
+  --time: 0.2s;
 
   font-family: var(--mainFontFamily);
   color: var(--foregroundColor);
@@ -76,6 +80,18 @@
   color: var(--linkColor);
   text-decoration: none;
   border-bottom: 1px solid var(--linkUnderlineColor);
+  transition-property: color, border-color, fill;
+  transition-duration: var(--time);
+  transition-timing-function: ease-out;
+}
+
+.aegea-preview a:hover,
+.aegea-preview a.hover {
+  transition: none;
+}
+
+.aegea-preview a.nu {
+  border-bottom: 0;
 }
 
 .aegea-preview .e2-band-full-size .band-item a {
@@ -110,8 +126,22 @@
 }
 
 .aegea-preview .band-item-inner {
+  position: relative;
   display: block;
   padding-bottom: 0.35rem;
+}
+
+.aegea-preview .band-item-inner::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  display: block;
+  height: 1px;
+  content: '';
+  transition-property: background-color;
+  transition-duration: var(--time);
+  transition-timing-function: ease-out;
 }
 
 .aegea-preview .e2-band-full-size .band-item:not(.band-item-current, .band-item-parent) .band-item-inner {
@@ -123,6 +153,12 @@
   color: var(--hoverColor);
 }
 
+.aegea-preview .band-item a.band-item-inner:hover::after,
+.aegea-preview .band-item a.band-item-inner.hover::after {
+  background-color: var(--hoverColor);
+  transition: none;
+}
+
 .aegea-preview .band-item-current .band-item-inner {
   font-weight: 700;
   color: var(--activeColor);
@@ -131,6 +167,10 @@
 .aegea-preview .band-item-parent .band-item-inner {
   font-weight: 700;
   color: var(--activeColor);
+}
+
+.aegea-preview .band-item-parent .band-item-inner::after {
+  background-color: var(--activeColor);
 }
 
 .aegea-preview svg {
@@ -168,10 +208,22 @@
   margin-top: 3rem;
 }
 
+.aegea-preview .e2-note:not(.e2-note-snippet) {
+  margin: 0 0 60px;
+}
+
 .aegea-preview .e2-smart-title {
   margin-bottom: 1.25rem;
   font-size: var(--noteTitleFontSize);
   line-height: var(--noteTitleLineHeight);
+}
+
+.aegea-preview .e2-note.e2-note-snippet,
+.aegea-preview .e2-note-snippet {
+  margin: 0 0 40px;
+  font-size: var(--noteTextFontSize);
+  line-height: var(--noteTextLineHeight);
+  text-wrap: balance;
 }
 
 .aegea-preview .e2-note-snippet h1 {
@@ -180,6 +232,11 @@
   font-weight: 700;
   line-height: inherit;
   color: var(--headingsColor);
+}
+
+.aegea-preview .e2-note-snippet-text p {
+  max-width: 45rem;
+  margin: 0 0 4px;
 }
 
 .aegea-preview .e2-note-favourite-title::after {
@@ -208,8 +265,18 @@
   margin: 0;
 }
 
+.aegea-preview .e2-text p {
+  max-width: 45rem;
+  margin: 0 0 10px;
+}
+
 .aegea-preview .e2-text p + p {
-  margin-top: 1rem;
+  margin-top: 0;
+}
+
+.aegea-preview .e2-text p + ul,
+.aegea-preview .e2-text p + ol {
+  margin-top: -10px;
 }
 
 .aegea-preview .e2-text .foot {
@@ -238,12 +305,14 @@
 
 .aegea-preview .e2-text ul,
 .aegea-preview .e2-text ol {
-  padding-left: 1.4em;
-  margin: 1rem 0 0;
+  max-width: 45rem;
+  padding-left: 40px;
+  margin: 0 0 10px;
 }
 
-.aegea-preview .e2-text li + li {
-  margin-top: 0.4rem;
+.aegea-preview .e2-text li {
+  max-width: 45rem;
+  margin: 0 0 10px;
 }
 
 .aegea-preview .e2-text ul li {
@@ -254,6 +323,7 @@
   color: var(--boldColor);
 }
 
+.aegea-preview .e2-note-snippet-text tt,
 .aegea-preview .e2-text tt {
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.9em;
@@ -267,7 +337,7 @@
 
 .aegea-preview .e2-text-table {
   max-width: 100%;
-  margin-top: 1rem;
+  margin: 0 0 10px;
   overflow-x: auto;
 }
 
@@ -337,7 +407,7 @@
 .aegea-preview .e2-tag a:link,
 .aegea-preview .e2-tag a:visited {
   color: var(--tagColor);
-  border-color: var(--tagUnderlineColor);
+  border-bottom: 0;
 }
 
 .aegea-preview a:hover.e2-tag,
@@ -347,7 +417,7 @@
 .aegea-preview .e2-tag a.hover,
 .aegea-preview .e2-tag a:active {
   color: var(--hoverColor);
-  border-color: var(--hoverUnderlineColor);
+  border-bottom: 0;
 }
 
 .aegea-preview .e2-tag {
@@ -427,6 +497,32 @@
 .aegea-preview .e2-pages {
   margin-top: 2rem;
   font-family: var(--mainFontFamily);
+}
+
+.aegea-preview .e2-pages a {
+  padding-top: 0.4em;
+  color: var(--headingsColor);
+  border-color: var(--headingsUnderlineColor);
+}
+
+.aegea-preview .e2-pages a:hover,
+.aegea-preview .e2-pages a.hover {
+  color: var(--hoverColor);
+  border-color: var(--hoverUnderlineColor);
+}
+
+.aegea-preview .e2-keyboard-shortcut {
+  visibility: hidden;
+  padding: 0 0.5em;
+  font-family: var(--smallFontFamily);
+  font-size: var(--smallFontSize);
+  line-height: var(--smallLineHeight);
+  text-decoration: none;
+  border-radius: 3px;
+}
+
+.aegea-preview .e2-keyboard-shortcut_visible {
+  visibility: visible;
 }
 
 .aegea-preview .e2-text .loud {
