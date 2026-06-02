@@ -293,6 +293,22 @@ Deliberately still outside this Stage 8.4 slice:
 - admin controls and sharing widgets;
 - broader `plain` CSS subset transfer.
 
+## Stage 8.5 review
+
+Completed as the selected P2 states slice for the simplified Aegea demo preview transfer:
+
+- the first note now renders the broader Aegea demo text with `h2`, `h3`, `b`, `i`, `tt`, lists, table, and `hr`;
+- the search-result snippet renders as a third preview note;
+- thumbnail images render from `public/preview/sample-thumb-*`;
+- simple timeline pagination renders the `Earlier` link;
+- browser verification confirmed the selected P2 states render without horizontal overflow.
+
+Deliberately still outside this Stage 8.5 slice:
+
+- full comment-form states;
+- admin controls and sharing widgets;
+- broader `plain` CSS subset transfer beyond styles needed by the selected preview states.
+
 ## Next small step
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
@@ -319,7 +335,8 @@ Deliberately still outside this Stage 8.4 slice:
 - [x] Stage 8.2: Move static Aegea demo content into preview data.
 - [x] Stage 8.3: Render P0 Aegea preview surface from demo data.
 - [x] Stage 8.4: Add P1 Aegea preview states.
-- [ ] Stage 8.5: Add selected P2 Aegea preview states.
+- [x] Stage 8.5: Add selected P2 Aegea preview states.
+- [ ] Stage 8.6: Reconcile the scoped preview CSS subset with Aegea `plain`.
 
 ## Future backlog
 

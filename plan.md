@@ -264,7 +264,7 @@ theme-name.zip
   - note meta band: comments/read count/tags/current tag;
   - favourite note;
   - простую форму с input, textarea и button.
-- [ ] Stage 8.5: Добавить P2-состояния, если preview остаётся читаемым.
+- [x] Stage 8.5: Добавить P2-состояния, если preview остаётся читаемым.
   - `h2`, `h3`, `b`, `i`, `tt`;
   - ordered/unordered lists;
   - table;

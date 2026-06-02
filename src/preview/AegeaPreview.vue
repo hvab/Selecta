@@ -13,10 +13,10 @@ const props = defineProps({
 
 const themeCssVariables = computed(() => getThemeCssVariables(props.themeState));
 const visibleMainMenuItems = computed(() => aegeaDemoContent.mainMenu.filter((item) => item.visible));
-const p1Notes = computed(() => aegeaDemoContent.notes.slice(0, 2));
+const p2Notes = computed(() => aegeaDemoContent.notes);
 
 function getNoteText(note) {
-  return note.p1Text || note.text;
+  return note.snippetText || note.text;
 }
 </script>
 
@@ -61,16 +61,30 @@ function getNoteText(note) {
 
       <main class="content">
         <article
-          v-for="note in p1Notes"
+          v-for="note in p2Notes"
           :key="note.id"
           class="e2-note"
           :class="{
             'e2-note-favourite': note.favourite,
+            'e2-note-snippet': note.snippetText,
           }"
         >
+          <div v-if="note.thumbs" class="e2-note-thumbs">
+            <div v-for="thumb in note.thumbs" :key="thumb.src" class="e2-note-thumb">
+              <mark v-if="thumb.highlighted">
+                <img :src="thumb.src" :width="thumb.width" :height="thumb.height" alt="" />
+              </mark>
+              <img v-else :src="thumb.src" :width="thumb.width" :height="thumb.height" alt="" />
+            </div>
+          </div>
+
           <h1 class="e2-smart-title">
-            <a v-if="note.href" :href="note.href">{{ note.title }}</a>
-            <span v-else>{{ note.title }}</span>
+            <a v-if="note.href" :href="note.href">
+              <!-- eslint-disable-next-line vue/no-v-html -->
+              <span v-html="note.title"></span>
+            </a>
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <span v-else v-html="note.title"></span>
           </h1>
 
           <!-- eslint-disable-next-line vue/no-v-html -->
@@ -82,7 +96,31 @@ function getNoteText(note) {
                 <a class="band-item-inner" :href="note.hrefComments">{{ note.commentsText }}</a>
               </div>
               <div v-if="note.readCount" class="band-item">
-                <div class="band-item-inner">{{ note.readCount }} views</div>
+                <div class="band-item-inner">
+                  <span
+                    ><span class="e2-svgi">
+                      <svg
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        x="0"
+                        y="0"
+                        viewBox="0 0 16 16"
+                        xml:space="preserve"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 12.5C3 12.5.3 8.4.2 8.3L0 8l.1-.3C.2 7.6 2.5 3.5 8 3.5s7.8 4.1 7.8 4.3l.2.3-.2.2c-.1.2-2.8 4.2-7.8 4.2zM1.2 8c.7.8 3.1 3.5 6.8 3.5 3.8 0 6.1-2.7 6.8-3.5-.6-.9-2.6-3.5-6.8-3.5-4.2 0-6.2 2.6-6.8 3.5z"
+                          stroke="none"
+                        />
+                        <path
+                          d="M8 10.5c-1.9 0-3.5-1.6-3.5-3.5S6.1 3.5 8 3.5s3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm0-6C6.6 4.5 5.5 5.6 5.5 7S6.6 9.5 8 9.5s2.5-1.1 2.5-2.5S9.4 4.5 8 4.5z"
+                          stroke="none"
+                        />
+                        <circle cx="6.7" cy="6.5" r="1.5" />
+                      </svg> </span
+                    >&nbsp;{{ note.readCount }}</span
+                  >
+                </div>
               </div>
               <div v-for="tag in note.tags" :key="tag.name" class="band-item">
                 <span v-if="tag.current" class="band-item-inner"
@@ -93,6 +131,10 @@ function getNoteText(note) {
             </nav>
           </div>
         </article>
+
+        <div v-if="aegeaDemoContent.pages.timeline" class="e2-pages">
+          <a :href="aegeaDemoContent.pages.earlierHref">{{ aegeaDemoContent.pages.earlierTitle }}</a>
+        </div>
 
         <form class="e2-comment-form">
           <label>

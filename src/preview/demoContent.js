@@ -96,7 +96,7 @@ export const aegeaDemoContent = {
         <p>Your post may have subheadings as above, <a href="${selfHref}">hyperlinks</a> and use text formatting, like <i>italics</i>, <b>bold</b>, or <tt>monospace</tt>.</p>
         <p>An image with a caption:</p>
         <div class="e2-text-picture">
-        <div style="width: 800px; max-width: 100%"><div class="e2-text-proportional-wrapper" style="padding-bottom: 44.375%"><img src="system/theme/images/sample-image.jpg" width="800" height="355" alt="">
+        <div style="width: 800px; max-width: 100%"><div class="e2-text-proportional-wrapper" style="padding-bottom: 44.375%"><img src="${previewAssetPath}sample-image.jpg" width="800" height="355" alt="">
         </div></div>
         <div class="e2-text-caption">La creazione di Adamo. Michelangelo Buonarroti, c. 1511</div>
         </div>
@@ -200,19 +200,19 @@ export const aegeaDemoContent = {
       readCount: 31,
       thumbs: [
         {
-          src: 'system/theme/images/sample-thumb-1@2x.jpg',
+          src: `${previewAssetPath}sample-thumb-1@2x.jpg`,
           width: 100,
           height: 79,
           highlighted: false,
         },
         {
-          src: 'system/theme/images/sample-thumb-2@2x.jpg',
+          src: `${previewAssetPath}sample-thumb-2@2x.jpg`,
           width: 100,
           height: 67,
           highlighted: false,
         },
         {
-          src: 'system/theme/images/sample-thumb-3@2x.jpg',
+          src: `${previewAssetPath}sample-thumb-3@2x.jpg`,
           width: 100,
           height: 44,
           highlighted: true,
