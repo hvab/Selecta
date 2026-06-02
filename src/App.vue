@@ -5,6 +5,7 @@ import AegeaPreview from './preview/AegeaPreview.vue';
 import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
 import { getRandomThemeState } from './theme/random.js';
+import { getContrastWarnings } from './theme/contrast.js';
 import { validateMetadata } from './theme/validation.js';
 import { generateThemeZip, getThemeZipFileName } from './theme/zip.js';
 
@@ -14,6 +15,7 @@ const appElement = ref(null);
 const controlsPaneWidth = ref(416);
 const isResizingControlsPane = ref(false);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
+const contrastWarnings = computed(() => getContrastWarnings(themeState.palette));
 const canDownloadTheme = computed(() => Object.keys(metadataErrors.value).length === 0);
 const appStyle = computed(() => ({
   '--controls-pane-width': `${controlsPaneWidth.value}px`,
@@ -140,6 +142,7 @@ function downloadThemeZip() {
           <ThemeControls
             :meta="themeState.meta"
             :metadata-errors="metadataErrors"
+            :contrast-warnings="contrastWarnings"
             :palette="themeState.palette"
             :typography="themeState.typography"
             :layout="themeState.layout"

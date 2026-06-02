@@ -11,6 +11,10 @@ defineProps({
     type: Object,
     required: true,
   },
+  contrastWarnings: {
+    type: Array,
+    required: true,
+  },
   palette: {
     type: Object,
     required: true,
@@ -244,6 +248,15 @@ function updateMetadataField(control, event) {
 
     <div class="control-group">
       <h3>Colors</h3>
+      <ul
+        v-if="contrastWarnings.length"
+        class="contrast-warnings"
+        role="status"
+        aria-live="polite"
+        aria-label="Contrast warnings"
+      >
+        <li v-for="warning in contrastWarnings" :key="warning.id">{{ warning.message }}</li>
+      </ul>
       <label v-for="control in colorControls" :key="control.key" class="control-row">
         <span class="control-label">{{ control.label }}</span>
         <input

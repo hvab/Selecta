@@ -42,6 +42,10 @@ Preview production build locally:
 npm run preview
 ```
 
+## Roadmap
+
+Post-MVP priorities and release targets: [`ROADMAP.md`](./ROADMAP.md).
+
 ## Project Flow
 
 The `main` branch is used for active development and GitHub Pages deployment.

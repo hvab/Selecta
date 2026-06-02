@@ -354,7 +354,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Post-MVP planning from `plan.md` «После MVP» and the future backlog below.
+- [ ] Stage 9.2: Per-field locks for Random (`ROADMAP.md`, target `0.3.0`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -384,14 +384,17 @@ Deliberately still outside this Stage 8.7 slice:
 - [x] Stage 8.6: Reconcile the scoped preview CSS subset with Aegea `plain`.
 - [x] Stage 8.7: Browser QA for responsive preview and shell/preview style isolation.
 
-## Future backlog
+## Post-MVP roadmap
 
-- [ ] Post-MVP planning.
-- [ ] Support multiple Aegea target versions for preview and generated theme compatibility.
-- [ ] В будущей версии конструктора расширить theme contract и настройки для элементов, которые сейчас только preview-local или вне MVP: размеры/отступы шапки, blog title, logo/userpic, compact layout, follow/search/admin/menu states.
-- [ ] Рассмотреть глубокие состояния превью Эгеи только если появится конкретный пользовательский пробел в предпросмотре:
-  - полная форма комментария с логином, подпиской и состояниями вокруг валидации;
-  - админские иконки, меню автора, sticky admin links и controls редактирования;
-  - sharing buttons и Likely widgets;
-  - скрытые, непубличные, черновые, запланированные и другие author-only состояния заметок;
-  - подключение полного compiled `plain/styles/main.css` вместо scoped preview subset.
+- [x] Post-MVP planning — see `ROADMAP.md` (fixed 2026-06-02).
+
+Planned releases (detail in `ROADMAP.md`):
+
+- [x] Stage 9.1: Non-blocking contrast warnings (WCAG 3:1 threshold, `src/theme/contrast.js`).
+- [ ] Stage 9.2: Per-field locks for Random.
+- [ ] Stage 9 review (`0.3.0`): locks + contrast QA together.
+- [ ] Stage 10 (`0.4.0`): presets.
+- [ ] Stage 11 (`0.5.0`): URL state and/or JSON export/import.
+- [ ] Stage 12 (`0.6.0`): Google Fonts.
+- [ ] Stage 13+: theme contract expansion, Aegea version targeting, deep preview states (on demand).
+- [ ] Backlog: dark mode, bundled Cyrillic fonts, theme import, UI i18n, visual diff, gallery, arbitrary CSS editor.
