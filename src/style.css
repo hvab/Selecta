@@ -46,14 +46,11 @@ p {
 }
 
 .app-preview-pane {
-  display: flex;
   background: #fff;
 }
 
 .app-preview-pane > .aegea-preview {
-  flex: 1;
   min-width: 0;
-  min-height: 100%;
 }
 
 .app-pane-resizer {

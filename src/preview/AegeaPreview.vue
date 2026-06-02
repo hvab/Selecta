@@ -251,7 +251,9 @@ const menuIconSvgById = {
             <span class="label-text">Comment</span>
             <textarea :value="aegeaDemoContent.simpleForm.text"></textarea>
           </label>
-          <button type="button">{{ aegeaDemoContent.simpleForm.submitText }}</button>
+          <button type="button" class="e2-button e2-submit-button">
+            {{ aegeaDemoContent.simpleForm.submitText }}
+          </button>
         </form>
       </main>
 

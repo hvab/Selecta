@@ -328,7 +328,33 @@ Deliberately still outside this Stage 8.6 slice:
 - admin controls and sharing widgets;
 - author-only note states.
 
+## Stage 8.7 review
+
+Completed as the browser QA slice for the simplified Aegea demo preview transfer:
+
+- preview stays responsive inside `.app-preview-pane` without horizontal overflow;
+- shell and preview styles remain separated by scope;
+- theme CSS variables still come from `getThemeCssVariables()` only;
+- demo content covers the selected P0/P1/P2 states after the post-review fixes to note 1 and meta comments;
+- header menu matches Aegea parent/current behavior: parent keeps the active underline, current does not;
+- pagination `Earlier` link has hover colors from `plain`;
+- preview links use the Aegea-style ease-out return animation on hover out.
+
+Post-8.7 follow-up:
+
+- P1 comment form controls are visually aligned with Aegea `plain` (input background, radius, textarea size, orange submit).
+
+Deliberately still outside this Stage 8.7 slice:
+
+- full compiled `plain/styles/main.css`;
+- body links still use a scoped border-bottom subset instead of Aegea `text-decoration-color`;
+- full comment-form states;
+- admin controls and sharing widgets;
+- author-only note states.
+
 ## Next small step
+
+- [ ] Post-MVP planning from `plan.md` «После MVP» and the future backlog below.
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -356,7 +382,7 @@ Deliberately still outside this Stage 8.6 slice:
 - [x] Stage 8.4: Add P1 Aegea preview states.
 - [x] Stage 8.5: Add selected P2 Aegea preview states.
 - [x] Stage 8.6: Reconcile the scoped preview CSS subset with Aegea `plain`.
-- [ ] Stage 8.7: Browser QA for responsive preview and shell/preview style isolation.
+- [x] Stage 8.7: Browser QA for responsive preview and shell/preview style isolation.
 
 ## Future backlog
 

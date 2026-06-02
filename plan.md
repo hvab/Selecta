@@ -280,7 +280,7 @@ theme-name.zip
   - pages;
   - form controls;
   - comments only if they are included in the selected P2 slice.
-- [ ] Stage 8.7: Проверить результат в браузере.
+- [x] Stage 8.7: Проверить результат в браузере.
   - preview остаётся responsive внутри существующей preview pane;
   - shell styles не протекают в preview и обратно;
   - изменяемые CSS-переменные продолжают приходить из `getThemeCssVariables()`;

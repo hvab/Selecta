@@ -18,7 +18,7 @@ export const initialThemeState = {
     admin: '#cc3300',
     active: '#cc3300',
     markedTextBackground: '#fff2a8',
-    inputBackground: '#ffffff',
+    inputBackground: '#f0f0f0',
     inputText: '#111111',
   },
   typography: {
