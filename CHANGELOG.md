@@ -12,6 +12,31 @@ The project follows semantic versioning where practical.
 
 ### Fixed
 
+## 0.2.0 - 2026-06-02
+
+### Added
+
+- Aegea demo preview based on English `system/preview/en.php` content.
+- Multi-note preview layout: header, main menu, footer, favourite note, search snippet.
+- P1 states: sample image with caption, note meta band, simple comment form.
+- P2 states: headings, lists, table, search thumbnails, timeline pagination.
+- Sample preview assets in `public/preview/`.
+- Scoped Aegea `plain` CSS subset for the selected preview states.
+
+### Changed
+
+- Replaced the compact single-note preview mock with the Aegea demo page layout.
+- Default input background in generated themes aligned with Aegea `plain` (`#f0f0f0`).
+- Preview pane responsive layout inside the generator shell.
+- README link to the Aegea website.
+
+### Fixed
+
+- Preview CSS reconciliation with Aegea `plain`: image ratios, meta band icons/underlines, tag colors, search snippet layout.
+- Main menu parent/current underline behavior.
+- Link hover-out animation and pagination hover colors.
+- Comment form controls aligned with Aegea `plain`.
+
 ## 0.1.0 - 2026-05-20
 
 ### Added

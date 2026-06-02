@@ -84,9 +84,9 @@
   color: var(--linkColor);
   text-decoration: none;
   border-bottom: 1px solid var(--linkUnderlineColor);
-  transition-property: color, border-color, fill;
-  transition-duration: var(--time);
   transition-timing-function: ease-out;
+  transition-duration: var(--time);
+  transition-property: color, border-color, fill;
 }
 
 .aegea-preview a:hover,
@@ -143,9 +143,9 @@
   display: block;
   height: 1px;
   content: '';
-  transition-property: background-color;
-  transition-duration: var(--time);
   transition-timing-function: ease-out;
+  transition-duration: var(--time);
+  transition-property: background-color;
 }
 
 .aegea-preview .e2-band-full-size .band-item:not(.band-item-current, .band-item-parent) .band-item-inner {
@@ -573,9 +573,9 @@
   border: 0;
   border-radius: var(--borderRadius);
   box-shadow: none;
-  transition-property: background, border-color, box-shadow;
-  transition-duration: var(--time);
   transition-timing-function: ease-out;
+  transition-duration: var(--time);
+  transition-property: background, border-color, box-shadow;
 }
 
 .aegea-preview .e2-comment-form textarea {
@@ -593,26 +593,28 @@
 
 .aegea-preview .e2-comment-form .e2-button {
   display: inline-block;
-  margin-top: 1rem;
   padding: 6px 16px;
+  margin-top: 1rem;
   font: inherit;
   font-size: 16px;
-  line-height: 24px;
   font-weight: normal;
+  line-height: 24px;
   text-align: center;
-  text-decoration: none;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
   border: 0;
   border-radius: var(--borderRadius);
-  box-shadow: inset 0 0 0 0 rgba(255, 255, 255, 0), inset 0 0 1px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 0 0 0 rgb(255 255 255 / 0%),
+    inset 0 0 1px rgb(0 0 0 / 50%);
 }
 
 .aegea-preview .e2-comment-form .e2-submit-button {
   padding: 16px 32px;
   font-size: var(--bigButtonFontSize);
-  line-height: var(--bigButtonLineHeight);
   font-weight: bold;
+  line-height: var(--bigButtonLineHeight);
   color: #fff;
   background: #e87840;
   background: linear-gradient(to bottom, #f88850 0%, #d86830 100%);
@@ -626,7 +628,9 @@
 
 .aegea-preview .e2-comment-form .e2-submit-button:active,
 .aegea-preview .e2-comment-form .e2-submit-button:hover {
-  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.12), inset 0 0 1px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 0 100px rgb(0 0 0 / 12%),
+    inset 0 0 1px rgb(0 0 0 / 50%);
 }
 
 .aegea-preview .e2-comment-form .e2-submit-button:hover {
@@ -634,11 +638,15 @@
 }
 
 .aegea-preview .e2-comment-form .e2-submit-button:focus {
-  box-shadow: inset 0 0 0 0 rgba(255, 255, 255, 0), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    inset 0 0 0 0 rgb(255 255 255 / 0%),
+    inset 0 0 0 1px rgb(0 0 0 / 20%);
 }
 
 .aegea-preview .e2-comment-form .e2-submit-button:focus:hover {
-  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    inset 0 0 100px rgb(0 0 0 / 12%),
+    inset 0 0 0 1px rgb(0 0 0 / 20%);
 }
 
 .aegea-preview .footer {
