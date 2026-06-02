@@ -12,6 +12,12 @@ The project follows semantic versioning where practical.
 
 ### Fixed
 
+## 0.3.2 - 2026-06-02
+
+### Fixed
+
+- Preview note meta band links (comments) use theme link and hover colors, aligned with Aegea `plain` band-item rules.
+
 ## 0.3.1 - 2026-06-02
 
 ### Fixed

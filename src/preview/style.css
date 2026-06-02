@@ -90,6 +90,8 @@
 
 .aegea-preview a:hover,
 .aegea-preview a.hover {
+  color: var(--hoverColor);
+  border-color: var(--hoverUnderlineColor);
   transition: none;
 }
 
@@ -97,8 +99,8 @@
   border-bottom: 0;
 }
 
-.aegea-preview .e2-band-full-size .band-item a {
-  border: 0;
+.aegea-preview .band-item a {
+  border-bottom: 0;
 }
 
 .aegea-preview .e2-smart-title a,
@@ -151,8 +153,8 @@
   color: var(--headingsColor);
 }
 
-.aegea-preview .e2-band-full-size .band-item a.band-item-inner:hover,
-.aegea-preview .e2-band-full-size .band-item a.band-item-inner.hover {
+.aegea-preview .band-item a.band-item-inner:hover,
+.aegea-preview .band-item a.band-item-inner.hover {
   color: var(--hoverColor);
 }
 
