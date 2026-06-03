@@ -44,6 +44,10 @@ export function serializeTheme(themeState) {
   });
 }
 
+export function getThemeJsonFileName(themeState) {
+  return `${themeState.meta.folderName}.selecta.json`;
+}
+
 export function deserializeTheme(json) {
   let data;
 

@@ -4,6 +4,7 @@ import {
   decodeThemeFromUrlParam,
   deserializeTheme,
   encodeThemeToUrlParam,
+  getThemeJsonFileName,
   serializeTheme,
   THEME_SERIALIZATION_VERSION,
 } from './serialize.js';
@@ -33,6 +34,14 @@ test('serializes only known theme state fields', () => {
   assert.equal(serialized.version, THEME_SERIALIZATION_VERSION);
   assert.equal(serialized.meta.extra, undefined);
   assert.equal(serialized.extraSection, undefined);
+});
+
+test('builds theme JSON file name from folder name', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.meta.folderName = 'shared-theme';
+
+  assert.equal(getThemeJsonFileName(themeState), 'shared-theme.selecta.json');
 });
 
 test('ignores unknown fields while deserializing', () => {

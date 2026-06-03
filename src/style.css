@@ -191,6 +191,7 @@ pre {
 
 .download-button,
 .copy-link-button,
+.export-json-button,
 .random-button,
 .reset-button,
 .unlock-button {
@@ -200,6 +201,7 @@ pre {
 }
 
 .download-button:disabled,
+.export-json-button:disabled,
 .unlock-button:disabled {
   cursor: not-allowed;
 }

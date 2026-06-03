@@ -10,6 +10,7 @@ The project follows semantic versioning where practical.
 
 - Theme serialization module for upcoming URL and JSON sharing.
 - URL sharing with `?theme=` links and invalid-link fallback.
+- JSON export using the same theme serialization format.
 
 ### Changed
 

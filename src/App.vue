@@ -7,7 +7,12 @@ import { clearSession, loadSession, saveSession } from './storage.js';
 import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
 import { themePresets } from './theme/presets.js';
-import { decodeThemeFromUrlParam, encodeThemeToUrlParam } from './theme/serialize.js';
+import {
+  decodeThemeFromUrlParam,
+  encodeThemeToUrlParam,
+  getThemeJsonFileName,
+  serializeTheme,
+} from './theme/serialize.js';
 import { clearAllFieldLocks, createEmptyFieldLocks, hasAnyFieldLocked } from './theme/fieldLocks.js';
 import { getRandomThemeState } from './theme/random.js';
 import { getContrastWarningsByField } from './theme/contrast.js';
@@ -276,6 +281,23 @@ async function copyThemeLink() {
   }
 }
 
+function downloadThemeJson() {
+  if (!canDownloadTheme.value) {
+    return;
+  }
+
+  const blob = new Blob([serializeTheme(themeState)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = getThemeJsonFileName(themeState);
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function downloadThemeZip() {
   if (!canDownloadTheme.value) {
     return;
@@ -373,6 +395,9 @@ watch(
         </button>
         <button class="reset-button" type="button" @click="resetToDefaults">Reset to defaults</button>
         <button class="copy-link-button" type="button" @click="copyThemeLink">Copy link</button>
+        <button class="export-json-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeJson">
+          Export JSON
+        </button>
         <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
           Download theme ZIP
         </button>
