@@ -63,3 +63,15 @@ export function deserializeTheme(json) {
 
   return copyKnownThemeState(data);
 }
+
+export function encodeThemeToUrlParam(themeState) {
+  return btoa(encodeURIComponent(serializeTheme(themeState)));
+}
+
+export function decodeThemeFromUrlParam(value) {
+  try {
+    return deserializeTheme(decodeURIComponent(atob(value)));
+  } catch {
+    throw new Error('Invalid theme link.');
+  }
+}

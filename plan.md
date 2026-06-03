@@ -474,7 +474,7 @@ rgb() значения из CSS преобразуются в hex вручную
   - `serializeTheme(themeState)` → JSON-строка с `version: 1`
   - `deserializeTheme(json)` → themeState; строгая проверка наличия обязательных полей и их типов; бросать `Error` с понятным сообщением если структура невалидна; неизвестные поля игнорировать (forward-compat)
   - Написать тесты: round-trip, неполный JSON, лишние поля, версия != 1.
-- [ ] Stage 11.2: URL share — кнопка **"Copy link"** (или иконка) в export bar:
+- [x] Stage 11.2: URL share — кнопка **"Copy link"** (или иконка) в export bar:
   - `btoa(encodeURIComponent(serializeTheme(themeState)))` → `?theme=<value>` в URL
   - При загрузке страницы: если `?theme=` есть — распарсить через `deserializeTheme`, применить; параметр имеет приоритет над localStorage.
   - При ошибке десериализации — показать тихое предупреждение, загрузить из localStorage или дефолт.

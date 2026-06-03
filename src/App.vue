@@ -7,6 +7,7 @@ import { clearSession, loadSession, saveSession } from './storage.js';
 import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
 import { themePresets } from './theme/presets.js';
+import { decodeThemeFromUrlParam, encodeThemeToUrlParam } from './theme/serialize.js';
 import { clearAllFieldLocks, createEmptyFieldLocks, hasAnyFieldLocked } from './theme/fieldLocks.js';
 import { getRandomThemeState } from './theme/random.js';
 import { getContrastWarningsByField } from './theme/contrast.js';
@@ -20,6 +21,8 @@ const appElement = ref(null);
 const defaultControlsPaneWidth = 416;
 const controlsPaneWidth = ref(defaultControlsPaneWidth);
 const isResizingControlsPane = ref(false);
+const shareMessage = ref('');
+const shareError = ref('');
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
 const contrastWarningsByField = computed(() => getContrastWarningsByField(themeState.palette));
 const hasFieldLocks = computed(() => hasAnyFieldLocked(fieldLocks));
@@ -43,6 +46,7 @@ const previewPaneMinWidth = 360;
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
 let shouldSkipNextSessionSave = false;
+const themeUrlParam = 'theme';
 const effectiveControlsPaneMaxWidth = computed(() => {
   const appWidth = appElement.value?.getBoundingClientRect().width ?? window.innerWidth;
 
@@ -83,7 +87,24 @@ function resetThemeState() {
   folderNameEdited.value = false;
 }
 
+function inferFolderNameEdited(meta) {
+  return meta.folderName !== suggestFolderName(meta.displayName);
+}
+
+function clearShareStatus() {
+  shareMessage.value = '';
+  shareError.value = '';
+}
+
+function applySharedThemeState(nextThemeState) {
+  applyThemeState(nextThemeState);
+  clearAllFieldLocks(fieldLocks);
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(defaultControlsPaneWidth);
+  folderNameEdited.value = inferFolderNameEdited(nextThemeState.meta);
+}
+
 function updateMetaField(key, value) {
+  clearShareStatus();
   themeState.meta[key] = key === 'folderName' ? normalizeFolderName(value) : value;
 
   if (key === 'displayName' && !folderNameEdited.value) {
@@ -96,18 +117,22 @@ function updateMetaField(key, value) {
 }
 
 function updatePaletteField(key, value) {
+  clearShareStatus();
   themeState.palette[key] = value;
 }
 
 function updateTypographyField(key, value) {
+  clearShareStatus();
   themeState.typography[key] = value;
 }
 
 function updateLayoutField(key, value) {
+  clearShareStatus();
   themeState.layout[key] = value;
 }
 
 function applyPreset(presetId) {
+  clearShareStatus();
   const preset = themePresets.find(({ id }) => id === presetId);
 
   if (!preset) {
@@ -121,21 +146,26 @@ function applyPreset(presetId) {
 }
 
 function toggleFieldLock(section, key, locked) {
+  clearShareStatus();
   fieldLocks[section][key] = locked;
 }
 
 function unlockAllFields() {
+  clearShareStatus();
   clearAllFieldLocks(fieldLocks);
 }
 
 function resetToDefaults() {
   clearTimeout(sessionSaveTimeout);
   shouldSkipNextSessionSave = true;
+  clearShareStatus();
+  clearThemeUrlParam();
   clearSession();
   resetThemeState();
 }
 
 function randomizeTheme() {
+  clearShareStatus();
   const randomThemeState = getRandomThemeState(themeState, fieldLocks);
 
   if (!fieldLocks.meta.displayName) {
@@ -212,6 +242,40 @@ function handleControlsPaneResizeKeydown(event) {
   }
 }
 
+function getThemeShareUrl() {
+  const url = new URL(window.location.href);
+
+  url.searchParams.set(themeUrlParam, encodeThemeToUrlParam(themeState));
+
+  return url.toString();
+}
+
+function clearThemeUrlParam() {
+  if (!window.history?.replaceState) {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+
+  if (!url.searchParams.has(themeUrlParam)) {
+    return;
+  }
+
+  url.searchParams.delete(themeUrlParam);
+  window.history.replaceState(null, '', url.toString());
+}
+
+async function copyThemeLink() {
+  clearShareStatus();
+
+  try {
+    await navigator.clipboard.writeText(getThemeShareUrl());
+    shareMessage.value = 'Theme link copied.';
+  } catch {
+    shareError.value = 'Could not copy the theme link.';
+  }
+}
+
 function downloadThemeZip() {
   if (!canDownloadTheme.value) {
     return;
@@ -230,6 +294,18 @@ function downloadThemeZip() {
 }
 
 onMounted(() => {
+  const themeParam = new URLSearchParams(window.location.search).get(themeUrlParam);
+
+  if (themeParam) {
+    try {
+      applySharedThemeState(decodeThemeFromUrlParam(themeParam));
+      return;
+    } catch {
+      clearThemeUrlParam();
+      shareError.value = 'Theme link is invalid; loaded saved session instead.';
+    }
+  }
+
   const session = loadSession();
 
   if (session) {
@@ -296,9 +372,12 @@ watch(
           Unlock all
         </button>
         <button class="reset-button" type="button" @click="resetToDefaults">Reset to defaults</button>
+        <button class="copy-link-button" type="button" @click="copyThemeLink">Copy link</button>
         <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
           Download theme ZIP
         </button>
+        <p v-if="shareMessage" class="share-message">{{ shareMessage }}</p>
+        <p v-if="shareError" class="share-error">{{ shareError }}</p>
         <p v-if="!canDownloadTheme" class="download-error">Fix metadata errors to download the theme.</p>
       </section>
     </aside>

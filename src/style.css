@@ -190,6 +190,7 @@ pre {
 }
 
 .download-button,
+.copy-link-button,
 .random-button,
 .reset-button,
 .unlock-button {
@@ -203,11 +204,21 @@ pre {
   cursor: not-allowed;
 }
 
-.download-error {
+.download-error,
+.share-error,
+.share-message {
   flex-basis: 100%;
   margin-top: 0.5rem;
   font-size: 0.875rem;
+}
+
+.download-error,
+.share-error {
   color: #b00020;
+}
+
+.share-message {
+  color: #060;
 }
 
 .export-section {

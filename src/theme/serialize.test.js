@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deserializeTheme, serializeTheme, THEME_SERIALIZATION_VERSION } from './serialize.js';
+import {
+  decodeThemeFromUrlParam,
+  deserializeTheme,
+  encodeThemeToUrlParam,
+  serializeTheme,
+  THEME_SERIALIZATION_VERSION,
+} from './serialize.js';
 import { initialThemeState } from './model.js';
 
 test('serializes and deserializes theme state', () => {
@@ -80,4 +86,17 @@ test('rejects invalid theme field types', () => {
   data.layout.maxWidth = 52;
 
   assert.throws(() => deserializeTheme(JSON.stringify(data)), /Invalid theme layout.maxWidth/);
+});
+
+test('encodes and decodes theme state for URL params', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.meta.displayName = 'Café Theme';
+  themeState.palette.hover = '#abcdef';
+
+  assert.deepEqual(decodeThemeFromUrlParam(encodeThemeToUrlParam(themeState)), themeState);
+});
+
+test('rejects invalid URL theme params', () => {
+  assert.throws(() => decodeThemeFromUrlParam('not valid base64'), /Invalid theme link/);
 });
