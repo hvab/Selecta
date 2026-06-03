@@ -369,10 +369,10 @@ src/
   - Обернуть весь I/O в `try/catch` — localStorage может быть недоступен (приватный режим, квота).
   - `uiState.sidebarWidth` хранить числом в пикселях, без `px`; при восстановлении пропускать через текущий clamp.
   - `uiState.folderNameEdited` хранить явно, чтобы ручное имя папки не перезаписывалось после reload.
-- [ ] Stage 10.0.2: Ширина левой панели уже реактивный `controlsPaneWidth` в `App.vue`; включить его числовое значение в `uiState`.
-- [ ] Stage 10.0.3: В `App.vue` — `onMounted`: вызвать `loadSession()`, применить к `themeState`, `fieldLocks`, `controlsPaneWidth` и `folderNameEdited`. Если `null` — стартуем с `initialThemeState`. Добавить `watch` с дебаунсом 500 мс на `{ themeState, fieldLocks, uiState }` → `saveSession()`.
-- [ ] Stage 10.0.4: Кнопка **"Reset to defaults"** — разместить рядом с "Unlock all" в export bar (или отдельно — по результату ревью UI). Действие: `clearSession()` + сброс `themeState` → `initialThemeState` + `clearAllFieldLocks(fieldLocks)` + сброс `controlsPaneWidth` и `folderNameEdited` к дефолту.
-- [ ] Stage 10.0.5: Ручная проверка:
+- [x] Stage 10.0.2: Ширина левой панели уже реактивный `controlsPaneWidth` в `App.vue`; включить его числовое значение в `uiState`.
+- [x] Stage 10.0.3: В `App.vue` — `onMounted`: вызвать `loadSession()`, применить к `themeState`, `fieldLocks`, `controlsPaneWidth` и `folderNameEdited`. Если `null` — стартуем с `initialThemeState`. Добавить `watch` с дебаунсом 500 мс на `{ themeState, fieldLocks, uiState }` → `saveSession()`.
+- [x] Stage 10.0.4: Кнопка **"Reset to defaults"** — разместить рядом с "Unlock all" в export bar (или отдельно — по результату ревью UI). Действие: `clearSession()` + сброс `themeState` → `initialThemeState` + `clearAllFieldLocks(fieldLocks)` + сброс `controlsPaneWidth` и `folderNameEdited` к дефолту.
+- [x] Stage 10.0.5: Ручная проверка:
   - изменить несколько полей → перезагрузить → значения на месте;
   - изменить ширину левой панели → перезагрузить → ширина на месте;
   - нажать Reset → всё вернулось к дефолту, localStorage очищен;
@@ -409,21 +409,21 @@ src/
 
 **Правила маппинга CSS → palette:**
 
-| Поле модели | CSS-переменная | Особые случаи |
-|---|---|---|
-| `background` | `--backgroundColor` | — |
-| `foreground` | `--foregroundColor` | Если не задана → `#111111` (plain default) |
-| `headings` | `--headingsColor` | — |
-| `link` | `--linkColor` | — |
-| `linkVisited` | `--linkColorVisited` | — |
-| `hover` | `--hoverColor` | — |
-| `tag` | `--tagColor` | Если `var(--linkColor)` или не задана → взять значение `link` |
-| `engineText` | `--engineTextColor` | Если `var(--foregroundColor)` или не задана → взять значение `foreground` |
-| `admin` | `--adminColor` | — |
-| `active` | `--activeColor` | Если `var(--linkColor)` → взять значение `link` |
-| `markedTextBackground` | `--markedTextBackground` | — |
-| `inputBackground` | `--inputBackgroundColor` | — |
-| `inputText` | `--inputTextColor` | Если `var(--foregroundColor)` → взять значение `foreground` |
+| Поле модели            | CSS-переменная           | Особые случаи                                                             |
+| ---------------------- | ------------------------ | ------------------------------------------------------------------------- |
+| `background`           | `--backgroundColor`      | —                                                                         |
+| `foreground`           | `--foregroundColor`      | Если не задана → `#111111` (plain default)                                |
+| `headings`             | `--headingsColor`        | —                                                                         |
+| `link`                 | `--linkColor`            | —                                                                         |
+| `linkVisited`          | `--linkColorVisited`     | —                                                                         |
+| `hover`                | `--hoverColor`           | —                                                                         |
+| `tag`                  | `--tagColor`             | Если `var(--linkColor)` или не задана → взять значение `link`             |
+| `engineText`           | `--engineTextColor`      | Если `var(--foregroundColor)` или не задана → взять значение `foreground` |
+| `admin`                | `--adminColor`           | —                                                                         |
+| `active`               | `--activeColor`          | Если `var(--linkColor)` → взять значение `link`                           |
+| `markedTextBackground` | `--markedTextBackground` | —                                                                         |
+| `inputBackground`      | `--inputBackgroundColor` | —                                                                         |
+| `inputText`            | `--inputTextColor`       | Если `var(--foregroundColor)` → взять значение `foreground`               |
 
 rgb() значения из CSS преобразуются в hex вручную при написании пресетов.
 `gal` (`based_on: acute`) — генерируем как `plain`-child с gal-палитрой; визуально близко, не идентично.

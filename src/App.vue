@@ -1,7 +1,8 @@
 <script setup>
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import ThemeControls from './components/ThemeControls.vue';
 import AegeaPreview from './preview/AegeaPreview.vue';
+import { clearSession, loadSession, saveSession } from './storage.js';
 import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
 import { clearAllFieldLocks, createEmptyFieldLocks, hasAnyFieldLocked } from './theme/fieldLocks.js';
@@ -14,7 +15,8 @@ const themeState = reactive(structuredClone(initialThemeState));
 const fieldLocks = reactive(createEmptyFieldLocks());
 const folderNameEdited = ref(false);
 const appElement = ref(null);
-const controlsPaneWidth = ref(416);
+const defaultControlsPaneWidth = 416;
+const controlsPaneWidth = ref(defaultControlsPaneWidth);
 const isResizingControlsPane = ref(false);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
 const contrastWarningsByField = computed(() => getContrastWarningsByField(themeState.palette));
@@ -27,6 +29,9 @@ const appStyle = computed(() => ({
 const controlsPaneMinWidth = 320;
 const controlsPaneMaxWidth = 672;
 const previewPaneMinWidth = 360;
+const sessionSaveDelay = 500;
+let sessionSaveTimeout = null;
+let shouldSkipNextSessionSave = false;
 const effectiveControlsPaneMaxWidth = computed(() => {
   const appWidth = appElement.value?.getBoundingClientRect().width ?? window.innerWidth;
 
@@ -35,6 +40,32 @@ const effectiveControlsPaneMaxWidth = computed(() => {
 
 function getConstrainedControlsPaneWidth(value) {
   return Math.min(Math.max(value, controlsPaneMinWidth), effectiveControlsPaneMaxWidth.value);
+}
+
+function applyThemeState(nextThemeState) {
+  for (const section of Object.keys(initialThemeState)) {
+    Object.assign(themeState[section], nextThemeState[section]);
+  }
+}
+
+function applyFieldLocks(nextFieldLocks) {
+  for (const section of Object.keys(fieldLocks)) {
+    Object.assign(fieldLocks[section], nextFieldLocks[section]);
+  }
+}
+
+function getUiState() {
+  return {
+    sidebarWidth: controlsPaneWidth.value,
+    folderNameEdited: folderNameEdited.value,
+  };
+}
+
+function resetThemeState() {
+  applyThemeState(structuredClone(initialThemeState));
+  clearAllFieldLocks(fieldLocks);
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(defaultControlsPaneWidth);
+  folderNameEdited.value = false;
 }
 
 function updateMetaField(key, value) {
@@ -67,6 +98,13 @@ function toggleFieldLock(section, key, locked) {
 
 function unlockAllFields() {
   clearAllFieldLocks(fieldLocks);
+}
+
+function resetToDefaults() {
+  clearTimeout(sessionSaveTimeout);
+  shouldSkipNextSessionSave = true;
+  clearSession();
+  resetThemeState();
 }
 
 function randomizeTheme() {
@@ -162,6 +200,38 @@ function downloadThemeZip() {
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+onMounted(() => {
+  const session = loadSession();
+
+  if (session) {
+    applyThemeState(session.themeState);
+    applyFieldLocks(session.fieldLocks);
+    controlsPaneWidth.value = getConstrainedControlsPaneWidth(session.uiState.sidebarWidth);
+    folderNameEdited.value = session.uiState.folderNameEdited;
+  }
+});
+
+watch(
+  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited],
+  () => {
+    clearTimeout(sessionSaveTimeout);
+
+    if (shouldSkipNextSessionSave) {
+      shouldSkipNextSessionSave = false;
+      return;
+    }
+
+    sessionSaveTimeout = setTimeout(() => {
+      saveSession({
+        themeState,
+        fieldLocks,
+        uiState: getUiState(),
+      });
+    }, sessionSaveDelay);
+  },
+  { deep: true }
+);
 </script>
 
 <template>
@@ -196,6 +266,7 @@ function downloadThemeZip() {
         <button class="unlock-button" type="button" :disabled="!hasFieldLocks" @click="unlockAllFields">
           Unlock all
         </button>
+        <button class="reset-button" type="button" @click="resetToDefaults">Reset to defaults</button>
         <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
           Download theme ZIP
         </button>

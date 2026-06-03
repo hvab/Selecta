@@ -187,6 +187,7 @@ pre {
 
 .download-button,
 .random-button,
+.reset-button,
 .unlock-button {
   min-height: 2rem;
   padding: 0.35rem 0.75rem;

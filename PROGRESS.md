@@ -354,7 +354,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Stage 10.0.2 (`0.4.0`): include controls pane width in session `uiState` (`ROADMAP.md`).
+- [ ] Stage 10.1.1 (`0.4.0`): build Aegea theme presets (`ROADMAP.md`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -394,7 +394,7 @@ Planned releases (detail in `ROADMAP.md`):
 - [x] Stage 9.2: Per-field locks for Random (`src/theme/fieldLocks.js`, Unlock all).
 - [x] Stage 9 review (`0.3.0`): contrast, locks, a11y fixes, marked thumbnail color.
 - [x] Stage 10.0.1: Session storage module with guarded localStorage I/O and shape validation.
-- [ ] Stage 10.0 (`0.4.0`): session restore + Reset.
+- [x] Stage 10.0: Session restore, field-lock restore, controls-pane width restore, and Reset to defaults.
 - [ ] Stage 10.1 (`0.4.0`): presets.
 - [ ] Stage 11 (`0.5.0`): URL state and/or JSON export/import.
 - [ ] Stage 12 (`0.6.0`): Google Fonts.
