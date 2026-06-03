@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   decodeThemeFromUrlParam,
+  deserializeThemeFile,
   deserializeTheme,
   encodeThemeToUrlParam,
   getThemeJsonFileName,
@@ -42,6 +43,14 @@ test('builds theme JSON file name from folder name', () => {
   themeState.meta.folderName = 'shared-theme';
 
   assert.equal(getThemeJsonFileName(themeState), 'shared-theme.selecta.json');
+});
+
+test('deserializes theme JSON files', async () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.meta.displayName = 'Imported Theme';
+
+  assert.deepEqual(await deserializeThemeFile(new Blob([serializeTheme(themeState)])), themeState);
 });
 
 test('ignores unknown fields while deserializing', () => {

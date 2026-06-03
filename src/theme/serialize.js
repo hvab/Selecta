@@ -48,6 +48,10 @@ export function getThemeJsonFileName(themeState) {
   return `${themeState.meta.folderName}.selecta.json`;
 }
 
+export async function deserializeThemeFile(file) {
+  return deserializeTheme(await file.text());
+}
+
 export function deserializeTheme(json) {
   let data;
 

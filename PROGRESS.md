@@ -354,7 +354,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Stage 11.4 (`0.5.0`): JSON import (`ROADMAP.md`).
+- [ ] Stage 11.5 (`0.5.0`): manual share/import verification (`ROADMAP.md`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -399,6 +399,7 @@ Planned releases (detail in `ROADMAP.md`):
 - [x] Stage 11.1: Theme serialization module with strict shape validation.
 - [x] Stage 11.2: URL share with `?theme=` loading priority and invalid-link fallback.
 - [x] Stage 11.3: JSON export using the theme serialization format.
+- [x] Stage 11.4: JSON import with inline invalid-file feedback.
 - [ ] Stage 11 (`0.5.0`): URL state and/or JSON export/import.
 - [ ] Stage 12 (`0.6.0`): Google Fonts.
 - [ ] Stage 13+: theme contract expansion, Aegea version targeting, deep preview states (on demand).

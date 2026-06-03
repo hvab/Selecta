@@ -9,6 +9,7 @@ import { initialThemeState } from './theme/model.js';
 import { themePresets } from './theme/presets.js';
 import {
   decodeThemeFromUrlParam,
+  deserializeThemeFile,
   encodeThemeToUrlParam,
   getThemeJsonFileName,
   serializeTheme,
@@ -28,6 +29,9 @@ const controlsPaneWidth = ref(defaultControlsPaneWidth);
 const isResizingControlsPane = ref(false);
 const shareMessage = ref('');
 const shareError = ref('');
+const importMessage = ref('');
+const importError = ref('');
+const themeJsonFileInput = ref(null);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
 const contrastWarningsByField = computed(() => getContrastWarningsByField(themeState.palette));
 const hasFieldLocks = computed(() => hasAnyFieldLocked(fieldLocks));
@@ -96,9 +100,11 @@ function inferFolderNameEdited(meta) {
   return meta.folderName !== suggestFolderName(meta.displayName);
 }
 
-function clearShareStatus() {
+function clearStatusMessages() {
   shareMessage.value = '';
   shareError.value = '';
+  importMessage.value = '';
+  importError.value = '';
 }
 
 function applySharedThemeState(nextThemeState) {
@@ -109,7 +115,7 @@ function applySharedThemeState(nextThemeState) {
 }
 
 function updateMetaField(key, value) {
-  clearShareStatus();
+  clearStatusMessages();
   themeState.meta[key] = key === 'folderName' ? normalizeFolderName(value) : value;
 
   if (key === 'displayName' && !folderNameEdited.value) {
@@ -122,22 +128,22 @@ function updateMetaField(key, value) {
 }
 
 function updatePaletteField(key, value) {
-  clearShareStatus();
+  clearStatusMessages();
   themeState.palette[key] = value;
 }
 
 function updateTypographyField(key, value) {
-  clearShareStatus();
+  clearStatusMessages();
   themeState.typography[key] = value;
 }
 
 function updateLayoutField(key, value) {
-  clearShareStatus();
+  clearStatusMessages();
   themeState.layout[key] = value;
 }
 
 function applyPreset(presetId) {
-  clearShareStatus();
+  clearStatusMessages();
   const preset = themePresets.find(({ id }) => id === presetId);
 
   if (!preset) {
@@ -151,26 +157,26 @@ function applyPreset(presetId) {
 }
 
 function toggleFieldLock(section, key, locked) {
-  clearShareStatus();
+  clearStatusMessages();
   fieldLocks[section][key] = locked;
 }
 
 function unlockAllFields() {
-  clearShareStatus();
+  clearStatusMessages();
   clearAllFieldLocks(fieldLocks);
 }
 
 function resetToDefaults() {
   clearTimeout(sessionSaveTimeout);
   shouldSkipNextSessionSave = true;
-  clearShareStatus();
+  clearStatusMessages();
   clearThemeUrlParam();
   clearSession();
   resetThemeState();
 }
 
 function randomizeTheme() {
-  clearShareStatus();
+  clearStatusMessages();
   const randomThemeState = getRandomThemeState(themeState, fieldLocks);
 
   if (!fieldLocks.meta.displayName) {
@@ -271,7 +277,7 @@ function clearThemeUrlParam() {
 }
 
 async function copyThemeLink() {
-  clearShareStatus();
+  clearStatusMessages();
 
   try {
     await navigator.clipboard.writeText(getThemeShareUrl());
@@ -296,6 +302,30 @@ function downloadThemeJson() {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function openThemeJsonImport() {
+  clearStatusMessages();
+  themeJsonFileInput.value?.click();
+}
+
+async function importThemeJson(event) {
+  clearStatusMessages();
+  const [file] = event.target.files ?? [];
+
+  if (!file) {
+    return;
+  }
+
+  try {
+    applySharedThemeState(await deserializeThemeFile(file));
+    clearThemeUrlParam();
+    importMessage.value = 'Theme JSON imported.';
+  } catch {
+    importError.value = 'Theme JSON is invalid.';
+  } finally {
+    event.target.value = '';
+  }
 }
 
 function downloadThemeZip() {
@@ -398,11 +428,21 @@ watch(
         <button class="export-json-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeJson">
           Export JSON
         </button>
+        <button class="import-json-button" type="button" @click="openThemeJsonImport">Import JSON</button>
+        <input
+          ref="themeJsonFileInput"
+          class="import-json-input"
+          type="file"
+          accept=".json,application/json"
+          @change="importThemeJson"
+        />
         <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
           Download theme ZIP
         </button>
         <p v-if="shareMessage" class="share-message">{{ shareMessage }}</p>
         <p v-if="shareError" class="share-error">{{ shareError }}</p>
+        <p v-if="importMessage" class="import-message">{{ importMessage }}</p>
+        <p v-if="importError" class="import-error">{{ importError }}</p>
         <p v-if="!canDownloadTheme" class="download-error">Fix metadata errors to download the theme.</p>
       </section>
     </aside>

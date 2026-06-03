@@ -479,7 +479,7 @@ rgb() значения из CSS преобразуются в hex вручную
   - При загрузке страницы: если `?theme=` есть — распарсить через `deserializeTheme`, применить; параметр имеет приоритет над localStorage.
   - При ошибке десериализации — показать тихое предупреждение, загрузить из localStorage или дефолт.
 - [x] Stage 11.3: JSON export — кнопка **"Export JSON"** в export bar: скачивает `<folderName>.selecta.json`.
-- [ ] Stage 11.4: JSON import — кнопка **"Import JSON"** (скрытый `<input type="file">`): читает файл, вызывает `deserializeTheme`, применяет к `themeState`; при ошибке — показывает inline-сообщение рядом с кнопкой.
+- [x] Stage 11.4: JSON import — кнопка **"Import JSON"** (скрытый `<input type="file">`): читает файл, вызывает `deserializeTheme`, применяет к `themeState`; при ошибке — показывает inline-сообщение рядом с кнопкой.
 - [ ] Stage 11.5: Ручная проверка:
   - export → import → состояние идентично (включая meta);
   - Copy link → открыть в новой вкладке → то же состояние;

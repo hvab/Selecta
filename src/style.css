@@ -192,6 +192,7 @@ pre {
 .download-button,
 .copy-link-button,
 .export-json-button,
+.import-json-button,
 .random-button,
 .reset-button,
 .unlock-button {
@@ -207,6 +208,8 @@ pre {
 }
 
 .download-error,
+.import-error,
+.import-message,
 .share-error,
 .share-message {
   flex-basis: 100%;
@@ -215,12 +218,18 @@ pre {
 }
 
 .download-error,
+.import-error,
 .share-error {
   color: #b00020;
 }
 
+.import-message,
 .share-message {
   color: #060;
+}
+
+.import-json-input {
+  display: none;
 }
 
 .export-section {
