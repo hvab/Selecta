@@ -354,7 +354,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Stage 10.1.1 (`0.4.0`): build Aegea theme presets (`ROADMAP.md`).
+- [ ] Stage 11.1 (`0.5.0`): theme serialization module (`ROADMAP.md`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -395,7 +395,7 @@ Planned releases (detail in `ROADMAP.md`):
 - [x] Stage 9 review (`0.3.0`): contrast, locks, a11y fixes, marked thumbnail color.
 - [x] Stage 10.0.1: Session storage module with guarded localStorage I/O and shape validation.
 - [x] Stage 10.0: Session restore, field-lock restore, controls-pane width restore, and Reset to defaults.
-- [ ] Stage 10.1 (`0.4.0`): presets.
+- [x] Stage 10.1: Aegea theme presets selector with lock reset and session persistence.
 - [ ] Stage 11 (`0.5.0`): URL state and/or JSON export/import.
 - [ ] Stage 12 (`0.6.0`): Google Fonts.
 - [ ] Stage 13+: theme contract expansion, Aegea version targeting, deep preview states (on demand).

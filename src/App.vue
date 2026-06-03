@@ -1,10 +1,12 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import ThemeControls from './components/ThemeControls.vue';
+import PresetSelector from './components/PresetSelector.vue';
 import AegeaPreview from './preview/AegeaPreview.vue';
 import { clearSession, loadSession, saveSession } from './storage.js';
 import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
+import { themePresets } from './theme/presets.js';
 import { clearAllFieldLocks, createEmptyFieldLocks, hasAnyFieldLocked } from './theme/fieldLocks.js';
 import { getRandomThemeState } from './theme/random.js';
 import { getContrastWarningsByField } from './theme/contrast.js';
@@ -22,6 +24,15 @@ const metadataErrors = computed(() => validateMetadata(themeState.meta));
 const contrastWarningsByField = computed(() => getContrastWarningsByField(themeState.palette));
 const hasFieldLocks = computed(() => hasAnyFieldLocked(fieldLocks));
 const canDownloadTheme = computed(() => Object.keys(metadataErrors.value).length === 0);
+const selectedPresetId = computed(
+  () =>
+    themePresets.find(
+      (preset) =>
+        hasSameSectionValues(themeState.palette, preset.palette) &&
+        hasSameSectionValues(themeState.typography, preset.typography) &&
+        hasSameSectionValues(themeState.layout, preset.layout)
+    )?.id ?? ''
+);
 const appStyle = computed(() => ({
   '--controls-pane-width': `${controlsPaneWidth.value}px`,
 }));
@@ -40,6 +51,10 @@ const effectiveControlsPaneMaxWidth = computed(() => {
 
 function getConstrainedControlsPaneWidth(value) {
   return Math.min(Math.max(value, controlsPaneMinWidth), effectiveControlsPaneMaxWidth.value);
+}
+
+function hasSameSectionValues(section, referenceSection) {
+  return Object.entries(referenceSection).every(([key, value]) => section[key] === value);
 }
 
 function applyThemeState(nextThemeState) {
@@ -90,6 +105,19 @@ function updateTypographyField(key, value) {
 
 function updateLayoutField(key, value) {
   themeState.layout[key] = value;
+}
+
+function applyPreset(presetId) {
+  const preset = themePresets.find(({ id }) => id === presetId);
+
+  if (!preset) {
+    return;
+  }
+
+  Object.assign(themeState.palette, preset.palette);
+  Object.assign(themeState.typography, preset.typography);
+  Object.assign(themeState.layout, preset.layout);
+  clearAllFieldLocks(fieldLocks);
 }
 
 function toggleFieldLock(section, key, locked) {
@@ -244,6 +272,7 @@ watch(
         </header>
 
         <section class="controls-section">
+          <PresetSelector :presets="themePresets" :selected-preset-id="selectedPresetId" @apply-preset="applyPreset" />
           <ThemeControls
             :meta="themeState.meta"
             :metadata-errors="metadataErrors"

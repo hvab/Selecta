@@ -430,10 +430,10 @@ rgb() значения из CSS преобразуются в hex вручную
 
 **Что делать:**
 
-- [ ] Stage 10.1.1: `src/theme/presets.js` — статический массив из 10 объектов. `typography` и `layout` у всех совпадают с `initialThemeState` (ни одна тема Aegea их не переопределяет). Написать вручную, сверив каждое поле с CSS-файлом темы.
-- [ ] Stage 10.1.2: `PresetSelector.vue` — нативный `<select>` с `— Default (plain) —` как первый option, затем остальные 9 в алфавитном порядке (или по `index` из `theme-info.php` — по результату ревью). Стиль — в духе существующих контролов Selecta. Размещение — отдельная строка над или под палитрой (по результату ревью UI).
-- [ ] Stage 10.1.3: Логика применения в `App.vue`: применяет `preset.palette`, `preset.typography`, `preset.layout`; `meta` — не меняет; `fieldLocks` — сбрасывает (`clearAllFieldLocks`). Сессия сразу перезаписывается через debounced watch.
-- [ ] Stage 10.1.4: Ручная проверка:
+- [x] Stage 10.1.1: `src/theme/presets.js` — статический массив из 10 объектов. `typography` и `layout` у всех совпадают с `initialThemeState` (ни одна тема Aegea их не переопределяет). Написать вручную, сверив каждое поле с CSS-файлом темы.
+- [x] Stage 10.1.2: `PresetSelector.vue` — нативный `<select>` с `— Default (plain) —` как первый option, затем остальные 9 в алфавитном порядке (или по `index` из `theme-info.php` — по результату ревью). Стиль — в духе существующих контролов Selecta. Размещение — отдельная строка над или под палитрой (по результату ревью UI).
+- [x] Stage 10.1.3: Логика применения в `App.vue`: применяет `preset.palette`, `preset.typography`, `preset.layout`; `meta` — не меняет; `fieldLocks` — сбрасывает (`clearAllFieldLocks`). Сессия сразу перезаписывается через debounced watch.
+- [x] Stage 10.1.4: Ручная проверка:
   - выбрать Vulcano → тёмная палитра в превью и контролах;
   - выбрать Fiesta → яркая цветная палитра;
   - выбрать Kolomna → тёплый жёлтый фон;

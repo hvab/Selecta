@@ -103,6 +103,10 @@ pre {
   gap: 1rem;
 }
 
+.preset-controls {
+  margin-bottom: 1rem;
+}
+
 .control-group {
   padding-top: 0.75rem;
   border-top: 1px solid #ddd;
