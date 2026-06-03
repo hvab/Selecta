@@ -8,6 +8,14 @@ The project follows semantic versioning where practical.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## 0.4.0 - 2026-06-03
+
+### Added
+
 - Session restore in `localStorage`, including field locks, edited folder-name state, controls pane width, and Reset to defaults.
 - Aegea theme presets for quick starting palettes.
 

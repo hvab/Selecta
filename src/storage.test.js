@@ -111,6 +111,13 @@ test('returns null for invalid session shape', () => {
   assert.equal(loadSession(), null);
 });
 
+test('returns null for invalid session JSON', () => {
+  setLocalStorage(createMemoryStorage());
+  localStorage.setItem(SESSION_STORAGE_KEY, '{');
+
+  assert.equal(loadSession(), null);
+});
+
 test('ignores unavailable localStorage', () => {
   setLocalStorage({
     getItem() {

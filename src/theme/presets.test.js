@@ -31,6 +31,16 @@ test('each preset has the full Selecta palette contract', () => {
   }
 });
 
+test('preset palette values are normalized full hex colors', () => {
+  const fullHexColor = /^#[0-9a-f]{6}$/;
+
+  for (const preset of themePresets) {
+    for (const [key, value] of Object.entries(preset.palette)) {
+      assert.match(value, fullHexColor, `${preset.id}.${key}`);
+    }
+  }
+});
+
 test('plain preset matches the Selecta default theme state', () => {
   const plainPreset = themePresets.find((preset) => preset.id === 'plain');
 
