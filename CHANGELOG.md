@@ -8,6 +8,8 @@ The project follows semantic versioning where practical.
 
 ### Added
 
+- Theme serialization module for upcoming URL and JSON sharing.
+
 ### Changed
 
 ### Fixed
@@ -16,12 +18,16 @@ The project follows semantic versioning where practical.
 
 ### Added
 
-- Session restore in `localStorage`, including field locks, edited folder-name state, controls pane width, and Reset to defaults.
-- Aegea theme presets for quick starting palettes.
-
-### Changed
+- Session restore in `localStorage`: theme state, field locks, folder-name edits, and controls pane width
+- Reset to defaults in the export bar (clears saved session)
+- Aegea theme preset selector with 10 presets (Default, Acute, Chancery, Douglas, Fiesta, Gal, Holm, Kolomna, Vox, Vulcano); based on Aegea v4199 / e1d0583
+- Presets update palette, typography, and layout; applying a preset clears field locks
+- Manual edits after a preset switch the selector to Custom
 
 ### Fixed
+
+- Invalid or unsupported saved sessions are silently ignored instead of breaking the app
+- Broken `localStorage` access is handled safely (private mode, blocked storage, quota errors)
 
 ## 0.3.3 - 2026-06-02
 

@@ -470,7 +470,7 @@ rgb() значения из CSS преобразуются в hex вручную
 
 **Что делать:**
 
-- [ ] Stage 11.1: `src/theme/serialize.js`:
+- [x] Stage 11.1: `src/theme/serialize.js`:
   - `serializeTheme(themeState)` → JSON-строка с `version: 1`
   - `deserializeTheme(json)` → themeState; строгая проверка наличия обязательных полей и их типов; бросать `Error` с понятным сообщением если структура невалидна; неизвестные поля игнорировать (forward-compat)
   - Написать тесты: round-trip, неполный JSON, лишние поля, версия != 1.
