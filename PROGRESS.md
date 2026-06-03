@@ -354,7 +354,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Stage 10 (`0.4.0`): presets (`ROADMAP.md`).
+- [ ] Stage 10.0 (`0.4.0`): session restore + Reset (`ROADMAP.md`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -393,8 +393,10 @@ Planned releases (detail in `ROADMAP.md`):
 - [x] Stage 9.1: Non-blocking contrast warnings (WCAG 3:1 threshold, `src/theme/contrast.js`).
 - [x] Stage 9.2: Per-field locks for Random (`src/theme/fieldLocks.js`, Unlock all).
 - [x] Stage 9 review (`0.3.0`): contrast, locks, a11y fixes, marked thumbnail color.
-- [ ] Stage 10 (`0.4.0`): presets.
+- [ ] Stage 10.0 (`0.4.0`): session restore + Reset.
+- [ ] Stage 10.1 (`0.4.0`): presets.
 - [ ] Stage 11 (`0.5.0`): URL state and/or JSON export/import.
 - [ ] Stage 12 (`0.6.0`): Google Fonts.
 - [ ] Stage 13+: theme contract expansion, Aegea version targeting, deep preview states (on demand).
 - [ ] Backlog: dark mode, bundled Cyrillic fonts, theme import, UI i18n, visual diff, gallery, arbitrary CSS editor.
+- [ ] UX follow-up: add a user-facing link to Aegea in the Selecta interface.

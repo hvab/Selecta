@@ -328,11 +328,12 @@ src/
 
 Кратко:
 
-1. Этап 9 (`0.3.0`): предупреждения о контрасте + фиксация полей для Random.
-2. Этап 10 (`0.4.0`): пресеты.
-3. Этап 11 (`0.5.0`): URL state и/или JSON export/import.
-4. Этап 12 (`0.6.0`): Google Fonts.
-5. Далее — расширение контракта темы, версии Aegea, глубокое превью; тёмный режим, bundled шрифты, импорт тем, i18n — в backlog `ROADMAP.md`.
+1. Этап 9 (`0.3.0`): предупреждения о контрасте + фиксация полей для Random. ✅
+2. Этап 10.0 (`0.4.0`): сохранение сессии в localStorage + Reset.
+3. Этап 10.1 (`0.4.0`): пресеты из официальных тем Aegea.
+4. Этап 11 (`0.5.0`): URL state + JSON export/import.
+5. Этап 12 (`0.6.0`): Google Fonts.
+6. Далее — расширение контракта темы, версии Aegea, глубокое превью; тёмный режим, bundled шрифты, импорт тем, i18n — в backlog `ROADMAP.md`.
 
 ## Этап 9. Контраст и фиксация полей
 
@@ -341,3 +342,145 @@ src/
 - [x] Stage 9.1: модуль неблокирующих предупреждений о контрасте + показ в UI.
 - [x] Stage 9.2: lock у полей + Random меняет только незаблокированные значения.
 - [x] Stage 9 review: предупреждения не мешают ZIP; lock проверен в браузере; тесты на контраст и random+locks.
+
+---
+
+## Этап 10.0. Сохранение сессии (`0.4.0`)
+
+Цель: пользователь не теряет работу при перезагрузке страницы; ширина левой панели тоже сохраняется. Строит инфраструктуру сериализации, которую переиспользуют пресеты и этап 11.
+
+**Формат в localStorage** — один ключ `selecta_session`, JSON с `version`:
+
+```json
+{
+  "version": 1,
+  "themeState": { "meta": {}, "palette": {}, "typography": {}, "layout": {} },
+  "fieldLocks": { "meta": {}, "palette": {}, "typography": {}, "layout": {} },
+  "uiState": { "sidebarWidth": 416, "folderNameEdited": false }
+}
+```
+
+**Что делать:**
+
+- [ ] Stage 10.0.1: `src/storage.js` — три чистые функции:
+  - `saveSession({ themeState, fieldLocks, uiState })` → `localStorage.setItem('selecta_session', JSON.stringify({ version: 1, ... }))`
+  - `loadSession()` → распарсить, проверить `version`, валидировать форму `themeState`, `fieldLocks` и `uiState`, вернуть `{ themeState, fieldLocks, uiState }` или `null`
+  - `clearSession()` → `localStorage.removeItem('selecta_session')`
+  - Обернуть весь I/O в `try/catch` — localStorage может быть недоступен (приватный режим, квота).
+  - `uiState.sidebarWidth` хранить числом в пикселях, без `px`; при восстановлении пропускать через текущий clamp.
+  - `uiState.folderNameEdited` хранить явно, чтобы ручное имя папки не перезаписывалось после reload.
+- [ ] Stage 10.0.2: Ширина левой панели уже реактивный `controlsPaneWidth` в `App.vue`; включить его числовое значение в `uiState`.
+- [ ] Stage 10.0.3: В `App.vue` — `onMounted`: вызвать `loadSession()`, применить к `themeState`, `fieldLocks`, `controlsPaneWidth` и `folderNameEdited`. Если `null` — стартуем с `initialThemeState`. Добавить `watch` с дебаунсом 500 мс на `{ themeState, fieldLocks, uiState }` → `saveSession()`.
+- [ ] Stage 10.0.4: Кнопка **"Reset to defaults"** — разместить рядом с "Unlock all" в export bar (или отдельно — по результату ревью UI). Действие: `clearSession()` + сброс `themeState` → `initialThemeState` + `clearAllFieldLocks(fieldLocks)` + сброс `controlsPaneWidth` и `folderNameEdited` к дефолту.
+- [ ] Stage 10.0.5: Ручная проверка:
+  - изменить несколько полей → перезагрузить → значения на месте;
+  - изменить ширину левой панели → перезагрузить → ширина на месте;
+  - нажать Reset → всё вернулось к дефолту, localStorage очищен;
+  - открыть в приватном режиме → нет JS-ошибок, работает без сессии.
+
+Параллельный маленький UX-todo:
+
+- [ ] Добавить в интерфейс Selecta ссылку на Эгею, чтобы пользователь мог быстро перейти к движку/документации. UI copy остаётся английским.
+
+---
+
+## Этап 10.1. Пресеты из тем Aegea (`0.4.0`)
+
+Цель: пользователь может выбрать один из 10 официальных стилей Aegea как отправную точку и дальше настроить под себя.
+
+**Источник данных** — `system/themes/*/styles/main.css` из репозитория Aegea. Темы: `plain` (= дефолт Selecta), `vulcano`, `fiesta`, `douglas`, `chancery`, `acute`, `gal`, `vox`, `kolomna`, `holm`. Тема `embeddable` — не включать.
+
+**Формат пресета:**
+
+```js
+{
+  id: 'vulcano',
+  label: 'Vulcano',
+  palette: { background, foreground, headings, link, linkVisited, hover,
+             tag, engineText, admin, active, markedTextBackground,
+             inputBackground, inputText },
+  typography: { mainFontFamily, noteFontFamily, noteTextSize,
+                noteTextLineHeight, titleScale },
+  layout: { maxWidth, margins },
+}
+```
+
+`meta` (folderName, displayName) в пресете **не хранится** — это пользовательские поля.
+
+**Правила маппинга CSS → palette:**
+
+| Поле модели | CSS-переменная | Особые случаи |
+|---|---|---|
+| `background` | `--backgroundColor` | — |
+| `foreground` | `--foregroundColor` | Если не задана → `#111111` (plain default) |
+| `headings` | `--headingsColor` | — |
+| `link` | `--linkColor` | — |
+| `linkVisited` | `--linkColorVisited` | — |
+| `hover` | `--hoverColor` | — |
+| `tag` | `--tagColor` | Если `var(--linkColor)` или не задана → взять значение `link` |
+| `engineText` | `--engineTextColor` | Если `var(--foregroundColor)` или не задана → взять значение `foreground` |
+| `admin` | `--adminColor` | — |
+| `active` | `--activeColor` | Если `var(--linkColor)` → взять значение `link` |
+| `markedTextBackground` | `--markedTextBackground` | — |
+| `inputBackground` | `--inputBackgroundColor` | — |
+| `inputText` | `--inputTextColor` | Если `var(--foregroundColor)` → взять значение `foreground` |
+
+rgb() значения из CSS преобразуются в hex вручную при написании пресетов.
+`gal` (`based_on: acute`) — генерируем как `plain`-child с gal-палитрой; визуально близко, не идентично.
+
+**Что делать:**
+
+- [ ] Stage 10.1.1: `src/theme/presets.js` — статический массив из 10 объектов. `typography` и `layout` у всех совпадают с `initialThemeState` (ни одна тема Aegea их не переопределяет). Написать вручную, сверив каждое поле с CSS-файлом темы.
+- [ ] Stage 10.1.2: `PresetSelector.vue` — нативный `<select>` с `— Default (plain) —` как первый option, затем остальные 9 в алфавитном порядке (или по `index` из `theme-info.php` — по результату ревью). Стиль — в духе существующих контролов Selecta. Размещение — отдельная строка над или под палитрой (по результату ревью UI).
+- [ ] Stage 10.1.3: Логика применения в `App.vue`: применяет `preset.palette`, `preset.typography`, `preset.layout`; `meta` — не меняет; `fieldLocks` — сбрасывает (`clearAllFieldLocks`). Сессия сразу перезаписывается через debounced watch.
+- [ ] Stage 10.1.4: Ручная проверка:
+  - выбрать Vulcano → тёмная палитра в превью и контролах;
+  - выбрать Fiesta → яркая цветная палитра;
+  - выбрать Kolomna → тёплый жёлтый фон;
+  - изменить одно поле после пресета → скачать ZIP → тема работает в Aegea;
+  - reload → пресет-состояние сохранено (через session restore);
+  - выбрать пресет при наличии locks → locks сброшены;
+  - Reset → вернулось к plain-дефолту.
+
+---
+
+## Этап 11. URL state и JSON export/import (`0.5.0`)
+
+Цель: поделиться темой по ссылке и/или обменяться JSON-файлом между устройствами.
+
+**Порядок внутри этапа:**
+
+1. Общий модуль сериализации (`serialize.js`) — тест-покрываемый.
+2. URL share.
+3. JSON export + import.
+
+**Формат JSON (он же base64url в URL):**
+
+```json
+{
+  "version": 1,
+  "meta": { "folderName": "...", "displayName": "...", "basedOn": "plain", ... },
+  "palette": { ... },
+  "typography": { ... },
+  "layout": { ... }
+}
+```
+
+`fieldLocks` и `uiState` — **не входят** в JSON/URL формат (это только сессия).
+
+**Что делать:**
+
+- [ ] Stage 11.1: `src/theme/serialize.js`:
+  - `serializeTheme(themeState)` → JSON-строка с `version: 1`
+  - `deserializeTheme(json)` → themeState; строгая проверка наличия обязательных полей и их типов; бросать `Error` с понятным сообщением если структура невалидна; неизвестные поля игнорировать (forward-compat)
+  - Написать тесты: round-trip, неполный JSON, лишние поля, версия != 1.
+- [ ] Stage 11.2: URL share — кнопка **"Copy link"** (или иконка) в export bar:
+  - `btoa(encodeURIComponent(serializeTheme(themeState)))` → `?theme=<value>` в URL
+  - При загрузке страницы: если `?theme=` есть — распарсить через `deserializeTheme`, применить; параметр имеет приоритет над localStorage.
+  - При ошибке десериализации — показать тихое предупреждение, загрузить из localStorage или дефолт.
+- [ ] Stage 11.3: JSON export — кнопка **"Export JSON"** в export bar: скачивает `<folderName>.selecta.json`.
+- [ ] Stage 11.4: JSON import — кнопка **"Import JSON"** (скрытый `<input type="file">`): читает файл, вызывает `deserializeTheme`, применяет к `themeState`; при ошибке — показывает inline-сообщение рядом с кнопкой.
+- [ ] Stage 11.5: Ручная проверка:
+  - export → import → состояние идентично (включая meta);
+  - Copy link → открыть в новой вкладке → то же состояние;
+  - испорченный JSON → понятная ошибка в UI, приложение не падает.

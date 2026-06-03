@@ -17,9 +17,10 @@
 
 | Этап | Целевая версия        | Фокус                                                           |
 | ---- | --------------------- | --------------------------------------------------------------- |
-| 9    | `0.3.0`               | Контраст + фиксация полей для Random                            |
-| 10   | `0.4.0`               | Пресеты                                                         |
-| 11   | `0.5.0`               | Сохранение темы в URL и/или JSON export/import                  |
+| 9    | `0.3.0` ✅            | Контраст + фиксация полей для Random                            |
+| 10.0 | `0.4.0`               | Сохранение сессии в localStorage + Reset                        |
+| 10.1 | `0.4.0`               | Пресеты из официальных тем Aegea                                |
+| 11   | `0.5.0`               | URL state + JSON export/import                                  |
 | 12   | `0.6.0`               | Google Fonts                                                    |
 | 13+  | по мере необходимости | Контракт темы, версии Aegea, глубокое превью                    |
 | —    | позже                 | Тёмный режим, bundled кириллические шрифты, импорт тем, i18n UI |
@@ -60,10 +61,31 @@
 
 ---
 
-## Этап 10 — Пресеты (`0.4.0`)
+## Этап 10.0 — Сохранение сессии (`0.4.0`)
 
-- Небольшой набор встроенных стартовых тем (без «маркетинговой» галереи).
-- Выбор пресета подменяет состояние темы; lock-поля — по решению при реализации (обычно сбрасывать lock или спрашивать подтверждение).
+Пользователь не теряет работу при перезагрузке и может сбросить к дефолту.
+
+- `src/storage.js`: `saveSession` / `loadSession` / `clearSession`; обёрнуты в try/catch; хранят `themeState + fieldLocks + uiState` с `version: 1`.
+- Ширина левой панели — реактивный ref, персистится в `uiState.sidebarWidth`.
+- `App.vue`: загрузка на mount, debounced watch → save.
+- Кнопка **"Reset to defaults"**: clearSession + возврат к `initialThemeState`.
+
+Этот этап строит инфраструктуру сериализации, которую переиспользуют пресеты (10.1) и этап 11.
+
+---
+
+## Этап 10.1 — Пресеты из тем Aegea (`0.4.0`)
+
+Пользователь выбирает официальный стиль Aegea как стартовую точку.
+
+- 10 пресетов из `system/themes/` Aegea: `plain` (дефолт), `vulcano`, `fiesta`, `douglas`, `chancery`, `acute`, `gal`, `vox`, `kolomna`, `holm`. `embeddable` не включать.
+- `src/theme/presets.js`: статический массив `{ id, label, palette, typography, layout }`.
+- `PresetSelector.vue`: нативный `<select>`, компактный, в духе остального UI.
+- Применение: заменяет palette + typography + layout; meta остаётся; fieldLocks сбрасываются.
+- Темы Aegea не переопределяют шрифты и layout → typography/layout всех пресетов = `initialThemeState`.
+- `gal` (`based_on: acute`) — генерируется как `plain`-child с gal-палитрой.
+
+Подробные чекбоксы реализации — в `plan.md`.
 
 ---
 
@@ -71,8 +93,12 @@
 
 Порядок внутри этапа:
 
-1. Сериализация состояния темы в URL (share / bookmark).
-2. JSON export и import (отдельно или сразу после URL — по объёму среза).
+1. `src/theme/serialize.js` — `serializeTheme` / `deserializeTheme` с `version: 1`; тест-покрытие.
+2. URL share: `?theme=<base64url(JSON)>`; при загрузке имеет приоритет над localStorage.
+3. JSON export: кнопка "Export JSON" → `<folderName>.selecta.json`.
+4. JSON import: кнопка "Import JSON" → file input → apply; inline ошибка при невалидном JSON.
+
+`fieldLocks` и `uiState` в URL/JSON формат **не входят** (только `themeState`).
 
 ---
 
@@ -112,4 +138,4 @@
 
 ## Следующий шаг по репозиторию
 
-Начать **этап 9.1** (модуль контраста + отображение предупреждений в UI), затем **9.2** (lock + Random).
+Этап 9 завершён (`0.3.2`). Следующий: **этап 10.0** (session restore + Reset).
