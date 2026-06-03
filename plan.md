@@ -362,7 +362,7 @@ src/
 
 **Что делать:**
 
-- [ ] Stage 10.0.1: `src/storage.js` — три чистые функции:
+- [x] Stage 10.0.1: `src/storage.js` — три чистые функции:
   - `saveSession({ themeState, fieldLocks, uiState })` → `localStorage.setItem('selecta_session', JSON.stringify({ version: 1, ... }))`
   - `loadSession()` → распарсить, проверить `version`, валидировать форму `themeState`, `fieldLocks` и `uiState`, вернуть `{ themeState, fieldLocks, uiState }` или `null`
   - `clearSession()` → `localStorage.removeItem('selecta_session')`
