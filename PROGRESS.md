@@ -404,4 +404,5 @@ Planned releases (detail in `ROADMAP.md`):
 - [ ] Stage 12 (`0.6.0`): Google Fonts.
 - [ ] Stage 13+: theme contract expansion, Aegea version targeting, deep preview states (on demand).
 - [ ] Backlog: dark mode, bundled Cyrillic fonts, theme import, UI i18n, visual diff, gallery, arbitrary CSS editor.
-- [ ] UX follow-up: add a user-facing link to Aegea in the Selecta interface.
+- [x] UX follow-up: user-facing Aegea link in generator shell (`App.vue`; MVP hardcoded URL).
+- [ ] With UI i18n: locale-specific Aegea site URLs (shell header, README, preview `engineHref` in `demoContent.js`; e.g. `blogengine.me` EN, `blogengine.ru` RU).

@@ -397,7 +397,10 @@ watch(
       <div class="app-controls-scroll">
         <header class="app-header">
           <h1>Selecta</h1>
-          <p>Theme generator for Aegea.</p>
+          <p>
+            Theme generator for
+            <a href="https://blogengine.me">Aegea</a>.
+          </p>
         </header>
 
         <section class="controls-section">
