@@ -6,16 +6,14 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+## 0.5.0 - 2026-06-03
+
 ### Added
 
 - Theme serialization module for upcoming URL and JSON sharing.
 - URL sharing with `?theme=` links and invalid-link fallback.
 - JSON export using the same theme serialization format.
 - JSON import with inline invalid-file feedback.
-
-### Changed
-
-### Fixed
 
 ## 0.4.0 - 2026-06-03
 

@@ -92,7 +92,6 @@ function getUiState() {
 function resetThemeState() {
   applyThemeState(structuredClone(initialThemeState));
   clearAllFieldLocks(fieldLocks);
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(defaultControlsPaneWidth);
   folderNameEdited.value = false;
 }
 
@@ -110,7 +109,6 @@ function clearStatusMessages() {
 function applySharedThemeState(nextThemeState) {
   applyThemeState(nextThemeState);
   clearAllFieldLocks(fieldLocks);
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(defaultControlsPaneWidth);
   folderNameEdited.value = inferFolderNameEdited(nextThemeState.meta);
 }
 
@@ -288,6 +286,8 @@ async function copyThemeLink() {
 }
 
 function downloadThemeJson() {
+  clearStatusMessages();
+
   if (!canDownloadTheme.value) {
     return;
   }
@@ -351,6 +351,7 @@ onMounted(() => {
   if (themeParam) {
     try {
       applySharedThemeState(decodeThemeFromUrlParam(themeParam));
+      clearThemeUrlParam();
       return;
     } catch {
       clearThemeUrlParam();
@@ -424,7 +425,9 @@ watch(
           Unlock all
         </button>
         <button class="reset-button" type="button" @click="resetToDefaults">Reset to defaults</button>
-        <button class="copy-link-button" type="button" @click="copyThemeLink">Copy link</button>
+        <button class="copy-link-button" type="button" :disabled="!canDownloadTheme" @click="copyThemeLink">
+          Copy link
+        </button>
         <button class="export-json-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeJson">
           Export JSON
         </button>
