@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateThemeCss, getThemeCssVariables } from './css.js';
-import { FONT_SOURCE_GOOGLE } from './fonts.js';
+import { FONT_SOURCE_GOOGLE, SERIF_FONT_STACK, UI_FONT_STACK } from './fonts.js';
 import { initialThemeState } from './model.js';
 
 test('derives shared plain color variables from theme palette', () => {
@@ -50,18 +50,30 @@ test('keeps custom font stacks and falls back from unsafe font-family values', (
   themeState.typography.noteFontFamily = 'Georgia;\nbody { color: red }';
 
   assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], 'Aptos, "Segoe UI", system-ui, sans-serif');
-  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], 'Georgia, "Times New Roman", serif');
+  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], SERIF_FONT_STACK);
   assert.equal(generateThemeCss(themeState).includes('body { color: red }'), false);
 
   themeState.typography.mainFontFamily = undefined;
   themeState.typography.noteFontFamily = null;
 
-  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], 'Arial, Helvetica, sans-serif');
-  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], 'Georgia, "Times New Roman", serif');
+  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], UI_FONT_STACK);
+  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], SERIF_FONT_STACK);
 
   themeState.typography.mainFontFamily = '   ';
 
-  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], 'Arial, Helvetica, sans-serif');
+  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], UI_FONT_STACK);
+});
+
+test('adds fallback to custom system font names without generic family', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.typography.mainFontSource = 'system';
+  themeState.typography.mainFontFamily = 'Aptos';
+  themeState.typography.noteFontSource = 'system';
+  themeState.typography.noteFontFamily = 'Georgia';
+
+  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], `Aptos, ${UI_FONT_STACK}`);
+  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], `Georgia, ${SERIF_FONT_STACK}`);
 });
 
 test('does not add Google Fonts import for plain default typography', () => {
@@ -83,4 +95,15 @@ test('adds deduplicated Google Fonts import before theme variables', () => {
     true
   );
   assert.equal(generateThemeCss(themeState).match(/family=PT\+Sans/g).length, 1);
+  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], '"PT Sans", system-ui, sans-serif');
+  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], '"PT Sans", system-ui, sans-serif');
+});
+
+test('adds serif fallback for Google Serif font variables', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.typography.noteFontSource = FONT_SOURCE_GOOGLE;
+  themeState.typography.noteFontFamily = 'PT Serif';
+
+  assert.equal(getThemeCssVariables(themeState)['--noteMainFontFamily'], `"PT Serif", ${SERIF_FONT_STACK}`);
 });

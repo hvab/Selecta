@@ -6,6 +6,7 @@ import {
   filterGoogleFonts,
   findGoogleFont,
   getGoogleFontCss2FamilyParam,
+  getGoogleFontFamilyCssValue,
   getGoogleFontsCss2Url,
   getRequiredGoogleFontStyleTuples,
   getSelectedGoogleFonts,
@@ -66,6 +67,17 @@ test('builds CSS2 family params', () => {
     'PT+Sans:ital,wght@0,400;0,700;1,400'
   );
   assert.equal(getGoogleFontCss2FamilyParam(findGoogleFont(googleFontsCatalog, 'Oswald')), 'Oswald:wght@400;700');
+});
+
+test('builds Google Font CSS values with category fallbacks', () => {
+  assert.equal(
+    getGoogleFontFamilyCssValue(findGoogleFont(googleFontsCatalog, 'PT Sans')),
+    '"PT Sans", system-ui, sans-serif'
+  );
+  assert.equal(
+    getGoogleFontFamilyCssValue(findGoogleFont(googleFontsCatalog, 'PT Serif')),
+    '"PT Serif", ui-serif, Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif'
+  );
 });
 
 test('builds deduplicated CSS2 URLs', () => {

@@ -1,20 +1,26 @@
 import { hexToRgba } from './color.js';
-import { getFontFamilyCssValue } from './fonts.js';
-import { getSelectedGoogleFontsCss2Url } from './googleFonts.js';
+import { FONT_SOURCE_GOOGLE, SERIF_FONT_STACK, UI_FONT_STACK, getFontFamilyCssValue } from './fonts.js';
+import { findGoogleFont, getGoogleFontFamilyCssValue, getSelectedGoogleFontsCss2Url } from './googleFonts.js';
 import { googleFontsCatalog } from './googleFontsCatalog.js';
 import { getNoteTitleLineHeight, scalePixelSize } from './typography.js';
 
+function getThemeFontFamilyCssValue(source, value, fallbackValue) {
+  const googleFont = source === FONT_SOURCE_GOOGLE ? findGoogleFont(googleFontsCatalog, value) : null;
+
+  return googleFont ? getGoogleFontFamilyCssValue(googleFont) : getFontFamilyCssValue(source, value, fallbackValue);
+}
+
 export function getThemeCssVariables(themeState) {
   const noteTitleFontSize = scalePixelSize(themeState.typography.noteTextSize, themeState.typography.titleScale);
-  const mainFontFamily = getFontFamilyCssValue(
+  const mainFontFamily = getThemeFontFamilyCssValue(
     themeState.typography.mainFontSource,
     themeState.typography.mainFontFamily,
-    'Arial, Helvetica, sans-serif'
+    UI_FONT_STACK
   );
-  const noteFontFamily = getFontFamilyCssValue(
+  const noteFontFamily = getThemeFontFamilyCssValue(
     themeState.typography.noteFontSource,
     themeState.typography.noteFontFamily,
-    'Georgia, "Times New Roman", serif'
+    SERIF_FONT_STACK
   );
 
   return {

@@ -1,4 +1,4 @@
-import { FONT_SOURCE_GOOGLE } from './fonts.js';
+import { FONT_SOURCE_GOOGLE, MONO_FONT_STACK, SERIF_FONT_STACK, UI_FONT_STACK } from './fonts.js';
 
 export const GOOGLE_FONTS_CSS2_BASE_URL = 'https://fonts.googleapis.com/css2';
 export const GOOGLE_FONTS_CYRILLIC_SUBSET = 'cyrillic';
@@ -15,6 +15,10 @@ function normalizeSearchText(value) {
 
 function encodeCss2FamilyName(family) {
   return encodeURIComponent(family).replace(/%20/g, '+');
+}
+
+function quoteCssFontFamilyName(family) {
+  return `"${family.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`;
 }
 
 function getUniqueFonts(fonts) {
@@ -75,6 +79,22 @@ export function getGoogleFontsCss2Url(fonts) {
   const familyParams = getUniqueFonts(fonts).map((font) => `family=${getGoogleFontCss2FamilyParam(font)}`);
 
   return `${GOOGLE_FONTS_CSS2_BASE_URL}?${familyParams.join('&')}&display=swap`;
+}
+
+export function getGoogleFontFallbackStack(font) {
+  if (font.category === 'Serif') {
+    return SERIF_FONT_STACK;
+  }
+
+  if (font.category === 'Monospace') {
+    return MONO_FONT_STACK;
+  }
+
+  return UI_FONT_STACK;
+}
+
+export function getGoogleFontFamilyCssValue(font) {
+  return `${quoteCssFontFamilyName(font.family)}, ${getGoogleFontFallbackStack(font)}`;
 }
 
 export function getSelectedGoogleFonts(catalog, typography) {

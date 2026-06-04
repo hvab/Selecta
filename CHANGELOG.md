@@ -12,6 +12,7 @@ The project follows semantic versioning where practical.
 - Live preview stylesheet loading for selected Google Fonts only, with repeated families deduplicated.
 - Generated theme CSS adds a deduplicated Google Fonts `@import` before `:root`.
 - Manual generator and installed Aegea theme verification for the Google Fonts flow.
+- Font-family output now adds modern system fallbacks for Google Fonts and system stack suggestions.
 
 ## 0.5.0 - 2026-06-03
 

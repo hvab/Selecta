@@ -1,8 +1,15 @@
 <script setup>
 import { computed, reactive } from 'vue';
 import { PALETTE_COLOR_CONTROLS } from '../theme/fieldLocks.js';
-import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM, systemFonts } from '../theme/fonts.js';
-import { filterGoogleFonts, findGoogleFont } from '../theme/googleFonts.js';
+import {
+  FONT_SOURCE_GOOGLE,
+  FONT_SOURCE_PLAIN,
+  FONT_SOURCE_SYSTEM,
+  SERIF_FONT_STACK,
+  UI_FONT_STACK,
+  systemFonts,
+} from '../theme/fonts.js';
+import { filterGoogleFonts, findGoogleFont, getGoogleFontFamilyCssValue } from '../theme/googleFonts.js';
 import { googleFontsCatalog } from '../theme/googleFontsCatalog.js';
 
 const props = defineProps({
@@ -60,13 +67,15 @@ const fontControls = [
     familyKey: 'mainFontFamily',
     sourceKey: 'mainFontSource',
     label: 'Interface font',
-    placeholder: 'Aptos, Arial, sans-serif',
+    placeholder: UI_FONT_STACK,
+    defaultSystemFontValue: UI_FONT_STACK,
   },
   {
     familyKey: 'noteFontFamily',
     sourceKey: 'noteFontSource',
     label: 'Note text font',
-    placeholder: 'Georgia, "Times New Roman", serif',
+    placeholder: SERIF_FONT_STACK,
+    defaultSystemFontValue: SERIF_FONT_STACK,
   },
 ];
 
@@ -165,8 +174,11 @@ function updateFontSource(control, event) {
 
   if (source === FONT_SOURCE_PLAIN) {
     emit('update:typography-field', control.familyKey, '');
-  } else if (source === FONT_SOURCE_SYSTEM && !props.typography[control.familyKey]) {
-    emit('update:typography-field', control.familyKey, systemFonts[0].value);
+  } else if (
+    source === FONT_SOURCE_SYSTEM &&
+    (!props.typography[control.familyKey] || findGoogleFont(googleFontsCatalog, props.typography[control.familyKey]))
+  ) {
+    emit('update:typography-field', control.familyKey, control.defaultSystemFontValue);
   } else if (
     source === FONT_SOURCE_GOOGLE &&
     !findGoogleFont(googleFontsCatalog, props.typography[control.familyKey])
@@ -289,7 +301,7 @@ function updateFontSource(control, event) {
               <option
                 v-for="font in getGoogleFontOptions(control)"
                 :key="font.family"
-                :style="{ fontFamily: font.family }"
+                :style="{ fontFamily: getGoogleFontFamilyCssValue(font) }"
                 :value="font.family"
               >
                 {{ font.family }} · Aa Яя · {{ font.category }}
