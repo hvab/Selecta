@@ -1,17 +1,6 @@
 <script setup>
-import { computed, reactive } from 'vue';
 import { PALETTE_COLOR_CONTROLS } from '../theme/fieldLocks.js';
-import {
-  FONT_SOURCE_GOOGLE,
-  FONT_SOURCE_PLAIN,
-  FONT_SOURCE_SYSTEM,
-  isBuiltinSystemStack,
-  SERIF_FONT_STACK,
-  systemFonts,
-  systemStackVariants,
-  UI_FONT_STACK,
-} from '../theme/fonts.js';
-import { filterGoogleFonts, findGoogleFont, getGoogleFontFamilyCssValue } from '../theme/googleFonts.js';
+import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM, systemStackVariants } from '../theme/fonts.js';
 import { googleFontsCatalog } from '../theme/googleFontsCatalog.js';
 
 const props = defineProps({
@@ -69,41 +58,33 @@ const fontControls = [
     familyKey: 'mainFontFamily',
     sourceKey: 'mainFontSource',
     label: 'Interface font',
-    defaultSystemFontValue: UI_FONT_STACK,
   },
   {
     familyKey: 'noteFontFamily',
     sourceKey: 'noteFontSource',
     label: 'Note text font',
-    defaultSystemFontValue: SERIF_FONT_STACK,
   },
 ];
 
-const fontSourceOptions = [
-  { value: FONT_SOURCE_PLAIN, label: 'Plain default' },
-  { value: FONT_SOURCE_SYSTEM, label: 'System stack' },
-  { value: FONT_SOURCE_GOOGLE, label: 'Google Font' },
+const namedSystemFamilies = [
+  { value: 'Georgia, serif', label: 'Georgia' },
+  { value: '"Helvetica Neue", "Helvetica", "Arial", sans-serif', label: 'Helvetica Neue' },
 ];
 
-const googleFontFilters = reactive(
-  Object.fromEntries(
-    fontControls.map(({ familyKey }) => [
-      familyKey,
-      {
-        cyrillicOnly: true,
-        query: '',
-      },
-    ])
-  )
-);
-const googleFontOptionsByControl = computed(() =>
-  Object.fromEntries(
-    fontControls.map(({ familyKey }) => [
-      familyKey,
-      filterGoogleFonts(googleFontsCatalog, googleFontFilters[familyKey]),
-    ])
-  )
-);
+const fontSelectGroups = [
+  {
+    label: 'System stacks',
+    options: systemStackVariants.map((s) => ({ value: `${FONT_SOURCE_SYSTEM}|${s.value}`, label: s.label })),
+  },
+  {
+    label: 'Preset fonts',
+    options: namedSystemFamilies.map((f) => ({ value: `${FONT_SOURCE_SYSTEM}|${f.value}`, label: f.label })),
+  },
+  {
+    label: 'Google Fonts',
+    options: googleFontsCatalog.map((f) => ({ value: `${FONT_SOURCE_GOOGLE}|${f.family}`, label: f.family })),
+  },
+];
 
 const typographyControls = [
   {
@@ -149,6 +130,19 @@ const layoutControls = [
   },
 ];
 
+function getFontSelectValue(control) {
+  const source = props.typography[control.sourceKey];
+  return `${source}|${source === FONT_SOURCE_PLAIN ? '' : props.typography[control.familyKey]}`;
+}
+
+function updateFont(control, event) {
+  const idx = event.target.value.indexOf('|');
+  const source = idx === -1 ? event.target.value : event.target.value.slice(0, idx);
+  const family = idx === -1 ? '' : event.target.value.slice(idx + 1);
+  emit('update:typography-field', control.sourceKey, source);
+  emit('update:typography-field', control.familyKey, family);
+}
+
 function getControlValue(control, value) {
   return control.unit ? Number.parseFloat(value) : value;
 }
@@ -159,30 +153,6 @@ function getNumericValue(control, value) {
 
 function updateMetadataField(control, event) {
   emit('update:meta-field', control.key, event.target.value);
-}
-
-function getGoogleFontOptions(control) {
-  return googleFontOptionsByControl.value[control.familyKey];
-}
-
-function updateFontSource(control, event) {
-  const source = event.target.value;
-
-  emit('update:typography-field', control.sourceKey, source);
-
-  if (source === FONT_SOURCE_PLAIN) {
-    emit('update:typography-field', control.familyKey, '');
-  } else if (
-    source === FONT_SOURCE_SYSTEM &&
-    (!props.typography[control.familyKey] || findGoogleFont(googleFontsCatalog, props.typography[control.familyKey]))
-  ) {
-    emit('update:typography-field', control.familyKey, control.defaultSystemFontValue);
-  } else if (
-    source === FONT_SOURCE_GOOGLE &&
-    !findGoogleFont(googleFontsCatalog, props.typography[control.familyKey])
-  ) {
-    emit('update:typography-field', control.familyKey, getGoogleFontOptions(control)[0]?.family ?? '');
-  }
 }
 </script>
 
@@ -222,16 +192,19 @@ function updateFontSource(control, event) {
       <h3>Fonts</h3>
       <div v-for="control in fontControls" :key="control.familyKey" class="font-control">
         <div class="control-row">
-          <label class="control-label" :for="`font-source-${control.familyKey}`">{{ control.label }}</label>
+          <label class="control-label" :for="`font-select-${control.familyKey}`">{{ control.label }}</label>
           <select
-            :id="`font-source-${control.familyKey}`"
+            :id="`font-select-${control.familyKey}`"
             class="select-control"
-            :value="typography[control.sourceKey]"
-            @change="updateFontSource(control, $event)"
+            :value="getFontSelectValue(control)"
+            @change="updateFont(control, $event)"
           >
-            <option v-for="source in fontSourceOptions" :key="source.value" :value="source.value">
-              {{ source.label }}
-            </option>
+            <option value="plain|">Plain (Aegea default)</option>
+            <optgroup v-for="group in fontSelectGroups" :key="group.label" :label="group.label">
+              <option v-for="opt in group.options" :key="opt.value" :value="opt.value">
+                {{ opt.label }}
+              </option>
+            </optgroup>
           </select>
           <label class="field-lock">
             <input
@@ -243,84 +216,7 @@ function updateFontSource(control, event) {
             />
           </label>
         </div>
-        <div v-if="typography[control.sourceKey] === FONT_SOURCE_SYSTEM" class="font-system-stack">
-          <div class="control-row font-family-row">
-            <label class="control-label" :for="`font-family-${control.familyKey}`">Stack</label>
-            <select
-              :id="`font-family-${control.familyKey}`"
-              class="select-control"
-              :value="typography[control.familyKey]"
-              @change="emit('update:typography-field', control.familyKey, $event.target.value)"
-            >
-              <option
-                v-if="!isBuiltinSystemStack(typography[control.familyKey])"
-                :value="typography[control.familyKey]"
-              >
-                Custom
-              </option>
-              <option v-for="variant in systemStackVariants" :key="variant.value" :value="variant.value">
-                {{ variant.label }}
-              </option>
-            </select>
-          </div>
-          <div
-            v-if="!isBuiltinSystemStack(typography[control.familyKey])"
-            class="control-row font-family-row"
-          >
-            <label class="control-label" :for="`font-family-custom-${control.familyKey}`">Custom stack</label>
-            <input
-              :id="`font-family-custom-${control.familyKey}`"
-              class="text-control"
-              type="text"
-              list="system-font-suggestions"
-              :value="typography[control.familyKey]"
-              @input="emit('update:typography-field', control.familyKey, $event.target.value)"
-            />
-          </div>
-        </div>
-        <div v-else-if="typography[control.sourceKey] === FONT_SOURCE_GOOGLE" class="font-picker">
-          <div class="font-picker-filters">
-            <label class="font-filter-control">
-              <span class="font-filter-label">Search</span>
-              <input
-                class="text-control"
-                type="search"
-                :value="googleFontFilters[control.familyKey].query"
-                @input="googleFontFilters[control.familyKey].query = $event.target.value"
-              />
-            </label>
-            <label class="font-filter-checkbox">
-              <input
-                type="checkbox"
-                :checked="googleFontFilters[control.familyKey].cyrillicOnly"
-                @change="googleFontFilters[control.familyKey].cyrillicOnly = $event.target.checked"
-              />
-              <span>Cyrillic only</span>
-            </label>
-          </div>
-          <div class="control-row font-family-row">
-            <label class="control-label" :for="`google-font-family-${control.familyKey}`">Family</label>
-            <select
-              :id="`google-font-family-${control.familyKey}`"
-              class="select-control font-family-select"
-              :value="typography[control.familyKey]"
-              @change="emit('update:typography-field', control.familyKey, $event.target.value)"
-            >
-              <option
-                v-for="font in getGoogleFontOptions(control)"
-                :key="font.family"
-                :style="{ fontFamily: getGoogleFontFamilyCssValue(font) }"
-                :value="font.family"
-              >
-                {{ font.family }}
-              </option>
-            </select>
-          </div>
-        </div>
       </div>
-      <datalist id="system-font-suggestions">
-        <option v-for="font in systemFonts" :key="font.value" :value="font.value" :label="font.label"></option>
-      </datalist>
     </div>
 
     <div class="control-group">

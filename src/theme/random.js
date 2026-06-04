@@ -7,8 +7,14 @@ import { googleFontsCatalog } from './googleFontsCatalog.js';
 const MAX_COLOR_ATTEMPTS = 64;
 const MAX_PALETTE_ATTEMPTS = 32;
 
+const extraSystemFamilies = [
+  'Georgia, serif',
+  '"Helvetica Neue", "Helvetica", "Arial", sans-serif',
+];
+
 const fontPool = [
   ...systemStackVariants.map((stack) => ({ source: FONT_SOURCE_SYSTEM, family: stack.value })),
+  ...extraSystemFamilies.map((family) => ({ source: FONT_SOURCE_SYSTEM, family })),
   ...googleFontsCatalog.map((font) => ({ source: FONT_SOURCE_GOOGLE, family: font.family })),
 ];
 

@@ -13,49 +13,6 @@ export const systemStackVariants = [
   },
 ];
 
-export function isBuiltinSystemStack(value) {
-  return value === UI_FONT_STACK || value === SERIF_FONT_STACK;
-}
-
-export const systemFonts = [
-  {
-    value: UI_FONT_STACK,
-    label: 'System UI',
-  },
-  {
-    value: SERIF_FONT_STACK,
-    label: 'System Serif',
-  },
-  {
-    value: MONO_FONT_STACK,
-    label: 'System Mono',
-  },
-  {
-    value: 'Arial, Helvetica, sans-serif',
-    label: 'Arial',
-  },
-  {
-    value: 'Georgia, "Times New Roman", serif',
-    label: 'Georgia',
-  },
-  {
-    value: 'Verdana, Geneva, sans-serif',
-    label: 'Verdana',
-  },
-  {
-    value: '"Trebuchet MS", Helvetica, sans-serif',
-    label: 'Trebuchet MS',
-  },
-  {
-    value: '"Times New Roman", Times, serif',
-    label: 'Times New Roman',
-  },
-  {
-    value: '"Courier New", Courier, monospace',
-    label: 'Courier New',
-  },
-];
-
 const fontFamilyValuePattern = /^[A-Za-z0-9 "'_,.-]+$/;
 
 export const FONT_SOURCE_PLAIN = 'plain';
