@@ -85,7 +85,6 @@ const fontSourceOptions = [
   { value: FONT_SOURCE_GOOGLE, label: 'Google Font' },
 ];
 
-const googleFontCategories = [...new Set(googleFontsCatalog.map(({ category }) => category))].sort();
 const googleFontFilters = reactive(
   Object.fromEntries(
     fontControls.map(({ familyKey }) => [
@@ -93,7 +92,6 @@ const googleFontFilters = reactive(
       {
         cyrillicOnly: true,
         query: '',
-        category: '',
       },
     ])
   )
@@ -291,19 +289,6 @@ function updateFontSource(control, event) {
                 @input="googleFontFilters[control.familyKey].query = $event.target.value"
               />
             </label>
-            <label class="font-filter-control">
-              <span class="font-filter-label">Category</span>
-              <select
-                class="select-control"
-                :value="googleFontFilters[control.familyKey].category"
-                @change="googleFontFilters[control.familyKey].category = $event.target.value"
-              >
-                <option value="">All categories</option>
-                <option v-for="category in googleFontCategories" :key="category" :value="category">
-                  {{ category }}
-                </option>
-              </select>
-            </label>
             <label class="font-filter-checkbox">
               <input
                 type="checkbox"
@@ -327,7 +312,7 @@ function updateFontSource(control, event) {
                 :style="{ fontFamily: getGoogleFontFamilyCssValue(font) }"
                 :value="font.family"
               >
-                {{ font.family }} · Aa Яя · {{ font.category }}
+                {{ font.family }}
               </option>
             </select>
           </div>
