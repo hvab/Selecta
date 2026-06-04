@@ -362,7 +362,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Stage 12.2 (`0.6.0`): reconcile Aegea preset font overrides for `chancery`, `holm`, and `kolomna` (`ROADMAP.md`).
+- [ ] Stage 12.3 (`0.6.0`): add a static Google Fonts catalog snapshot and pure catalog helpers (`ROADMAP.md`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -410,6 +410,7 @@ Planned releases (detail in `ROADMAP.md`):
 - [x] Stage 11.4: JSON import with inline invalid-file feedback.
 - [x] Stage 11 (`0.5.0`): URL state and JSON export/import.
 - [x] Stage 12.1: Typography font source model (`plain` / `system` / future `google`).
+- [x] Stage 12.2: Aegea preset font override reconciliation for `chancery`, `holm`, and `kolomna`.
 - [ ] Stage 12 (`0.6.0`): Google Fonts.
 - [ ] Stage 13+: theme contract expansion, Aegea version targeting, deep preview states (on demand).
 - [ ] Backlog: dark mode, bundled Cyrillic fonts, theme import, UI i18n, visual diff, gallery, arbitrary CSS editor.

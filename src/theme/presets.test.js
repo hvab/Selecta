@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { themePresets } from './presets.js';
 import { initialThemeState } from './model.js';
+import { FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './fonts.js';
 
 const expectedPresetIds = [
   'plain',
@@ -31,6 +32,14 @@ test('each preset has the full Selecta palette contract', () => {
   }
 });
 
+test('each preset has the full Selecta typography contract', () => {
+  const typographyKeys = Object.keys(initialThemeState.typography).sort();
+
+  for (const preset of themePresets) {
+    assert.deepEqual(Object.keys(preset.typography).sort(), typographyKeys, preset.id);
+  }
+});
+
 test('preset palette values are normalized full hex colors', () => {
   const fullHexColor = /^#[0-9a-f]{6}$/;
 
@@ -49,11 +58,30 @@ test('plain preset matches the Selecta default theme state', () => {
   assert.deepEqual(plainPreset.layout, initialThemeState.layout);
 });
 
-test('official presets keep Selecta typography and layout defaults', () => {
+test('official presets keep Selecta layout and typography scale defaults', () => {
   for (const preset of themePresets) {
-    assert.deepEqual(preset.typography, initialThemeState.typography, preset.id);
+    assert.equal(preset.typography.noteTextSize, initialThemeState.typography.noteTextSize, preset.id);
+    assert.equal(preset.typography.noteTextLineHeight, initialThemeState.typography.noteTextLineHeight, preset.id);
+    assert.equal(preset.typography.titleScale, initialThemeState.typography.titleScale, preset.id);
     assert.deepEqual(preset.layout, initialThemeState.layout, preset.id);
   }
+});
+
+test('official presets mirror Aegea font overrides', () => {
+  const presetsById = Object.fromEntries(themePresets.map((preset) => [preset.id, preset]));
+
+  assert.equal(presetsById.plain.typography.mainFontSource, FONT_SOURCE_PLAIN);
+  assert.equal(presetsById.chancery.typography.mainFontSource, FONT_SOURCE_SYSTEM);
+  assert.equal(presetsById.chancery.typography.mainFontFamily, 'Georgia, serif');
+  assert.equal(presetsById.chancery.typography.noteFontSource, FONT_SOURCE_SYSTEM);
+  assert.equal(presetsById.chancery.typography.noteFontFamily, 'Georgia, serif');
+  assert.equal(presetsById.holm.typography.mainFontSource, FONT_SOURCE_SYSTEM);
+  assert.equal(presetsById.holm.typography.mainFontFamily, '"Helvetica Neue", "Helvetica", "Arial", sans-serif');
+  assert.equal(presetsById.holm.typography.noteFontSource, FONT_SOURCE_SYSTEM);
+  assert.equal(presetsById.holm.typography.noteFontFamily, '"Georgia", serif');
+  assert.equal(presetsById.kolomna.typography.mainFontSource, FONT_SOURCE_PLAIN);
+  assert.equal(presetsById.kolomna.typography.noteFontSource, FONT_SOURCE_SYSTEM);
+  assert.equal(presetsById.kolomna.typography.noteFontFamily, 'Georgia, serif');
 });
 
 test('resolves inherited and var-based Aegea palette values to hex colors', () => {
