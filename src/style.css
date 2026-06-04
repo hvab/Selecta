@@ -129,6 +129,46 @@ pre {
   margin-top: 0.5rem;
 }
 
+.font-control + .font-control {
+  margin-top: 0.75rem;
+}
+
+.font-family-row {
+  margin-top: 0.5rem;
+}
+
+.font-picker {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.font-picker-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.font-filter-control {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.font-filter-label {
+  font-size: 0.75rem;
+}
+
+.font-filter-checkbox {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  min-height: 1.75rem;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
 .control-label {
   min-width: 0;
   overflow-wrap: anywhere;
@@ -278,6 +318,10 @@ pre {
 
   .metadata-control .text-control {
     grid-column: auto;
+  }
+
+  .font-picker-filters {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .control-value {

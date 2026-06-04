@@ -362,7 +362,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Stage 12.4 (`0.6.0`): build the searchable font picker with Cyrillic-first filtering (`ROADMAP.md`).
+- [ ] Stage 12.5 (`0.6.0`): load selected Google Fonts in live preview without loading the whole catalog (`ROADMAP.md`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -412,6 +412,7 @@ Planned releases (detail in `ROADMAP.md`):
 - [x] Stage 12.1: Typography font source model (`plain` / `system` / future `google`).
 - [x] Stage 12.2: Aegea preset font override reconciliation for `chancery`, `holm`, and `kolomna`.
 - [x] Stage 12.3: Static Google Fonts catalog snapshot and pure catalog helpers.
+- [x] Stage 12.4: Searchable font picker with `Cyrillic only` default-on and category/search filters.
 - [ ] Stage 12 (`0.6.0`): Google Fonts.
 - [ ] Stage 13+: theme contract expansion, Aegea version targeting, deep preview states (on demand).
 - [ ] Backlog: dark mode, bundled Cyrillic fonts, theme import, UI i18n, visual diff, gallery, arbitrary CSS editor.

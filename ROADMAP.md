@@ -143,11 +143,14 @@
 4. Stage 12.4 — UI font picker:
    - заменить свободный ввод на picker с режимами Plain default / System stack / Google Font;
    - в списке показывать короткий preview sample для видимых результатов, не грузить весь каталог сразу.
-5. Stage 12.5 — Preview/export:
+5. Stage 12.5 — Live preview:
    - в генераторе подгружать выбранные Google Fonts для live preview;
+   - не подгружать CSS для всего каталога или для каждого результата поиска.
+6. Stage 12.6 — Export CSS:
    - в `generateThemeCss` добавлять `@import` только при выбранных Google Fonts;
+   - дедуплицировать одинаковые семейства между interface и note text;
    - в JSON/URL сериализацию включать выбранный font source как часть `typography`.
-6. Stage 12.6 — Ручная проверка:
+7. Stage 12.7 — Ручная проверка:
    - кириллический фильтр по умолчанию скрывает латиницу-only семейства;
    - выбранный кириллический шрифт виден в Aegea preview на русском sample text;
    - ZIP содержит только `@import` + CSS variables, без font files;
