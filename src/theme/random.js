@@ -1,10 +1,16 @@
 import { getContrastRatio, getRelativeLuminance, normalizeHexColor } from './color.js';
 import { isAccentPairDistinguishable, isPaletteContrastValid, MIN_CONTRAST_RATIO } from './contrast.js';
 import { createEmptyFieldLocks } from './fieldLocks.js';
-import { FONT_SOURCE_SYSTEM, systemFonts } from './fonts.js';
+import { FONT_SOURCE_GOOGLE, FONT_SOURCE_SYSTEM, systemStackVariants } from './fonts.js';
+import { googleFontsCatalog } from './googleFontsCatalog.js';
 
 const MAX_COLOR_ATTEMPTS = 64;
 const MAX_PALETTE_ATTEMPTS = 32;
+
+const fontPool = [
+  ...systemStackVariants.map((stack) => ({ source: FONT_SOURCE_SYSTEM, family: stack.value })),
+  ...googleFontsCatalog.map((font) => ({ source: FONT_SOURCE_GOOGLE, family: font.family })),
+];
 
 function getRandomItem(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -104,6 +110,18 @@ export function buildRandomPalette(basePalette, paletteLocks = {}) {
 
 export function getRandomThemeState(currentState, fieldLocks = createEmptyFieldLocks()) {
   const themeNumber = Math.floor(Math.random() * 9000) + 1000;
+  const mainFont = fieldLocks.typography.mainFontFamily
+    ? {
+        source: currentState.typography.mainFontSource,
+        family: currentState.typography.mainFontFamily,
+      }
+    : getRandomItem(fontPool);
+  const noteFont = fieldLocks.typography.noteFontFamily
+    ? {
+        source: currentState.typography.noteFontSource,
+        family: currentState.typography.noteFontFamily,
+      }
+    : getRandomItem(fontPool);
 
   return {
     meta: {
@@ -112,18 +130,10 @@ export function getRandomThemeState(currentState, fieldLocks = createEmptyFieldL
     },
     palette: buildRandomPalette(currentState.palette, fieldLocks.palette),
     typography: {
-      mainFontSource: fieldLocks.typography.mainFontFamily
-        ? currentState.typography.mainFontSource
-        : FONT_SOURCE_SYSTEM,
-      mainFontFamily: fieldLocks.typography.mainFontFamily
-        ? currentState.typography.mainFontFamily
-        : getRandomItem(systemFonts).value,
-      noteFontSource: fieldLocks.typography.noteFontFamily
-        ? currentState.typography.noteFontSource
-        : FONT_SOURCE_SYSTEM,
-      noteFontFamily: fieldLocks.typography.noteFontFamily
-        ? currentState.typography.noteFontFamily
-        : getRandomItem(systemFonts).value,
+      mainFontSource: mainFont.source,
+      mainFontFamily: mainFont.family,
+      noteFontSource: noteFont.source,
+      noteFontFamily: noteFont.family,
       noteTextSize: fieldLocks.typography.noteTextSize
         ? currentState.typography.noteTextSize
         : `${getRandomNumber(14, 24, 1)}px`,

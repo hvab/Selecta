@@ -2,6 +2,21 @@ export const UI_FONT_STACK = 'system-ui, sans-serif';
 export const SERIF_FONT_STACK = 'ui-serif, Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif';
 export const MONO_FONT_STACK = 'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace';
 
+export const systemStackVariants = [
+  {
+    value: UI_FONT_STACK,
+    label: 'Sans-serif',
+  },
+  {
+    value: SERIF_FONT_STACK,
+    label: 'Serif',
+  },
+];
+
+export function isBuiltinSystemStack(value) {
+  return value === UI_FONT_STACK || value === SERIF_FONT_STACK;
+}
+
 export const systemFonts = [
   {
     value: UI_FONT_STACK,

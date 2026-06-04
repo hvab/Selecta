@@ -13,6 +13,7 @@ The project follows semantic versioning where practical.
 - Generated theme CSS adds a deduplicated Google Fonts `@import` before `:root`.
 - Manual generator and installed Aegea theme verification for the Google Fonts flow.
 - Font-family output now adds modern system fallbacks for Google Fonts and system stack suggestions.
+- Random theme generation picks main and note typography from the Google Fonts catalog as well as system stack variants, with matching `*FontSource` values.
 
 ## 0.5.0 - 2026-06-03
 

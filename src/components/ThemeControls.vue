@@ -5,9 +5,11 @@ import {
   FONT_SOURCE_GOOGLE,
   FONT_SOURCE_PLAIN,
   FONT_SOURCE_SYSTEM,
+  isBuiltinSystemStack,
   SERIF_FONT_STACK,
-  UI_FONT_STACK,
   systemFonts,
+  systemStackVariants,
+  UI_FONT_STACK,
 } from '../theme/fonts.js';
 import { filterGoogleFonts, findGoogleFont, getGoogleFontFamilyCssValue } from '../theme/googleFonts.js';
 import { googleFontsCatalog } from '../theme/googleFontsCatalog.js';
@@ -67,14 +69,12 @@ const fontControls = [
     familyKey: 'mainFontFamily',
     sourceKey: 'mainFontSource',
     label: 'Interface font',
-    placeholder: UI_FONT_STACK,
     defaultSystemFontValue: UI_FONT_STACK,
   },
   {
     familyKey: 'noteFontFamily',
     sourceKey: 'noteFontSource',
     label: 'Note text font',
-    placeholder: SERIF_FONT_STACK,
     defaultSystemFontValue: SERIF_FONT_STACK,
   },
 ];
@@ -245,17 +245,40 @@ function updateFontSource(control, event) {
             />
           </label>
         </div>
-        <div v-if="typography[control.sourceKey] === FONT_SOURCE_SYSTEM" class="control-row font-family-row">
-          <label class="control-label" :for="`font-family-${control.familyKey}`">Stack</label>
-          <input
-            :id="`font-family-${control.familyKey}`"
-            class="text-control"
-            type="text"
-            list="system-font-suggestions"
-            :placeholder="control.placeholder"
-            :value="typography[control.familyKey]"
-            @input="emit('update:typography-field', control.familyKey, $event.target.value)"
-          />
+        <div v-if="typography[control.sourceKey] === FONT_SOURCE_SYSTEM" class="font-system-stack">
+          <div class="control-row font-family-row">
+            <label class="control-label" :for="`font-family-${control.familyKey}`">Stack</label>
+            <select
+              :id="`font-family-${control.familyKey}`"
+              class="select-control"
+              :value="typography[control.familyKey]"
+              @change="emit('update:typography-field', control.familyKey, $event.target.value)"
+            >
+              <option
+                v-if="!isBuiltinSystemStack(typography[control.familyKey])"
+                :value="typography[control.familyKey]"
+              >
+                Custom
+              </option>
+              <option v-for="variant in systemStackVariants" :key="variant.value" :value="variant.value">
+                {{ variant.label }}
+              </option>
+            </select>
+          </div>
+          <div
+            v-if="!isBuiltinSystemStack(typography[control.familyKey])"
+            class="control-row font-family-row"
+          >
+            <label class="control-label" :for="`font-family-custom-${control.familyKey}`">Custom stack</label>
+            <input
+              :id="`font-family-custom-${control.familyKey}`"
+              class="text-control"
+              type="text"
+              list="system-font-suggestions"
+              :value="typography[control.familyKey]"
+              @input="emit('update:typography-field', control.familyKey, $event.target.value)"
+            />
+          </div>
         </div>
         <div v-else-if="typography[control.sourceKey] === FONT_SOURCE_GOOGLE" class="font-picker">
           <div class="font-picker-filters">
