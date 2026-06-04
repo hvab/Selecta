@@ -20,6 +20,8 @@ import { getContrastWarningsByField } from './theme/contrast.js';
 import { validateMetadata } from './theme/validation.js';
 import { generateThemeZip, getThemeZipFileName } from './theme/zip.js';
 import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './theme/fonts.js';
+import { getSelectedGoogleFontsCss2Url } from './theme/googleFonts.js';
+import { googleFontsCatalog } from './theme/googleFontsCatalog.js';
 
 const themeState = reactive(structuredClone(initialThemeState));
 const fieldLocks = reactive(createEmptyFieldLocks());
@@ -49,6 +51,7 @@ const selectedPresetId = computed(
 const appStyle = computed(() => ({
   '--controls-pane-width': `${controlsPaneWidth.value}px`,
 }));
+const googleFontsPreviewUrl = computed(() => getSelectedGoogleFontsCss2Url(googleFontsCatalog, themeState.typography));
 
 const controlsPaneMinWidth = 320;
 const controlsPaneMaxWidth = 672;
@@ -415,6 +418,7 @@ watch(
 
 <template>
   <main ref="appElement" class="app" :style="appStyle">
+    <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
     <aside class="app-controls-pane">
       <div class="app-controls-scroll">
         <header class="app-header">

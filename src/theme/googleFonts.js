@@ -1,3 +1,5 @@
+import { FONT_SOURCE_GOOGLE } from './fonts.js';
+
 export const GOOGLE_FONTS_CSS2_BASE_URL = 'https://fonts.googleapis.com/css2';
 export const GOOGLE_FONTS_CYRILLIC_SUBSET = 'cyrillic';
 
@@ -73,4 +75,21 @@ export function getGoogleFontsCss2Url(fonts) {
   const familyParams = getUniqueFonts(fonts).map((font) => `family=${getGoogleFontCss2FamilyParam(font)}`);
 
   return `${GOOGLE_FONTS_CSS2_BASE_URL}?${familyParams.join('&')}&display=swap`;
+}
+
+export function getSelectedGoogleFonts(catalog, typography) {
+  return getUniqueFonts(
+    [
+      typography.mainFontSource === FONT_SOURCE_GOOGLE ? typography.mainFontFamily : '',
+      typography.noteFontSource === FONT_SOURCE_GOOGLE ? typography.noteFontFamily : '',
+    ]
+      .map((family) => findGoogleFont(catalog, family))
+      .filter(Boolean)
+  );
+}
+
+export function getSelectedGoogleFontsCss2Url(catalog, typography) {
+  const fonts = getSelectedGoogleFonts(catalog, typography);
+
+  return fonts.length ? getGoogleFontsCss2Url(fonts) : '';
 }

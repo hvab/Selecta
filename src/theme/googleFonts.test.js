@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './fonts.js';
 import { googleFontsCatalog } from './googleFontsCatalog.js';
 import {
   filterGoogleFonts,
@@ -7,6 +8,8 @@ import {
   getGoogleFontCss2FamilyParam,
   getGoogleFontsCss2Url,
   getRequiredGoogleFontStyleTuples,
+  getSelectedGoogleFonts,
+  getSelectedGoogleFontsCss2Url,
 } from './googleFonts.js';
 
 test('filters Google Fonts to Cyrillic families by default', () => {
@@ -73,4 +76,43 @@ test('builds deduplicated CSS2 URLs', () => {
     getGoogleFontsCss2Url([ptSans, lora, ptSans]),
     'https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,700;1,400&display=swap'
   );
+});
+
+test('selects only active Google Fonts from typography', () => {
+  const typography = {
+    mainFontSource: FONT_SOURCE_GOOGLE,
+    mainFontFamily: 'PT Sans',
+    noteFontSource: FONT_SOURCE_SYSTEM,
+    noteFontFamily: 'Georgia, serif',
+  };
+
+  assert.deepEqual(
+    getSelectedGoogleFonts(googleFontsCatalog, typography).map((font) => font.family),
+    ['PT Sans']
+  );
+});
+
+test('builds selected Google Fonts CSS2 URLs with deduplication', () => {
+  const typography = {
+    mainFontSource: FONT_SOURCE_GOOGLE,
+    mainFontFamily: 'PT Sans',
+    noteFontSource: FONT_SOURCE_GOOGLE,
+    noteFontFamily: 'PT Sans',
+  };
+
+  assert.equal(
+    getSelectedGoogleFontsCss2Url(googleFontsCatalog, typography),
+    'https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap'
+  );
+});
+
+test('skips Google Fonts CSS2 URL when typography has no Google source', () => {
+  const typography = {
+    mainFontSource: FONT_SOURCE_PLAIN,
+    mainFontFamily: '',
+    noteFontSource: FONT_SOURCE_SYSTEM,
+    noteFontFamily: 'Georgia, serif',
+  };
+
+  assert.equal(getSelectedGoogleFontsCss2Url(googleFontsCatalog, typography), '');
 });
