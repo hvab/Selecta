@@ -133,20 +133,21 @@
 2. Stage 12.2 — Aegea font preset reconciliation:
    - обновить пресеты `chancery`, `holm`, `kolomna`, чтобы они отражали реальные font-переопределения Aegea;
    - решить, нужно ли показывать inherited `plain` font state в UI как явный режим.
-3. Stage 12.3 — `src/theme/googleFontsCatalog.js` — статический metadata snapshot: `family`, `category`, `subsets`, `variants`, optional `axes`; документировать источник и дату обновления.
-4. Stage 12.4 — `src/theme/googleFonts.js` — чистые функции:
-   - фильтрация по `cyrillic`;
-   - поиск по названию и категории;
-   - вычисление доступных style tuples для `400`, `700`, `400 italic`;
-   - генерация CSS2 URL с `display=swap`.
-5. Stage 12.5 — UI font picker:
+3. Stage 12.3 — Google Fonts catalog core:
+   - `src/theme/googleFontsCatalog.js` — статический metadata snapshot: `family`, `category`, `subsets`, `variants`, optional `axes`; документировать источник и дату обновления;
+   - `src/theme/googleFonts.js` — чистые функции:
+     - фильтрация по `cyrillic`;
+     - поиск по названию и категории;
+     - вычисление доступных style tuples для `400`, `700`, `400 italic`;
+     - генерация CSS2 URL с `display=swap`.
+4. Stage 12.4 — UI font picker:
    - заменить свободный ввод на picker с режимами Plain default / System stack / Google Font;
    - в списке показывать короткий preview sample для видимых результатов, не грузить весь каталог сразу.
-6. Stage 12.6 — Preview/export:
+5. Stage 12.5 — Preview/export:
    - в генераторе подгружать выбранные Google Fonts для live preview;
    - в `generateThemeCss` добавлять `@import` только при выбранных Google Fonts;
    - в JSON/URL сериализацию включать выбранный font source как часть `typography`.
-7. Stage 12.7 — Ручная проверка:
+6. Stage 12.6 — Ручная проверка:
    - кириллический фильтр по умолчанию скрывает латиницу-only семейства;
    - выбранный кириллический шрифт виден в Aegea preview на русском sample text;
    - ZIP содержит только `@import` + CSS variables, без font files;
