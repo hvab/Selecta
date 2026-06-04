@@ -191,6 +191,11 @@ function resetToDefaults() {
   clearThemeUrlParam();
   clearSession();
   resetThemeState();
+  saveSession({
+    themeState,
+    fieldLocks,
+    uiState: getUiState(),
+  });
 }
 
 function randomizeTheme() {
