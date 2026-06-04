@@ -1,22 +1,10 @@
 import { getContrastRatio, getRelativeLuminance, normalizeHexColor } from './color.js';
 import { isAccentPairDistinguishable, isPaletteContrastValid, MIN_CONTRAST_RATIO } from './contrast.js';
 import { createEmptyFieldLocks } from './fieldLocks.js';
-import { FONT_SOURCE_GOOGLE, FONT_SOURCE_SYSTEM, systemStackVariants } from './fonts.js';
-import { googleFontsCatalog } from './googleFontsCatalog.js';
+import { fontPool } from './fonts.js';
 
 const MAX_COLOR_ATTEMPTS = 64;
 const MAX_PALETTE_ATTEMPTS = 32;
-
-const extraSystemFamilies = [
-  'Georgia, serif',
-  '"Helvetica Neue", "Helvetica", "Arial", sans-serif',
-];
-
-const fontPool = [
-  ...systemStackVariants.map((stack) => ({ source: FONT_SOURCE_SYSTEM, family: stack.value })),
-  ...extraSystemFamilies.map((family) => ({ source: FONT_SOURCE_SYSTEM, family })),
-  ...googleFontsCatalog.map((font) => ({ source: FONT_SOURCE_GOOGLE, family: font.family })),
-];
 
 function getRandomItem(items) {
   return items[Math.floor(Math.random() * items.length)];

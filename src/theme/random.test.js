@@ -2,13 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { isPaletteContrastValid } from './contrast.js';
 import { createEmptyFieldLocks } from './fieldLocks.js';
-import { FONT_SOURCE_GOOGLE, FONT_SOURCE_SYSTEM, systemStackVariants } from './fonts.js';
-import { googleFontsCatalog } from './googleFontsCatalog.js';
+import { FONT_SOURCE_GOOGLE, FONT_SOURCE_SYSTEM, fontPool, systemStackVariants } from './fonts.js';
 import { initialThemeState } from './model.js';
 import { buildRandomPalette, getRandomThemeState } from './random.js';
 
-const googleFontFamilies = new Set(googleFontsCatalog.map((font) => font.family));
-const systemFontFamilies = new Set(systemStackVariants.map((stack) => stack.value));
+const googleFontFamilies = new Set(
+  fontPool.filter((entry) => entry.source === FONT_SOURCE_GOOGLE).map((entry) => entry.family)
+);
+const systemFontFamilies = new Set(
+  fontPool.filter((entry) => entry.source === FONT_SOURCE_SYSTEM).map((entry) => entry.family)
+);
 
 test('buildRandomPalette passes contrast checks', () => {
   for (let attempt = 0; attempt < 32; attempt += 1) {

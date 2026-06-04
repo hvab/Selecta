@@ -1,6 +1,12 @@
 <script setup>
 import { PALETTE_COLOR_CONTROLS } from '../theme/fieldLocks.js';
-import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM, systemStackVariants } from '../theme/fonts.js';
+import {
+  FONT_SOURCE_GOOGLE,
+  FONT_SOURCE_PLAIN,
+  FONT_SOURCE_SYSTEM,
+  namedSystemFamilies,
+  systemStackVariants,
+} from '../theme/fonts.js';
 import { googleFontsCatalog } from '../theme/googleFontsCatalog.js';
 
 const props = defineProps({
@@ -64,11 +70,6 @@ const fontControls = [
     sourceKey: 'noteFontSource',
     label: 'Note text font',
   },
-];
-
-const namedSystemFamilies = [
-  { value: 'Georgia, serif', label: 'Georgia' },
-  { value: '"Helvetica Neue", "Helvetica", "Arial", sans-serif', label: 'Helvetica Neue' },
 ];
 
 const fontSelectGroups = [

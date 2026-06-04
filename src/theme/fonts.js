@@ -1,3 +1,5 @@
+import { googleFontsCatalog } from './googleFontsCatalog.js';
+
 export const UI_FONT_STACK = 'system-ui, sans-serif';
 export const SERIF_FONT_STACK = 'ui-serif, Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif';
 export const MONO_FONT_STACK = 'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace';
@@ -11,6 +13,11 @@ export const systemStackVariants = [
     value: SERIF_FONT_STACK,
     label: 'Serif',
   },
+];
+
+export const namedSystemFamilies = [
+  { value: 'Georgia, serif', label: 'Georgia' },
+  { value: '"Helvetica Neue", Helvetica, Arial, sans-serif', label: 'Helvetica Neue' },
 ];
 
 const fontFamilyValuePattern = /^[A-Za-z0-9 "'_,.-]+$/;
@@ -82,3 +89,9 @@ export function getFontFamilyCssValue(source, value, fallbackValue) {
     ? null
     : addFontFamilyFallback(normalizeFontFamily(value, fallbackValue), fallbackValue);
 }
+
+export const fontPool = [
+  ...systemStackVariants.map((stack) => ({ source: FONT_SOURCE_SYSTEM, family: stack.value })),
+  ...namedSystemFamilies.map((family) => ({ source: FONT_SOURCE_SYSTEM, family: family.value })),
+  ...googleFontsCatalog.map((font) => ({ source: FONT_SOURCE_GOOGLE, family: font.family })),
+];

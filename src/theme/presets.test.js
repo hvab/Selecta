@@ -76,9 +76,9 @@ test('official presets mirror Aegea font overrides', () => {
   assert.equal(presetsById.chancery.typography.noteFontSource, FONT_SOURCE_SYSTEM);
   assert.equal(presetsById.chancery.typography.noteFontFamily, 'Georgia, serif');
   assert.equal(presetsById.holm.typography.mainFontSource, FONT_SOURCE_SYSTEM);
-  assert.equal(presetsById.holm.typography.mainFontFamily, '"Helvetica Neue", "Helvetica", "Arial", sans-serif');
+  assert.equal(presetsById.holm.typography.mainFontFamily, '"Helvetica Neue", Helvetica, Arial, sans-serif');
   assert.equal(presetsById.holm.typography.noteFontSource, FONT_SOURCE_SYSTEM);
-  assert.equal(presetsById.holm.typography.noteFontFamily, '"Georgia", serif');
+  assert.equal(presetsById.holm.typography.noteFontFamily, 'Georgia, serif');
   assert.equal(presetsById.kolomna.typography.mainFontSource, FONT_SOURCE_PLAIN);
   assert.equal(presetsById.kolomna.typography.noteFontSource, FONT_SOURCE_SYSTEM);
   assert.equal(presetsById.kolomna.typography.noteFontFamily, 'Georgia, serif');

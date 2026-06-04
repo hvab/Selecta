@@ -118,7 +118,7 @@ export const themePresets = [
     },
     {
       mainFontSource: FONT_SOURCE_SYSTEM,
-      mainFontFamily: '"Helvetica Neue", "Helvetica", "Arial", sans-serif',
+      mainFontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
       noteFontSource: FONT_SOURCE_SYSTEM,
       noteFontFamily: 'Georgia, serif',
     }
