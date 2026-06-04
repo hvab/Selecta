@@ -19,6 +19,7 @@ import { getRandomThemeState } from './theme/random.js';
 import { getContrastWarningsByField } from './theme/contrast.js';
 import { validateMetadata } from './theme/validation.js';
 import { generateThemeZip, getThemeZipFileName } from './theme/zip.js';
+import { FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './theme/fonts.js';
 
 const themeState = reactive(structuredClone(initialThemeState));
 const fieldLocks = reactive(createEmptyFieldLocks());
@@ -56,6 +57,10 @@ const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
 let shouldSkipNextSessionSave = false;
 const themeUrlParam = 'theme';
+const fontSourceKeyByFamilyKey = {
+  mainFontFamily: 'mainFontSource',
+  noteFontFamily: 'noteFontSource',
+};
 const effectiveControlsPaneMaxWidth = computed(() => {
   const appWidth = appElement.value?.getBoundingClientRect().width ?? window.innerWidth;
 
@@ -133,6 +138,10 @@ function updatePaletteField(key, value) {
 function updateTypographyField(key, value) {
   clearStatusMessages();
   themeState.typography[key] = value;
+
+  if (fontSourceKeyByFamilyKey[key]) {
+    themeState.typography[fontSourceKeyByFamilyKey[key]] = value.trim() ? FONT_SOURCE_SYSTEM : FONT_SOURCE_PLAIN;
+  }
 }
 
 function updateLayoutField(key, value) {
@@ -194,6 +203,11 @@ function randomizeTheme() {
   for (const [key, locked] of Object.entries(fieldLocks.typography)) {
     if (!locked) {
       themeState.typography[key] = randomThemeState.typography[key];
+
+      if (fontSourceKeyByFamilyKey[key]) {
+        themeState.typography[fontSourceKeyByFamilyKey[key]] =
+          randomThemeState.typography[fontSourceKeyByFamilyKey[key]];
+      }
     }
   }
 

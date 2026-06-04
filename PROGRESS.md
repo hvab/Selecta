@@ -20,6 +20,11 @@
 - [x] Stage 7.3: Final MVP review and cleanup.
 - [x] Pre-release Random button for quick theme sampling.
 - [x] Pre-release Aegea 11.5 target audit.
+- [x] Stage 8: Expanded Aegea demo preview.
+- [x] Stage 9: Contrast warnings and field locks for Random.
+- [x] Stage 10.0: Session restore in localStorage and Reset.
+- [x] Stage 10.1: Aegea theme presets.
+- [x] Stage 11: URL state and JSON export/import.
 
 ## Current runnable state
 
@@ -29,6 +34,9 @@ The app starts locally and shows:
 - editable theme metadata fields;
 - metadata validation errors for required names and invalid folder names;
 - editable color, typography, and layout controls;
+- non-blocking contrast warnings and field locks for Random;
+- Aegea theme presets;
+- session restore, Reset, URL sharing, JSON export, and JSON import;
 - a guarded download button that exports a ZIP archive with the theme folder inside;
 - the current theme state;
 - generated `styles/main.css`;
@@ -354,7 +362,7 @@ Deliberately still outside this Stage 8.7 slice:
 
 ## Next small step
 
-- [ ] Stage 11.5 (`0.5.0`): manual share/import verification (`ROADMAP.md`).
+- [ ] Stage 12.2 (`0.6.0`): reconcile Aegea preset font overrides for `chancery`, `holm`, and `kolomna` (`ROADMAP.md`).
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.
@@ -400,7 +408,8 @@ Planned releases (detail in `ROADMAP.md`):
 - [x] Stage 11.2: URL share with `?theme=` loading priority and invalid-link fallback.
 - [x] Stage 11.3: JSON export using the theme serialization format.
 - [x] Stage 11.4: JSON import with inline invalid-file feedback.
-- [ ] Stage 11 (`0.5.0`): URL state and/or JSON export/import.
+- [x] Stage 11 (`0.5.0`): URL state and JSON export/import.
+- [x] Stage 12.1: Typography font source model (`plain` / `system` / future `google`).
 - [ ] Stage 12 (`0.6.0`): Google Fonts.
 - [ ] Stage 13+: theme contract expansion, Aegea version targeting, deep preview states (on demand).
 - [ ] Backlog: dark mode, bundled Cyrillic fonts, theme import, UI i18n, visual diff, gallery, arbitrary CSS editor.

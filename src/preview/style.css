@@ -5,6 +5,8 @@
   --marginTopCompact: 16px;
   --marginLeftCompact: 4%;
   --marginRightCompact: 4%;
+  --mainFontFamily: "InterVariable", sans-serif;
+  --noteMainFontFamily: inherit;
   --smallFontFamily: inherit;
   --smallFontSize: 12px;
   --smallLineHeight: 16px;

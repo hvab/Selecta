@@ -30,8 +30,6 @@ test('derives shared plain color variables from theme palette', () => {
     '--markedImageBorderColor': '#fff2a8',
     '--inputBackgroundColor': '#f0f0f0',
     '--inputTextColor': '#111111',
-    '--mainFontFamily': 'Arial, Helvetica, sans-serif',
-    '--noteMainFontFamily': 'Georgia, "Times New Roman", serif',
     '--noteTitleFontSize': '27px',
     '--noteTitleLineHeight': '31.5px',
     '--noteTextFontSize': '18px',
@@ -45,7 +43,9 @@ test('derives shared plain color variables from theme palette', () => {
 test('keeps custom font stacks and falls back from unsafe font-family values', () => {
   const themeState = structuredClone(initialThemeState);
 
+  themeState.typography.mainFontSource = 'system';
   themeState.typography.mainFontFamily = 'Aptos, "Segoe UI", system-ui, sans-serif';
+  themeState.typography.noteFontSource = 'system';
   themeState.typography.noteFontFamily = 'Georgia;\nbody { color: red }';
 
   assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], 'Aptos, "Segoe UI", system-ui, sans-serif');

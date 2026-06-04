@@ -1,4 +1,5 @@
 import { initialThemeState } from './model.js';
+import { normalizeTypographyFontSources } from './fonts.js';
 
 export const THEME_SERIALIZATION_VERSION = 1;
 
@@ -11,14 +12,15 @@ function copyKnownSection(section, referenceSection, sectionName) {
     throw new Error(`Invalid theme ${sectionName}.`);
   }
 
+  const compatibleSection = sectionName === 'typography' ? normalizeTypographyFontSources(section) : section;
   const knownSection = {};
 
   for (const [key, referenceValue] of Object.entries(referenceSection)) {
-    if (typeof section[key] !== typeof referenceValue) {
+    if (typeof compatibleSection[key] !== typeof referenceValue) {
       throw new Error(`Invalid theme ${sectionName}.${key}.`);
     }
 
-    knownSection[key] = section[key];
+    knownSection[key] = compatibleSection[key];
   }
 
   return knownSection;

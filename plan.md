@@ -329,9 +329,9 @@ src/
 Кратко:
 
 1. Этап 9 (`0.3.0`): предупреждения о контрасте + фиксация полей для Random. ✅
-2. Этап 10.0 (`0.4.0`): сохранение сессии в localStorage + Reset.
-3. Этап 10.1 (`0.4.0`): пресеты из официальных тем Aegea.
-4. Этап 11 (`0.5.0`): URL state + JSON export/import.
+2. Этап 10.0 (`0.4.0`): сохранение сессии в localStorage + Reset. ✅
+3. Этап 10.1 (`0.4.0`): пресеты из официальных тем Aegea. ✅
+4. Этап 11 (`0.5.0`): URL state + JSON export/import. ✅
 5. Этап 12 (`0.6.0`): Google Fonts.
 6. Далее — расширение контракта темы, версии Aegea, глубокое превью; тёмный режим, bundled шрифты, импорт тем, i18n — в backlog `ROADMAP.md`.
 
@@ -484,3 +484,33 @@ rgb() значения из CSS преобразуются в hex вручную
   - export → import → состояние идентично (включая meta);
   - Copy link → открыть в новой вкладке → то же состояние;
   - испорченный JSON → понятная ошибка в UI, приложение не падает.
+
+## Этап 12. Google Fonts (`0.6.0`)
+
+Цель: добавить внешний выбор Google Fonts без bundled font files и без переписывания текущего системного font pipeline.
+
+**Решение для этапа:**
+
+- Font slots соответствуют Aegea-переменным `--mainFontFamily` и `--noteMainFontFamily`.
+- У каждого slot есть source:
+  - `plain` — не переопределяем Aegea `plain`, child theme не пишет font-переменную;
+  - `system` — явный system stack;
+  - `google` — выбранное Google family.
+- Текущий Aegea `plain`: main = bundled Inter, note = inherit, small = inherit; code/`tt`/`pre` = bundled JetBrains Mono и не редактируется в этом этапе.
+- Встроенные темы в основном наследуют шрифт `plain`, но `chancery`, `holm`, `kolomna` имеют font-переопределения; это надо отразить в пресетах отдельным срезом.
+- Google Fonts в теме подключаются через CSS API `https://fonts.googleapis.com/css2?...&display=swap`.
+- В ZIP попадает только `styles/main.css` с `@import` перед `:root`; файлы шрифтов не попадают.
+- Каталог Google Fonts в Selecta — статический snapshot metadata, чтобы не хранить runtime API key в приложении.
+- Кириллический фильтр включён по умолчанию: показываем только семейства с `subsets.includes('cyrillic')`.
+- Свободный ввод для системных font stacks оставить, но Google Fonts выбирать только из каталога.
+- Для выбранного семейства запрашивать только фактически нужные начертания: `400`, `700`, `400 italic`, если они есть. `700 italic` не запрашивать на первом Google Fonts этапе: в проверенном Aegea markup/CSS нет отдельного обязательного состояния жирного курсива.
+
+**Что делать:**
+
+- [x] Stage 12.1: Ввести `mainFontSource` / `noteFontSource` (`plain`, `system`, позже `google`); `plain` не генерирует font CSS variables; старые JSON/URL/localStorage payload мигрируют по family value.
+- [ ] Stage 12.2: Сверить и обновить font values у Aegea presets (`chancery`, `holm`, `kolomna`).
+- [ ] Stage 12.3: Добавить статический `googleFontsCatalog` и чистые функции фильтрации/search/style tuple/url generation.
+- [ ] Stage 12.4: Сделать searchable font picker с `Cyrillic only` default-on и category/search filters.
+- [ ] Stage 12.5: Подключить live preview для выбранных Google Fonts без загрузки всего каталога.
+- [ ] Stage 12.6: Добавить `@import` в generated `styles/main.css`; дедуплицировать одинаковые семейства между interface и note text.
+- [ ] Stage 12.7: Ручная проверка в генераторе и в установленной Aegea теме.

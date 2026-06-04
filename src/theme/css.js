@@ -1,9 +1,19 @@
 import { hexToRgba } from './color.js';
-import { normalizeFontFamily } from './fonts.js';
+import { getFontFamilyCssValue } from './fonts.js';
 import { getNoteTitleLineHeight, scalePixelSize } from './typography.js';
 
 export function getThemeCssVariables(themeState) {
   const noteTitleFontSize = scalePixelSize(themeState.typography.noteTextSize, themeState.typography.titleScale);
+  const mainFontFamily = getFontFamilyCssValue(
+    themeState.typography.mainFontSource,
+    themeState.typography.mainFontFamily,
+    'Arial, Helvetica, sans-serif'
+  );
+  const noteFontFamily = getFontFamilyCssValue(
+    themeState.typography.noteFontSource,
+    themeState.typography.noteFontFamily,
+    'Georgia, "Times New Roman", serif'
+  );
 
   return {
     '--backgroundColor': themeState.palette.background,
@@ -31,11 +41,8 @@ export function getThemeCssVariables(themeState) {
     '--markedImageBorderColor': themeState.palette.markedTextBackground,
     '--inputBackgroundColor': themeState.palette.inputBackground,
     '--inputTextColor': themeState.palette.inputText,
-    '--mainFontFamily': normalizeFontFamily(themeState.typography.mainFontFamily, 'Arial, Helvetica, sans-serif'),
-    '--noteMainFontFamily': normalizeFontFamily(
-      themeState.typography.noteFontFamily,
-      'Georgia, "Times New Roman", serif'
-    ),
+    ...(mainFontFamily ? { '--mainFontFamily': mainFontFamily } : {}),
+    ...(noteFontFamily ? { '--noteMainFontFamily': noteFontFamily } : {}),
     '--noteTitleFontSize': noteTitleFontSize,
     '--noteTitleLineHeight': getNoteTitleLineHeight(noteTitleFontSize),
     '--noteTextFontSize': themeState.typography.noteTextSize,

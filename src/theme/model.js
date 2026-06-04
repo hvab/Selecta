@@ -1,3 +1,5 @@
+import { FONT_SOURCE_PLAIN } from './fonts.js';
+
 export const initialThemeState = {
   meta: {
     folderName: 'my-theme',
@@ -22,7 +24,9 @@ export const initialThemeState = {
     inputText: '#111111',
   },
   typography: {
+    mainFontSource: FONT_SOURCE_PLAIN,
     mainFontFamily: '',
+    noteFontSource: FONT_SOURCE_PLAIN,
     noteFontFamily: '',
     noteTextSize: '18px',
     noteTextLineHeight: 1.6,

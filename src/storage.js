@@ -1,4 +1,5 @@
 import { META_LOCK_KEYS, PALETTE_LOCK_KEYS, TYPOGRAPHY_LOCK_KEYS, LAYOUT_LOCK_KEYS } from './theme/fieldLocks.js';
+import { normalizeTypographyFontSources } from './theme/fonts.js';
 import { initialThemeState } from './theme/model.js';
 
 export const SESSION_STORAGE_KEY = 'selecta_session';
@@ -15,22 +16,36 @@ function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function hasSamePrimitiveShape(value, reference) {
+function getCompatibleSection(value, reference, sectionName) {
   if (!isPlainObject(value)) {
-    return false;
+    return null;
   }
 
-  return Object.entries(reference).every(([key, referenceValue]) => typeof value[key] === typeof referenceValue);
+  const section = sectionName === 'typography' ? normalizeTypographyFontSources(value) : value;
+
+  return Object.entries(reference).every(([key, referenceValue]) => typeof section[key] === typeof referenceValue)
+    ? Object.fromEntries(Object.keys(reference).map((key) => [key, section[key]]))
+    : null;
 }
 
-function isValidThemeState(themeState) {
+function getCompatibleThemeState(themeState) {
   if (!isPlainObject(themeState)) {
-    return false;
+    return null;
   }
 
-  return Object.entries(initialThemeState).every(([section, reference]) =>
-    hasSamePrimitiveShape(themeState[section], reference)
-  );
+  const compatibleThemeState = {};
+
+  for (const [section, reference] of Object.entries(initialThemeState)) {
+    const compatibleSection = getCompatibleSection(themeState[section], reference, section);
+
+    if (!compatibleSection) {
+      return null;
+    }
+
+    compatibleThemeState[section] = compatibleSection;
+  }
+
+  return compatibleThemeState;
 }
 
 function isValidFieldLocks(fieldLocks) {
@@ -53,14 +68,25 @@ function isValidUiState(uiState) {
   );
 }
 
-function isValidSession(session) {
-  return (
-    isPlainObject(session) &&
-    session.version === SESSION_STORAGE_VERSION &&
-    isValidThemeState(session.themeState) &&
-    isValidFieldLocks(session.fieldLocks) &&
-    isValidUiState(session.uiState)
-  );
+function getCompatibleSession(session) {
+  if (
+    !isPlainObject(session) ||
+    session.version !== SESSION_STORAGE_VERSION ||
+    !isValidFieldLocks(session.fieldLocks) ||
+    !isValidUiState(session.uiState)
+  ) {
+    return null;
+  }
+
+  const themeState = getCompatibleThemeState(session.themeState);
+
+  return themeState
+    ? {
+        themeState,
+        fieldLocks: session.fieldLocks,
+        uiState: session.uiState,
+      }
+    : null;
 }
 
 export function saveSession({ themeState, fieldLocks, uiState }) {
@@ -89,13 +115,7 @@ export function loadSession() {
 
     const session = JSON.parse(rawSession);
 
-    return isValidSession(session)
-      ? {
-          themeState: session.themeState,
-          fieldLocks: session.fieldLocks,
-          uiState: session.uiState,
-        }
-      : null;
+    return getCompatibleSession(session);
   } catch {
     return null;
   }

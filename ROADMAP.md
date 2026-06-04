@@ -104,8 +104,53 @@
 
 ## Этап 12 — Google Fonts (`0.6.0`)
 
-- Выбор шрифта из каталога; явный контракт, что попадает в ZIP темы для Aegea.
+Цель: пользователь выбирает Google Fonts для interface font и note text font, видит результат в превью и получает Aegea ZIP с явным внешним подключением Google Fonts.
+
+Контекст Aegea:
+
+- Текущий `plain` задаёт `--mainFontFamily: "InterVariable", sans-serif`, `--noteMainFontFamily: inherit`, `--smallFontFamily: inherit`.
+- `plain` поставляет Inter normal/italic variable и JetBrains Mono regular; code/`tt`/`pre` остаются за JetBrains Mono и в Selecta на этом этапе не редактируются.
+- Большинство встроенных тем наследует font-переменные от `plain`, но есть исключения: `chancery` меняет main/note/small, `holm` меняет main/note, `kolomna` меняет note.
+- В проверенном markup/CSS нет отдельного обязательного состояния `700 italic`: Aegea использует regular, bold и italic как отдельные состояния.
+
+Контракт этапа:
+
+- Подключение только через Google Fonts CSS API; шрифтовые файлы в ZIP не складываем.
+- В `styles/main.css` генерируем минимальный `@import` перед `:root`, только для реально выбранных Google Fonts.
+- Запрашиваем только нужные начертания: regular `400`, bold `700`, italic `400 italic`, если они доступны у выбранного семейства.
+- Если выбран один Google Font для interface и note text, в CSS API он должен быть запрошен один раз.
+- Каталог в UI строится из metadata snapshot, а не из runtime-запроса с API key.
+- Фильтр **Cyrillic only** включён по умолчанию и показывает семейства с `cyrillic` subset; пользователь может отключить фильтр и увидеть весь каталог.
+- У каждого редактируемого font slot есть source: `plain` (не переопределять Aegea), `system` (явный system stack), `google` (выбранное Google family).
 - Без bundled open-source кириллических файлов на этом этапе.
+
+Порядок внутри этапа:
+
+1. Stage 12.1 — typography source model:
+   - добавить `mainFontSource` и `noteFontSource`;
+   - `plain` source не генерирует `--mainFontFamily` / `--noteMainFontFamily`, а наследует `plain`;
+   - старые JSON/URL/localStorage без source-полей мигрировать: пустой family → `plain`, непустой family → `system`.
+2. Stage 12.2 — Aegea font preset reconciliation:
+   - обновить пресеты `chancery`, `holm`, `kolomna`, чтобы они отражали реальные font-переопределения Aegea;
+   - решить, нужно ли показывать inherited `plain` font state в UI как явный режим.
+3. Stage 12.3 — `src/theme/googleFontsCatalog.js` — статический metadata snapshot: `family`, `category`, `subsets`, `variants`, optional `axes`; документировать источник и дату обновления.
+4. Stage 12.4 — `src/theme/googleFonts.js` — чистые функции:
+   - фильтрация по `cyrillic`;
+   - поиск по названию и категории;
+   - вычисление доступных style tuples для `400`, `700`, `400 italic`;
+   - генерация CSS2 URL с `display=swap`.
+5. Stage 12.5 — UI font picker:
+   - заменить свободный ввод на picker с режимами Plain default / System stack / Google Font;
+   - в списке показывать короткий preview sample для видимых результатов, не грузить весь каталог сразу.
+6. Stage 12.6 — Preview/export:
+   - в генераторе подгружать выбранные Google Fonts для live preview;
+   - в `generateThemeCss` добавлять `@import` только при выбранных Google Fonts;
+   - в JSON/URL сериализацию включать выбранный font source как часть `typography`.
+7. Stage 12.7 — Ручная проверка:
+   - кириллический фильтр по умолчанию скрывает латиницу-only семейства;
+   - выбранный кириллический шрифт виден в Aegea preview на русском sample text;
+   - ZIP содержит только `@import` + CSS variables, без font files;
+   - при одинаковом font family для обоих полей запрос не дублируется.
 
 ---
 

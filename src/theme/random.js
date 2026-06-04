@@ -1,7 +1,7 @@
 import { getContrastRatio, getRelativeLuminance, normalizeHexColor } from './color.js';
 import { isAccentPairDistinguishable, isPaletteContrastValid, MIN_CONTRAST_RATIO } from './contrast.js';
 import { createEmptyFieldLocks } from './fieldLocks.js';
-import { systemFonts } from './fonts.js';
+import { FONT_SOURCE_SYSTEM, systemFonts } from './fonts.js';
 
 const MAX_COLOR_ATTEMPTS = 64;
 const MAX_PALETTE_ATTEMPTS = 32;
@@ -112,9 +112,15 @@ export function getRandomThemeState(currentState, fieldLocks = createEmptyFieldL
     },
     palette: buildRandomPalette(currentState.palette, fieldLocks.palette),
     typography: {
+      mainFontSource: fieldLocks.typography.mainFontFamily
+        ? currentState.typography.mainFontSource
+        : FONT_SOURCE_SYSTEM,
       mainFontFamily: fieldLocks.typography.mainFontFamily
         ? currentState.typography.mainFontFamily
         : getRandomItem(systemFonts).value,
+      noteFontSource: fieldLocks.typography.noteFontFamily
+        ? currentState.typography.noteFontSource
+        : FONT_SOURCE_SYSTEM,
       noteFontFamily: fieldLocks.typography.noteFontFamily
         ? currentState.typography.noteFontFamily
         : getRandomItem(systemFonts).value,
