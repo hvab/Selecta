@@ -1,5 +1,7 @@
 import { hexToRgba } from './color.js';
 import { getFontFamilyCssValue } from './fonts.js';
+import { getSelectedGoogleFontsCss2Url } from './googleFonts.js';
+import { googleFontsCatalog } from './googleFontsCatalog.js';
 import { getNoteTitleLineHeight, scalePixelSize } from './typography.js';
 
 export function getThemeCssVariables(themeState) {
@@ -54,7 +56,10 @@ export function getThemeCssVariables(themeState) {
 }
 
 export function generateThemeCss(themeState) {
-  return `:root {
+  const googleFontsImportUrl = getSelectedGoogleFontsCss2Url(googleFontsCatalog, themeState.typography);
+  const googleFontsImport = googleFontsImportUrl ? `@import url("${googleFontsImportUrl}");\n\n` : '';
+
+  return `${googleFontsImport}:root {
 ${Object.entries(getThemeCssVariables(themeState))
   .map(([name, value]) => `  ${name}: ${value};`)
   .join('\n')}

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateThemeCss, getThemeCssVariables } from './css.js';
+import { FONT_SOURCE_GOOGLE } from './fonts.js';
 import { initialThemeState } from './model.js';
 
 test('derives shared plain color variables from theme palette', () => {
@@ -61,4 +62,25 @@ test('keeps custom font stacks and falls back from unsafe font-family values', (
   themeState.typography.mainFontFamily = '   ';
 
   assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], 'Arial, Helvetica, sans-serif');
+});
+
+test('does not add Google Fonts import for plain default typography', () => {
+  assert.equal(generateThemeCss(initialThemeState).startsWith(':root {'), true);
+});
+
+test('adds deduplicated Google Fonts import before theme variables', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.typography.mainFontSource = FONT_SOURCE_GOOGLE;
+  themeState.typography.mainFontFamily = 'PT Sans';
+  themeState.typography.noteFontSource = FONT_SOURCE_GOOGLE;
+  themeState.typography.noteFontFamily = 'PT Sans';
+
+  assert.equal(
+    generateThemeCss(themeState).startsWith(
+      '@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap");\n\n:root {'
+    ),
+    true
+  );
+  assert.equal(generateThemeCss(themeState).match(/family=PT\+Sans/g).length, 1);
 });

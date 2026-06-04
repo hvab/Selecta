@@ -512,5 +512,5 @@ rgb() значения из CSS преобразуются в hex вручную
 - [x] Stage 12.3: Добавить статический `googleFontsCatalog` и чистые функции фильтрации/search/style tuple/url generation.
 - [x] Stage 12.4: Сделать searchable font picker с `Cyrillic only` default-on и category/search filters.
 - [x] Stage 12.5: Подключить live preview для выбранных Google Fonts без загрузки всего каталога.
-- [ ] Stage 12.6: Добавить `@import` в generated `styles/main.css`; дедуплицировать одинаковые семейства между interface и note text.
+- [x] Stage 12.6: Добавить `@import` в generated `styles/main.css`; дедуплицировать одинаковые семейства между interface и note text.
 - [ ] Stage 12.7: Ручная проверка в генераторе и в установленной Aegea теме.

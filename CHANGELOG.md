@@ -10,6 +10,7 @@ The project follows semantic versioning where practical.
 
 - Google Fonts picker mode for typography controls with default-on Cyrillic filtering, search, category filters, and system stack fallback.
 - Live preview stylesheet loading for selected Google Fonts only, with repeated families deduplicated.
+- Generated theme CSS adds a deduplicated Google Fonts `@import` before `:root`.
 
 ## 0.5.0 - 2026-06-03
 
