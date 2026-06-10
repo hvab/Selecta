@@ -1,17 +1,12 @@
 import { FONT_SOURCE_GOOGLE, MONO_FONT_STACK, SERIF_FONT_STACK, UI_FONT_STACK } from './fonts.js';
 
 export const GOOGLE_FONTS_CSS2_BASE_URL = 'https://fonts.googleapis.com/css2';
-export const GOOGLE_FONTS_CYRILLIC_SUBSET = 'cyrillic';
 
 const requiredStyleVariants = [
   { variant: '400', italic: false, weight: 400 },
   { variant: '700', italic: false, weight: 700 },
   { variant: '400i', italic: true, weight: 400 },
 ];
-
-function normalizeSearchText(value) {
-  return value.trim().toLowerCase();
-}
 
 function encodeCss2FamilyName(family) {
   return encodeURIComponent(family).replace(/%20/g, '+');
@@ -34,23 +29,8 @@ function getUniqueFonts(fonts) {
   });
 }
 
-export function hasGoogleFontSubset(font, subset) {
-  return font.subsets.includes(subset);
-}
-
 export function findGoogleFont(catalog, family) {
   return catalog.find((font) => font.family === family) ?? null;
-}
-
-export function filterGoogleFonts(catalog, { cyrillicOnly = true, query = '', category = '' } = {}) {
-  const normalizedQuery = normalizeSearchText(query);
-
-  return catalog.filter(
-    (font) =>
-      (!cyrillicOnly || hasGoogleFontSubset(font, GOOGLE_FONTS_CYRILLIC_SUBSET)) &&
-      (!normalizedQuery || font.family.toLowerCase().includes(normalizedQuery)) &&
-      (!category || font.category === category)
-  );
 }
 
 export function getRequiredGoogleFontStyleTuples(font) {

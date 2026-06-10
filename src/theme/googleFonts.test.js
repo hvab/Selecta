@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './fonts.js';
 import { googleFontsCatalog } from './googleFontsCatalog.js';
 import {
-  filterGoogleFonts,
   findGoogleFont,
   getGoogleFontCss2FamilyParam,
   getGoogleFontFamilyCssValue,
@@ -12,37 +11,6 @@ import {
   getSelectedGoogleFonts,
   getSelectedGoogleFontsCss2Url,
 } from './googleFonts.js';
-
-test('filters Google Fonts to Cyrillic families by default', () => {
-  const fonts = filterGoogleFonts(googleFontsCatalog);
-
-  assert.equal(
-    fonts.some((font) => font.family === 'PT Sans'),
-    true
-  );
-  assert.equal(
-    fonts.some((font) => font.family === 'Zilla Slab'),
-    false
-  );
-});
-
-test('can include latin-only fonts when Cyrillic filter is disabled', () => {
-  const fonts = filterGoogleFonts(googleFontsCatalog, { cyrillicOnly: false, query: 'zilla' });
-
-  assert.deepEqual(
-    fonts.map((font) => font.family),
-    ['Zilla Slab']
-  );
-});
-
-test('filters Google Fonts by query and category', () => {
-  const fonts = filterGoogleFonts(googleFontsCatalog, { query: 'noto', category: 'Serif' });
-
-  assert.deepEqual(
-    fonts.map((font) => font.family),
-    ['Noto Serif']
-  );
-});
 
 test('finds Google Fonts by family name', () => {
   assert.equal(findGoogleFont(googleFontsCatalog, 'Roboto').family, 'Roboto');

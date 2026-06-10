@@ -514,3 +514,32 @@ rgb() значения из CSS преобразуются в hex вручную
 - [x] Stage 12.5: Подключить live preview для выбранных Google Fonts без загрузки всего каталога.
 - [x] Stage 12.6: Добавить `@import` в generated `styles/main.css`; дедуплицировать одинаковые семейства между interface и note text.
 - [x] Stage 12.7: Ручная проверка в генераторе и в установленной Aegea теме.
+
+### Stage 12.8. Google Fonts cleanup and curated Cyrillic catalog
+
+Цель: убрать лишний UI для отключения кириллического фильтра и заменить Google Fonts catalog на curated-набор, где все семейства уже поддерживают кириллицу.
+
+**Решения:**
+
+- Каталог Google Fonts в Selecta становится только кириллическим; отдельная галочка `Cyrillic only` больше не нужна.
+- Выбор Google Fonts остаётся плоским `<select>` с категориями через `optgroup`; отдельный search/filter UI не возвращаем в этом шаге.
+- `Zilla Slab` удалить из каталога: в `src/fonts.json` у него нет `cyrillic` subset.
+- Random для typography берёт весь `fontPool`, включая все Google Fonts из каталога; значит новый curated-набор будет ротироваться для interface font и note text font.
+- Отдельный моно-шрифт для code/`tt`/`pre` не добавлять в этот шаг: Aegea `plain` сейчас оставляет code font за bundled JetBrains Mono, а Selecta редактирует только `--mainFontFamily` и `--noteMainFontFamily`.
+- Для каждого Google family хранить только нужные варианты: `400`, `700`, `400i`, если они есть у семейства.
+
+**Целевой набор Google Fonts:**
+
+- Sans Serif: Roboto, Open Sans, Inter, Montserrat, Noto Sans, Arimo, Roboto Condensed, Oswald, Raleway, Nunito Sans, Rubik, Ubuntu, Manrope, PT Sans, Mulish, Source Sans 3, IBM Plex Sans, Fira Sans, Jost, Onest.
+- Serif: Noto Serif, Playfair Display, Roboto Slab, Merriweather, Lora, PT Serif, Cormorant Garamond, EB Garamond, Bitter, Source Serif 4, IBM Plex Serif, Literata.
+- Monospace: Roboto Mono, Source Code Pro, JetBrains Mono, IBM Plex Mono, Geist Mono, Fira Code.
+- Display: Comfortaa, Lobster, Forum, Yeseva One, Poiret One, Tektur.
+- Handwriting: Caveat, Pacifico, Great Vibes, Amatic SC, Bad Script, Pangolin.
+
+**Чекпоинты:**
+
+- [x] Stage 12.8.1: Удалить состояние и контрол `Cyrillic only` из `ThemeControls.vue` и связанных helper/test expectations.
+- [ ] Stage 12.8.2: Заменить `googleFontsCatalog` на целевой curated-набор из `src/fonts.json`; не переносить latin-only и CJK/brand-oriented семейства.
+- [ ] Stage 12.8.3: Убедиться, что плоский font select и category `optgroup` не ссылаются на отключаемую кириллицу.
+- [ ] Stage 12.8.4: Проверить Random contract: `fontPool` включает все curated Google families только для interface/note slots и не пытается менять code font.
+- [ ] Stage 12.8.5: Обновить документацию Stage 12 в `ROADMAP.md` и `PROGRESS.md`, чтобы она больше не обещала отключаемый Cyrillic-only filter.
