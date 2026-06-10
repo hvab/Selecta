@@ -140,8 +140,8 @@
      - вычисление доступных style tuples для `400`, `700`, `400 italic`;
      - генерация CSS2 URL с `display=swap`.
 4. Stage 12.4 — UI font picker:
-   - заменить свободный ввод на плоский select с режимами Plain default / System stack / Google Font;
-   - Google Fonts показывать внутри category `optgroup`.
+   - заменить свободный ввод на плоский select с Plain default option и системными группами;
+   - Google Fonts показывать внутри category `optgroup`, без общего `Google Fonts` optgroup.
 5. Stage 12.5 — Live preview:
    - в генераторе подгружать выбранные Google Fonts для live preview;
    - не подгружать CSS для всего каталога или для каждого результата поиска.

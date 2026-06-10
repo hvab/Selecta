@@ -510,7 +510,7 @@ rgb() значения из CSS преобразуются в hex вручную
 - [x] Stage 12.1: Ввести `mainFontSource` / `noteFontSource` (`plain`, `system`, позже `google`); `plain` не генерирует font CSS variables; старые JSON/URL/localStorage payload мигрируют по family value.
 - [x] Stage 12.2: Сверить и обновить font values у Aegea presets (`chancery`, `holm`, `kolomna`).
 - [x] Stage 12.3: Добавить статический `googleFontsCatalog` и чистые функции lookup/style tuple/url generation.
-- [x] Stage 12.4: Сделать плоский font select с режимами Plain / System / Google и category `optgroup`.
+- [x] Stage 12.4: Сделать плоский font select с Plain option, системными группами и Google category `optgroup`.
 - [x] Stage 12.5: Подключить live preview для выбранных Google Fonts без загрузки всего каталога.
 - [x] Stage 12.6: Добавить `@import` в generated `styles/main.css`; дедуплицировать одинаковые семейства между interface и note text.
 - [x] Stage 12.7: Ручная проверка в генераторе и в установленной Aegea теме.
@@ -522,7 +522,7 @@ rgb() значения из CSS преобразуются в hex вручную
 **Решения:**
 
 - Каталог Google Fonts в Selecta становится только кириллическим; отдельная галочка `Cyrillic only` больше не нужна.
-- Выбор Google Fonts остаётся плоским `<select>` с категориями через `optgroup`; отдельный search/filter UI не возвращаем в этом шаге.
+- Выбор Google Fonts остаётся плоским `<select>` с category `optgroup`; общий `Google Fonts` optgroup не нужен.
 - `Zilla Slab` удалить из каталога: в `src/fonts.json` у него нет `cyrillic` subset.
 - Random для typography берёт весь `fontPool`, включая все Google Fonts из каталога; значит новый curated-набор будет ротироваться для interface font и note text font.
 - Отдельный моно-шрифт для code/`tt`/`pre` не добавлять в этот шаг: Aegea `plain` сейчас оставляет code font за bundled JetBrains Mono, а Selecta редактирует только `--mainFontFamily` и `--noteMainFontFamily`.

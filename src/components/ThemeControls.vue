@@ -72,6 +72,8 @@ const fontControls = [
   },
 ];
 
+const googleFontCategories = ['Sans Serif', 'Serif', 'Monospace', 'Display', 'Handwriting'];
+
 const fontSelectGroups = [
   {
     label: 'System stacks',
@@ -81,10 +83,12 @@ const fontSelectGroups = [
     label: 'Preset fonts',
     options: namedSystemFamilies.map((f) => ({ value: `${FONT_SOURCE_SYSTEM}|${f.value}`, label: f.label })),
   },
-  {
-    label: 'Google Fonts',
-    options: googleFontsCatalog.map((f) => ({ value: `${FONT_SOURCE_GOOGLE}|${f.family}`, label: f.family })),
-  },
+  ...googleFontCategories.map((category) => ({
+    label: category,
+    options: googleFontsCatalog
+      .filter((font) => font.category === category)
+      .map((font) => ({ value: `${FONT_SOURCE_GOOGLE}|${font.family}`, label: font.family })),
+  })),
 ];
 
 const typographyControls = [
