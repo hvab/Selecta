@@ -119,8 +119,8 @@
 - В `styles/main.css` генерируем минимальный `@import` перед `:root`, только для реально выбранных Google Fonts.
 - Запрашиваем только нужные начертания: regular `400`, bold `700`, italic `400 italic`, если они доступны у выбранного семейства.
 - Если выбран один Google Font для interface и note text, в CSS API он должен быть запрошен один раз.
-- Каталог в UI строится из metadata snapshot, а не из runtime-запроса с API key.
-- Фильтр **Cyrillic only** включён по умолчанию и показывает семейства с `cyrillic` subset; пользователь может отключить фильтр и увидеть весь каталог.
+- Каталог в UI строится из curated metadata snapshot, а не из runtime-запроса с API key.
+- Каталог Google Fonts содержит только выбранные семейства с кириллицей; отключаемого Cyrillic-only фильтра нет.
 - У каждого редактируемого font slot есть source: `plain` (не переопределять Aegea), `system` (явный system stack), `google` (выбранное Google family).
 - Без bundled open-source кириллических файлов на этом этапе.
 
@@ -134,15 +134,14 @@
    - обновить пресеты `chancery`, `holm`, `kolomna`, чтобы они отражали реальные font-переопределения Aegea;
    - решить, нужно ли показывать inherited `plain` font state в UI как явный режим.
 3. Stage 12.3 — Google Fonts catalog core:
-   - `src/theme/googleFontsCatalog.js` — статический metadata snapshot: `family`, `category`, `subsets`, `variants`, optional `axes`; документировать источник и дату обновления;
+   - `src/theme/googleFontsCatalog.js` — статический curated metadata snapshot: `family`, `category`, `subsets`, `variants`; документировать источник и дату обновления;
    - `src/theme/googleFonts.js` — чистые функции:
-     - фильтрация по `cyrillic`;
-     - поиск по названию и категории;
+     - поиск по названию;
      - вычисление доступных style tuples для `400`, `700`, `400 italic`;
      - генерация CSS2 URL с `display=swap`.
 4. Stage 12.4 — UI font picker:
-   - заменить свободный ввод на picker с режимами Plain default / System stack / Google Font;
-   - в списке показывать короткий preview sample для видимых результатов, не грузить весь каталог сразу.
+   - заменить свободный ввод на плоский select с режимами Plain default / System stack / Google Font;
+   - Google Fonts показывать внутри category `optgroup`.
 5. Stage 12.5 — Live preview:
    - в генераторе подгружать выбранные Google Fonts для live preview;
    - не подгружать CSS для всего каталога или для каждого результата поиска.
@@ -151,7 +150,7 @@
    - дедуплицировать одинаковые семейства между interface и note text;
    - в JSON/URL сериализацию включать выбранный font source как часть `typography`.
 7. Stage 12.7 — Ручная проверка:
-   - кириллический фильтр по умолчанию скрывает латиницу-only семейства;
+   - Google Fonts select не содержит latin-only семейства;
    - выбранный кириллический шрифт виден в Aegea preview на русском sample text;
    - ZIP содержит только `@import` + CSS variables, без font files;
    - при одинаковом font family для обоих полей запрос не дублируется.

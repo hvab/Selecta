@@ -412,7 +412,7 @@ Planned releases (detail in `ROADMAP.md`):
 - [x] Stage 12.1: Typography font source model (`plain` / `system` / future `google`).
 - [x] Stage 12.2: Aegea preset font override reconciliation for `chancery`, `holm`, and `kolomna`.
 - [x] Stage 12.3: Static Google Fonts catalog snapshot and pure catalog helpers.
-- [x] Stage 12.4: Searchable font picker with `Cyrillic only` default-on and category/search filters.
+- [x] Stage 12.4: Flat font select with Plain / System / Google groups and a curated Cyrillic Google Fonts catalog.
 - [x] Stage 12.5: Live preview loads only selected Google Fonts and deduplicates repeated families.
 - [x] Stage 12.6: Generated theme CSS adds deduplicated Google Fonts `@import` before `:root`.
 - [x] Stage 12.7: Manual generator and installed Aegea theme check for Google Fonts.

@@ -500,8 +500,8 @@ rgb() значения из CSS преобразуются в hex вручную
 - Встроенные темы в основном наследуют шрифт `plain`, но `chancery`, `holm`, `kolomna` имеют font-переопределения; это надо отразить в пресетах отдельным срезом.
 - Google Fonts в теме подключаются через CSS API `https://fonts.googleapis.com/css2?...&display=swap`.
 - В ZIP попадает только `styles/main.css` с `@import` перед `:root`; файлы шрифтов не попадают.
-- Каталог Google Fonts в Selecta — статический snapshot metadata, чтобы не хранить runtime API key в приложении.
-- Кириллический фильтр включён по умолчанию: показываем только семейства с `subsets.includes('cyrillic')`.
+- Каталог Google Fonts в Selecta — статический curated snapshot metadata, чтобы не хранить runtime API key в приложении.
+- Каталог Google Fonts содержит только выбранные семейства с кириллицей; отдельный отключаемый Cyrillic filter не нужен.
 - Свободный ввод для системных font stacks оставить, но Google Fonts выбирать только из каталога.
 - Для выбранного семейства запрашивать только фактически нужные начертания: `400`, `700`, `400 italic`, если они есть. `700 italic` не запрашивать на первом Google Fonts этапе: в проверенном Aegea markup/CSS нет отдельного обязательного состояния жирного курсива.
 
@@ -509,8 +509,8 @@ rgb() значения из CSS преобразуются в hex вручную
 
 - [x] Stage 12.1: Ввести `mainFontSource` / `noteFontSource` (`plain`, `system`, позже `google`); `plain` не генерирует font CSS variables; старые JSON/URL/localStorage payload мигрируют по family value.
 - [x] Stage 12.2: Сверить и обновить font values у Aegea presets (`chancery`, `holm`, `kolomna`).
-- [x] Stage 12.3: Добавить статический `googleFontsCatalog` и чистые функции фильтрации/search/style tuple/url generation.
-- [x] Stage 12.4: Сделать searchable font picker с `Cyrillic only` default-on и category/search filters.
+- [x] Stage 12.3: Добавить статический `googleFontsCatalog` и чистые функции lookup/style tuple/url generation.
+- [x] Stage 12.4: Сделать плоский font select с режимами Plain / System / Google и category `optgroup`.
 - [x] Stage 12.5: Подключить live preview для выбранных Google Fonts без загрузки всего каталога.
 - [x] Stage 12.6: Добавить `@import` в generated `styles/main.css`; дедуплицировать одинаковые семейства между interface и note text.
 - [x] Stage 12.7: Ручная проверка в генераторе и в установленной Aegea теме.
@@ -542,4 +542,4 @@ rgb() значения из CSS преобразуются в hex вручную
 - [x] Stage 12.8.2: Заменить `googleFontsCatalog` на целевой curated-набор из `src/fonts.json`; не переносить latin-only и CJK/brand-oriented семейства.
 - [x] Stage 12.8.3: Убедиться, что плоский font select и category `optgroup` не ссылаются на отключаемую кириллицу.
 - [x] Stage 12.8.4: Проверить Random contract: `fontPool` включает все curated Google families только для interface/note slots и не пытается менять code font.
-- [ ] Stage 12.8.5: Обновить документацию Stage 12 в `ROADMAP.md` и `PROGRESS.md`, чтобы она больше не обещала отключаемый Cyrillic-only filter.
+- [x] Stage 12.8.5: Обновить документацию Stage 12 в `ROADMAP.md` и `PROGRESS.md`, чтобы она больше не обещала отключаемый Cyrillic-only filter.

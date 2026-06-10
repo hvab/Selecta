@@ -8,7 +8,7 @@ The project follows semantic versioning where practical.
 
 ### Added
 
-- Google Fonts picker mode for typography controls with default-on Cyrillic filtering, search, category filters, and system stack fallback.
+- Google Fonts picker mode for typography controls with a curated Cyrillic catalog, flat category groups, and system stack fallback.
 - Live preview stylesheet loading for selected Google Fonts only, with repeated families deduplicated.
 - Generated theme CSS adds a deduplicated Google Fonts `@import` before `:root`.
 - Manual generator and installed Aegea theme verification for the Google Fonts flow.
