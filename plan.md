@@ -541,5 +541,5 @@ rgb() значения из CSS преобразуются в hex вручную
 - [x] Stage 12.8.1: Удалить состояние и контрол `Cyrillic only` из `ThemeControls.vue` и связанных helper/test expectations.
 - [x] Stage 12.8.2: Заменить `googleFontsCatalog` на целевой curated-набор из `src/fonts.json`; не переносить latin-only и CJK/brand-oriented семейства.
 - [x] Stage 12.8.3: Убедиться, что плоский font select и category `optgroup` не ссылаются на отключаемую кириллицу.
-- [ ] Stage 12.8.4: Проверить Random contract: `fontPool` включает все curated Google families только для interface/note slots и не пытается менять code font.
+- [x] Stage 12.8.4: Проверить Random contract: `fontPool` включает все curated Google families только для interface/note slots и не пытается менять code font.
 - [ ] Stage 12.8.5: Обновить документацию Stage 12 в `ROADMAP.md` и `PROGRESS.md`, чтобы она больше не обещала отключаемый Cyrillic-only filter.

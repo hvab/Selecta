@@ -89,6 +89,18 @@ test('getRandomThemeState can pick Google Fonts for typography', () => {
   assert.equal(sawGoogleNote, true);
 });
 
+test('getRandomThemeState keeps typography limited to editable font slots', () => {
+  const expectedTypographyKeys = Object.keys(initialThemeState.typography).sort();
+
+  for (let attempt = 0; attempt < 16; attempt += 1) {
+    const { typography } = getRandomThemeState(initialThemeState);
+
+    assert.deepEqual(Object.keys(typography).sort(), expectedTypographyKeys);
+    assert.equal('codeFontFamily' in typography, false);
+    assert.equal('monospaceFontFamily' in typography, false);
+  }
+});
+
 test('getRandomThemeState keeps locked font family and source', () => {
   const fieldLocks = createEmptyFieldLocks();
 
