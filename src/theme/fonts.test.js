@@ -39,6 +39,17 @@ test('googleFontsCatalog entries include fields required by googleFonts helpers'
   }
 });
 
+test('googleFontsCatalog contains only curated Cyrillic families', () => {
+  const families = new Set(googleFontsCatalog.map((font) => font.family));
+
+  for (const font of googleFontsCatalog) {
+    assert.equal(font.subsets.includes('cyrillic'), true);
+  }
+
+  assert.equal(families.has('PT Sans'), true);
+  assert.equal(families.has('Zilla Slab'), false);
+});
+
 test('fontPool assigns sources to system and Google entries', () => {
   const systemEntries = fontPool.filter((entry) => entry.source === FONT_SOURCE_SYSTEM);
   const googleEntries = fontPool.filter((entry) => entry.source === FONT_SOURCE_GOOGLE);
