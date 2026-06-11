@@ -6,6 +6,8 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+## 0.6.0 - 2026-06-11
+
 ### Added
 
 - Google Fonts picker mode for typography controls with a curated Cyrillic catalog, Google category groups, and system stack fallback.
