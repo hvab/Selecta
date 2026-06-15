@@ -1,8 +1,12 @@
 export const ru = {
   app: {
+    name: 'Селекта',
+    title: 'Селекта — генератор тем для Эгеи',
     descriptionPrefix: 'Генератор тем для',
     aegeaName: 'Эгеи',
     aegeaHref: 'https://blogengine.ru',
+    metaDescription: 'Селекта — браузерный генератор тем для блогового движка Эгея',
+    metaKeywords: 'Селекта, Эгея, движок для блога, генератор тем, типографика, Google Fonts',
   },
   actions: {
     random: 'Случайно',

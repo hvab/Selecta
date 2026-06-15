@@ -6,6 +6,10 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+### Added
+
+- Localized app name, document title, description, and keywords for English and Russian.
+
 ## 0.7.0 - 2026-06-15
 
 ### Added

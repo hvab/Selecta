@@ -1,8 +1,12 @@
 export const en = {
   app: {
+    name: 'Selecta',
+    title: 'Selecta — Theme generator for Aegea',
     descriptionPrefix: 'Theme generator for',
     aegeaName: 'Aegea',
     aegeaHref: 'https://blogengine.me',
+    metaDescription: 'Selecta is a browser-based theme generator for the Aegea blog engine',
+    metaKeywords: 'Selecta, Aegea, blog engine, theme generator, typography, Google Fonts',
   },
   actions: {
     random: 'Random',

@@ -141,7 +141,20 @@ function clearStatusMessages() {
 function updateLocale(event) {
   locale.value = event.target.value;
   saveStoredLocale(locale.value);
+}
+
+function setDocumentMetaContent(name, content) {
+  globalThis.document?.querySelector(`meta[name="${name}"]`)?.setAttribute('content', content);
+}
+
+function updateDocumentMetadata() {
+  if (globalThis.document) {
+    globalThis.document.title = t('app.title');
+  }
+
   setDocumentLocale(locale.value);
+  setDocumentMetaContent('description', t('app.metaDescription'));
+  setDocumentMetaContent('keywords', t('app.metaKeywords'));
 }
 
 function applySharedThemeState(nextThemeState) {
@@ -445,6 +458,8 @@ watch(
   },
   { deep: true }
 );
+
+watch(locale, updateDocumentMetadata, { immediate: true });
 </script>
 
 <template>
@@ -456,7 +471,7 @@ watch(
     <aside class="app-controls-pane">
       <div class="app-controls-scroll">
         <header class="app-header">
-          <h1>Selecta</h1>
+          <h1>{{ t('app.name') }}</h1>
           <p>
             {{ t('app.descriptionPrefix') }}
             <a :href="t('app.aegeaHref')">{{ t('app.aegeaName') }}</a>
