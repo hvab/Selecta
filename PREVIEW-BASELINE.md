@@ -52,7 +52,7 @@ P2:
 - search snippet with highlighted `mark` and thumbnails from `system/theme/images/sample-thumb-*`;
 - simple pagination.
 
-P3 is intentionally deferred to the future backlog in `PROGRESS.md`. Do not include full comment-form states, admin controls, sharing widgets, author-only note states, or full compiled `plain/styles/main.css` in the simplified transfer.
+P3 is intentionally deferred to the future backlog in `.project/IDEAS.md`. Do not include full comment-form states, admin controls, sharing widgets, author-only note states, or full compiled `plain/styles/main.css` in the simplified transfer.
 
 ## Maintenance checklist
 

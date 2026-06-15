@@ -11,8 +11,8 @@
 ## Source of truth
 
 - `SPEC.md` is the main project specification.
-- `plan.md` is the iteration plan and prompt library.
-- `ROADMAP.md` is the ordered post-MVP feature roadmap and target release map.
+- `.project/AI-HANDOFF.md` is the current AI working context, progress summary, and next-step checklist.
+- `.project/IDEAS.md` is the raw backlog for future ideas.
 - The Aegea repository is the external source of truth for how themes work and for the real markup/CSS-variable contract used by preview.
 - If `AGENTS.local.md` exists, read it for machine-local paths to the Aegea checkout and related local-only context.
 - Keep machine-local paths in `AGENTS.local.md`; do not copy them into tracked project documents.
@@ -62,7 +62,7 @@
 
 ## Implementation workflow
 
-- Work iteratively by `plan.md`.
+- Work iteratively by `.project/AI-HANDOFF.md`.
 - Before each implementation step, check the current state against `SPEC.md`.
 - Implement only the next small stage.
 - Keep diffs scoped to the prompt.

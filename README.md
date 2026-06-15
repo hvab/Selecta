@@ -42,9 +42,9 @@ Preview production build locally:
 npm run preview
 ```
 
-## Roadmap
+## Releases
 
-Post-MVP priorities and release targets: [`ROADMAP.md`](./ROADMAP.md).
+Released changes are tracked in [`CHANGELOG.md`](./CHANGELOG.md).
 
 ## Project Flow
 

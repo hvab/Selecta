@@ -78,7 +78,7 @@ The project follows semantic versioning where practical.
 - `src/theme/contrast.js` and color luminance helpers in `src/theme/color.js`.
 - Contrast-safe Random theme generation.
 - Per-field lock checkboxes for Random; Unlock all in the export bar.
-- Post-MVP roadmap in `ROADMAP.md`.
+- Internal post-MVP planning notes.
 
 ### Fixed
 
