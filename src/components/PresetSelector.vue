@@ -17,7 +17,7 @@ defineProps({
 const emit = defineEmits(['apply-preset']);
 
 function getPresetLabel(preset) {
-  return preset.id === 'plain' ? t('controls.defaultPlain') : preset.label;
+  return t(`presetLabels.${preset.id}`);
 }
 </script>
 

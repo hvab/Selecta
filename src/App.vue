@@ -459,8 +459,7 @@ watch(
           <h1>Selecta</h1>
           <p>
             {{ t('app.descriptionPrefix') }}
-            <a :href="t('app.aegeaHref')">{{ t('app.aegeaName') }}</a
-            >.
+            <a :href="t('app.aegeaHref')">{{ t('app.aegeaName') }}</a>
           </p>
         </header>
 

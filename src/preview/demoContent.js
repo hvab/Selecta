@@ -97,7 +97,7 @@ const aegeaDemoContentByLocale = {
           <p class="lead">This post has a lead paragraph.</p>
           <p>A regular <a href="${selfHref}">hyperlink</a>, a <a class="visited" href="${selfHref}">visited link</a>, and a <a class="hover" href="${selfHref}">hover example</a> should all be easy to compare.</p>
           <p>Theme work also needs <mark>highlighted text</mark> and enough body copy to judge the reading tone.</p>
-          <p>This is what a post looks like. This post is starred — in the built-in theme its title is big, but you may do something else.</p>
+          <p>This is what a post looks like.</p>
           <p>This paragraph has just a filler text. The theory of empathy is free. The rhythm has an elegant factographic chthonic myth. Artistic mediation is a catharsis. The liturgical drama has psychological parallelism.</p>
           <h2>Subheadings, text formatting and images</h2>
           <p>Your post may have subheadings as above, <a href="${selfHref}">hyperlinks</a> and use text formatting, like <i>italics</i>, <b>bold</b>, or <tt>monospace</tt>.</p>
@@ -164,6 +164,7 @@ const aegeaDemoContentByLocale = {
         href: '',
         text: `
           <p class="lead">This post has a lead paragraph.</p>
+          <p>This is a starred post. In the built-in theme its title is big, but you may do something else.</p>
           <p>This is a second example¹ to help you adjust the distance between the posts in a feed. The title is not a link here — as if we were on the posts’ page. It also has a highlighed tag — as if we were on that tag’s page.</p>
           <p class="foot">¹ By the way, this is an example of a footnote. It’s remarkable.</p>
         `,
@@ -303,7 +304,7 @@ const aegeaDemoContentByLocale = {
           <p class="lead">У этой заметки есть вводный абзац.</p>
           <p>Обычная <a href="${selfHref}">ссылка</a>, <a class="visited" href="${selfHref}">посещенная ссылка</a> и <a class="hover" href="${selfHref}">пример наведения</a> должны легко сравниваться.</p>
           <p>Для работы над темой также нужны <mark>подсвеченный текст</mark> и достаточно основного текста, чтобы оценить характер набора.</p>
-          <p>Так выглядит заметка. Это заметка со звездой. Во встроенной теме у нее крупный заголовок, но вы можете выделить его иначе.</p>
+          <p>Так выглядит заметка.</p>
           <p>В этом абзаце — рыбный текст. Теория вчувствования свободна. Ритм изящно имеет фактографический хтонический миф. Художественное опосредование представляет собой катарсис. Литургическая драма имеет психологический параллелизм.</p>
           <h2>Подзаголовки, форматирование текста и картинки</h2>
           <p>В заметке могут быть подзаголовки, как здесь, <a href="${selfHref}">ссылки</a> и разные виды форматирования текста — <i>курсив</i>, <b>жирный</b>, или <tt>моноширинный</tt>.</p>
@@ -370,6 +371,7 @@ const aegeaDemoContentByLocale = {
         href: '',
         text: `
           <p class="lead">У этой заметки есть вводный абзац.</p>
+          <p>Это заметка со звездой. Во встроенной теме у нее крупный заголовок, но вы можете выделить его иначе.</p>
           <p>Это еще один пример¹, чтобы вы настроили расстояние между заметками в ленте. Заголовок этой заметки не является ссылкой — как будто мы уже на ее странице. Еще один из тегов снизу подсвечен — как будто мы на его странице.</p>
           <p class="foot">¹ А это — пример примечания. Оно весьма примечательно.</p>
         `,

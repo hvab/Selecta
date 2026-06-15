@@ -158,6 +158,7 @@ preview content for Cyrillic font checks.
 
 - [x] Review the implemented English/Russian localization.
 - [ ] Decide where to mention the project author outside the compact app header.
+- [ ] Add a layout option for full-width content (`100%` viewport width).
 - [ ] Evaluate `vue-i18n` bundle-size/runtime-only setup, for example via
       `@intlify/unplugin-vue-i18n`, before optimizing this feature further.
 - [ ] Decide separately whether to address the Vite/esbuild audit warnings in
