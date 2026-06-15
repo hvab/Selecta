@@ -7,7 +7,11 @@ import { getNoteTitleLineHeight, scalePixelSize } from './typography.js';
 function getThemeFontFamilyCssValue(source, value, fallbackValue) {
   const googleFont = source === FONT_SOURCE_GOOGLE ? findGoogleFont(googleFontsCatalog, value) : null;
 
-  return googleFont ? getGoogleFontFamilyCssValue(googleFont) : getFontFamilyCssValue(source, value, fallbackValue);
+  if (source === FONT_SOURCE_GOOGLE) {
+    return googleFont ? getGoogleFontFamilyCssValue(googleFont) : null;
+  }
+
+  return getFontFamilyCssValue(source, value, fallbackValue);
 }
 
 export function getThemeCssVariables(themeState) {

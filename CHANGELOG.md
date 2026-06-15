@@ -6,6 +6,14 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+## 0.6.1 - 2026-06-15
+
+### Fixed
+
+- Unknown Google Font families from imported/shared themes now fall back to Aegea `plain` instead of emitting an unloaded font-family.
+- Font picker keeps imported custom system font stacks visible as a current custom option.
+- Google Fonts preview stylesheet link now renders in the document head.
+
 ## 0.6.0 - 2026-06-11
 
 ### Added

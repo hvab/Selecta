@@ -422,8 +422,11 @@ watch(
 </script>
 
 <template>
-  <main ref="appElement" class="app" :style="appStyle">
+  <Teleport to="head">
     <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
+  </Teleport>
+
+  <main ref="appElement" class="app" :style="appStyle">
     <aside class="app-controls-pane">
       <div class="app-controls-scroll">
         <header class="app-header">

@@ -363,7 +363,8 @@ Deliberately still outside this Stage 8.7 slice:
 ## Next small step
 
 - [x] Prepare the Google Fonts `0.6.0` release patch.
-- [ ] Choose the next post-`0.6.0` slice: Stage 13+ theme contract expansion or another small cleanup.
+- [x] Polish Google Fonts review fixes for `0.6.1`.
+- [ ] Choose the next post-`0.6.1` slice: Stage 13+ theme contract expansion or another small cleanup.
 
 - [x] Start Stage 3 with read-only planning for the first controls slice.
 - [x] Stage 3.1: First editable color controls for background, text, and links.

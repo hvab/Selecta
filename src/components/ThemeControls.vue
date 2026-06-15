@@ -90,6 +90,10 @@ const fontSelectGroups = [
       .map((font) => ({ value: `${FONT_SOURCE_GOOGLE}|${font.family}`, label: font.family })),
   })),
 ];
+const knownFontSelectValues = new Set([
+  'plain|',
+  ...fontSelectGroups.flatMap((group) => group.options.map((opt) => opt.value)),
+]);
 
 const typographyControls = [
   {
@@ -138,6 +142,10 @@ const layoutControls = [
 function getFontSelectValue(control) {
   const source = props.typography[control.sourceKey];
   return `${source}|${source === FONT_SOURCE_PLAIN ? '' : props.typography[control.familyKey]}`;
+}
+
+function isKnownFontSelectValue(value) {
+  return knownFontSelectValues.has(value);
 }
 
 function updateFont(control, event) {
@@ -205,6 +213,11 @@ function updateMetadataField(control, event) {
             @change="updateFont(control, $event)"
           >
             <option value="plain|">Plain (Aegea default)</option>
+            <optgroup v-if="!isKnownFontSelectValue(getFontSelectValue(control))" label="Custom">
+              <option :value="getFontSelectValue(control)">
+                {{ typography[control.familyKey] }}
+              </option>
+            </optgroup>
             <optgroup v-for="group in fontSelectGroups" :key="group.label" :label="group.label">
               <option v-for="opt in group.options" :key="opt.value" :value="opt.value">
                 {{ opt.label }}

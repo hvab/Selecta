@@ -80,6 +80,16 @@ test('does not add Google Fonts import for plain default typography', () => {
   assert.equal(generateThemeCss(initialThemeState).startsWith(':root {'), true);
 });
 
+test('does not emit unknown Google Font families without an import', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.typography.mainFontSource = FONT_SOURCE_GOOGLE;
+  themeState.typography.mainFontFamily = 'Missing Font';
+
+  assert.equal(generateThemeCss(themeState).startsWith(':root {'), true);
+  assert.equal(getThemeCssVariables(themeState)['--mainFontFamily'], undefined);
+});
+
 test('adds deduplicated Google Fonts import before theme variables', () => {
   const themeState = structuredClone(initialThemeState);
 

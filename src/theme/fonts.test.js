@@ -1,7 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { googleFontsCatalog } from './googleFontsCatalog.js';
-import { FONT_SOURCE_GOOGLE, FONT_SOURCE_SYSTEM, fontPool, namedSystemFamilies, systemStackVariants } from './fonts.js';
+import {
+  FONT_SOURCE_GOOGLE,
+  FONT_SOURCE_PLAIN,
+  FONT_SOURCE_SYSTEM,
+  fontPool,
+  namedSystemFamilies,
+  normalizeFontSource,
+  normalizeTypographyFontSources,
+  systemStackVariants,
+} from './fonts.js';
 
 test('namedSystemFamilies lists preset system font stacks', () => {
   assert.deepEqual(
@@ -48,6 +57,25 @@ test('googleFontsCatalog contains only curated Cyrillic families', () => {
 
   assert.equal(families.has('PT Sans'), true);
   assert.equal(families.has('Zilla Slab'), false);
+});
+
+test('normalizes unknown Google Font families to plain typography', () => {
+  assert.equal(normalizeFontSource(FONT_SOURCE_GOOGLE, 'Missing Font'), FONT_SOURCE_PLAIN);
+
+  assert.deepEqual(
+    normalizeTypographyFontSources({
+      mainFontSource: FONT_SOURCE_GOOGLE,
+      mainFontFamily: 'Missing Font',
+      noteFontSource: FONT_SOURCE_GOOGLE,
+      noteFontFamily: 'PT Serif',
+    }),
+    {
+      mainFontSource: FONT_SOURCE_PLAIN,
+      mainFontFamily: 'Missing Font',
+      noteFontSource: FONT_SOURCE_GOOGLE,
+      noteFontFamily: 'PT Serif',
+    }
+  );
 });
 
 test('fontPool assigns sources to system and Google entries', () => {

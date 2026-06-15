@@ -47,6 +47,10 @@ function inferFontSourceFromFamily(value) {
 }
 
 export function normalizeFontSource(value, fontFamilyValue) {
+  if (value === FONT_SOURCE_GOOGLE) {
+    return googleFontsCatalog.some((font) => font.family === fontFamilyValue) ? FONT_SOURCE_GOOGLE : FONT_SOURCE_PLAIN;
+  }
+
   return fontSources.includes(value) ? value : inferFontSourceFromFamily(fontFamilyValue);
 }
 
