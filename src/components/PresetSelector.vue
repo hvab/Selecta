@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 defineProps({
   presets: {
     type: Array,
@@ -11,23 +15,27 @@ defineProps({
 });
 
 const emit = defineEmits(['apply-preset']);
+
+function getPresetLabel(preset) {
+  return preset.id === 'plain' ? t('controls.defaultPlain') : preset.label;
+}
 </script>
 
 <template>
   <div class="theme-controls preset-controls">
     <div class="control-group">
-      <h3>Presets</h3>
+      <h3>{{ t('controls.presets') }}</h3>
       <div class="control-row">
-        <label class="control-label" for="preset-selector">Preset</label>
+        <label class="control-label" for="preset-selector">{{ t('controls.preset') }}</label>
         <select
           id="preset-selector"
           class="select-control"
           :value="selectedPresetId"
           @change="emit('apply-preset', $event.target.value)"
         >
-          <option value="">Custom</option>
+          <option value="">{{ t('controls.custom') }}</option>
           <option v-for="preset in presets" :key="preset.id" :value="preset.id">
-            {{ preset.label }}
+            {{ getPresetLabel(preset) }}
           </option>
         </select>
       </div>

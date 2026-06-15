@@ -1,16 +1,16 @@
 export const PALETTE_COLOR_CONTROLS = [
-  { key: 'background', label: 'Background' },
-  { key: 'foreground', label: 'Text' },
-  { key: 'headings', label: 'Headings' },
-  { key: 'link', label: 'Links' },
-  { key: 'linkVisited', label: 'Visited links' },
-  { key: 'hover', label: 'Hover' },
-  { key: 'tag', label: 'Tags' },
-  { key: 'engineText', label: 'Secondary text' },
-  { key: 'active', label: 'Active navigation' },
-  { key: 'markedTextBackground', label: 'Marked text' },
-  { key: 'inputBackground', label: 'Input background' },
-  { key: 'inputText', label: 'Input text' },
+  { key: 'background' },
+  { key: 'foreground' },
+  { key: 'headings' },
+  { key: 'link' },
+  { key: 'linkVisited' },
+  { key: 'hover' },
+  { key: 'tag' },
+  { key: 'engineText' },
+  { key: 'active' },
+  { key: 'markedTextBackground' },
+  { key: 'inputBackground' },
+  { key: 'inputText' },
 ];
 
 export const PALETTE_LOCK_KEYS = PALETTE_COLOR_CONTROLS.map(({ key }) => key);

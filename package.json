@@ -1,6 +1,6 @@
 {
   "name": "selecta",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Theme generator for Aegea",
   "homepage": "https://hvab.github.io/Selecta/",
   "bugs": {
@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "fflate": "^0.8.3",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-i18n": "^11.4.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

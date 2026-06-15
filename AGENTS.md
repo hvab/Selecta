@@ -11,7 +11,7 @@
 ## Source of truth
 
 - `SPEC.md` is the main project specification.
-- `.project/AI-HANDOFF.md` is the current AI working context, progress summary, and next-step checklist.
+- `.project/PROGRESS.md` is the current AI working context, progress summary, active feature plan, and next-step checklist.
 - `.project/IDEAS.md` is the raw backlog for future ideas.
 - The Aegea repository is the external source of truth for how themes work and for the real markup/CSS-variable contract used by preview.
 - If `AGENTS.local.md` exists, read it for machine-local paths to the Aegea checkout and related local-only context.
@@ -26,8 +26,7 @@
 - Generate only child themes based on `plain`.
 - Export a ZIP archive with the theme folder inside it.
 - Use only system web-safe fonts in MVP.
-- Use English for all user-facing UI copy in MVP.
-- Do not add i18n infrastructure in MVP.
+- User-facing app UI supports English and Russian after the dedicated i18n stage.
 - Do not add dark mode, presets, Google Fonts, bundled font files, JSON export/import, contrast warnings, or existing-theme import in MVP.
 - The interface and preview must be responsive from the start.
 
@@ -62,7 +61,10 @@
 
 ## Implementation workflow
 
-- Work iteratively by `.project/AI-HANDOFF.md`.
+- Work iteratively by `.project/PROGRESS.md`.
+- When planning a new feature, first write a step-by-step implementation plan in `.project/PROGRESS.md` before making code changes.
+- Break feature plans into small ordered steps with status checkboxes, expected files/areas, and verification commands or manual checks for each step.
+- After each implementation step, update `.project/PROGRESS.md` with what changed, what was verified, known limits, and the next small step.
 - Before each implementation step, check the current state against `SPEC.md`.
 - Implement only the next small stage.
 - Keep diffs scoped to the prompt.

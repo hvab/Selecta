@@ -5,7 +5,7 @@
 - Release target: Aegea `11.5`, build `v4199`
 - Commit: `e1d058356e5426bb1878785c6f4ab4e68b6c4995`
 - Baseline theme: `system/themes/plain`
-- Preview source: `system/preview/en.php`
+- Preview source: `system/preview/en.php` and `system/preview/ru.php`
 - Sample assets source: `system/theme/images/sample-*`
 
 ## Deferred Aegea source
@@ -22,7 +22,7 @@
 
 ## Demo content source
 
-The preview should use the English-language Aegea theme preview content from `system/preview/en.php`. Selecta keeps the UI English-only for MVP, so the Russian preview source stays out of scope for this transfer.
+The preview should use Aegea theme preview content from `system/preview/en.php` and `system/preview/ru.php`. Selecta keeps its own extra preview states for theme tuning, including visited links, forced hover links, lead text, and highlighted text.
 
 The transfer should be simplified: keep the page familiar to Aegea users without porting the whole Aegea renderer.
 
@@ -59,7 +59,7 @@ P3 is intentionally deferred to the future backlog in `.project/IDEAS.md`. Do no
 When preview-related code changes:
 
 1. Compare the checked Aegea release target with the user-available Aegea source.
-2. Recheck `system/preview/en.php` for demo content changes.
+2. Recheck `system/preview/en.php` and `system/preview/ru.php` for demo content changes.
 3. Recheck the relevant `plain` templates and markup used by the selected P0/P1/P2 blocks.
 4. Recheck the `plain` CSS-variable set used by the preview and exported themes.
 5. Recheck link underline behavior for the selected Aegea target version.

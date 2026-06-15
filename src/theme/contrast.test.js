@@ -21,7 +21,7 @@ test('warns when text matches background', () => {
       ...initialThemeState.palette,
       background: '#ffffff',
       foreground: '#ffffff',
-    }).foreground?.includes('Text may be hard to read on the background.')
+    }).foreground?.includes('textOnBackground')
   );
 });
 
@@ -43,10 +43,7 @@ test('warns when link and visited link use the same color', () => {
     linkVisited: '#0066cc',
   });
 
-  assert.equal(
-    warnings.find((warning) => warning.id === 'linkSameAsVisited')?.message,
-    'Link and visited link use the same color.'
-  );
+  assert.ok(warnings.some((warning) => warning.id === 'linkSameAsVisited'));
 });
 
 test('normalizes short hex before comparing colors', () => {

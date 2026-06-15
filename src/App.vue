@@ -1,8 +1,10 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import ThemeControls from './components/ThemeControls.vue';
 import PresetSelector from './components/PresetSelector.vue';
 import AegeaPreview from './preview/AegeaPreview.vue';
+import { saveStoredLocale, setDocumentLocale, supportedLocales } from './i18n/index.js';
 import { clearSession, loadSession, saveSession } from './storage.js';
 import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
 import { initialThemeState } from './theme/model.js';
@@ -23,6 +25,7 @@ import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './the
 import { getSelectedGoogleFontsCss2Url } from './theme/googleFonts.js';
 import { googleFontsCatalog } from './theme/googleFontsCatalog.js';
 
+const { locale, t } = useI18n();
 const themeState = reactive(structuredClone(initialThemeState));
 const fieldLocks = reactive(createEmptyFieldLocks());
 const folderNameEdited = ref(false);
@@ -30,13 +33,15 @@ const appElement = ref(null);
 const defaultControlsPaneWidth = 416;
 const controlsPaneWidth = ref(defaultControlsPaneWidth);
 const isResizingControlsPane = ref(false);
-const shareMessage = ref('');
-const shareError = ref('');
-const importMessage = ref('');
-const importError = ref('');
+const shareMessageKey = ref('');
+const shareErrorKey = ref('');
+const importMessageKey = ref('');
+const importErrorKey = ref('');
 const themeJsonFileInput = ref(null);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
+const translatedMetadataErrors = computed(() => translateMessageMap(metadataErrors.value, 'validation'));
 const contrastWarningsByField = computed(() => getContrastWarningsByField(themeState.palette));
+const translatedContrastWarningsByField = computed(() => translateWarningMap(contrastWarningsByField.value));
 const hasFieldLocks = computed(() => hasAnyFieldLocked(fieldLocks));
 const canDownloadTheme = computed(() => Object.keys(metadataErrors.value).length === 0);
 const selectedPresetId = computed(
@@ -73,6 +78,21 @@ const effectiveControlsPaneMaxWidth = computed(() => {
 
   return Math.max(controlsPaneMinWidth, Math.min(controlsPaneMaxWidth, appWidth - previewPaneMinWidth));
 });
+
+function translateMessageMap(messagesByField, namespace) {
+  return Object.fromEntries(
+    Object.entries(messagesByField).map(([field, messageKey]) => [field, t(`${namespace}.${messageKey}`)])
+  );
+}
+
+function translateWarningMap(warningsByField) {
+  return Object.fromEntries(
+    Object.entries(warningsByField).map(([field, messages]) => [
+      field,
+      messages.map((messageKey) => t(`contrast.${messageKey}`)),
+    ])
+  );
+}
 
 function getConstrainedControlsPaneWidth(value) {
   return Math.min(Math.max(value, controlsPaneMinWidth), effectiveControlsPaneMaxWidth.value);
@@ -112,10 +132,16 @@ function inferFolderNameEdited(meta) {
 }
 
 function clearStatusMessages() {
-  shareMessage.value = '';
-  shareError.value = '';
-  importMessage.value = '';
-  importError.value = '';
+  shareMessageKey.value = '';
+  shareErrorKey.value = '';
+  importMessageKey.value = '';
+  importErrorKey.value = '';
+}
+
+function updateLocale(event) {
+  locale.value = event.target.value;
+  saveStoredLocale(locale.value);
+  setDocumentLocale(locale.value);
 }
 
 function applySharedThemeState(nextThemeState) {
@@ -309,9 +335,9 @@ async function copyThemeLink() {
 
   try {
     await navigator.clipboard.writeText(getThemeShareUrl());
-    shareMessage.value = 'Theme link copied.';
+    shareMessageKey.value = 'status.themeLinkCopied';
   } catch {
-    shareError.value = 'Could not copy the theme link.';
+    shareErrorKey.value = 'status.themeLinkCopyFailed';
   }
 }
 
@@ -350,9 +376,9 @@ async function importThemeJson(event) {
   try {
     applySharedThemeState(await deserializeThemeFile(file));
     clearThemeUrlParam();
-    importMessage.value = 'Theme JSON imported.';
+    importMessageKey.value = 'status.themeJsonImported';
   } catch {
-    importError.value = 'Theme JSON is invalid.';
+    importErrorKey.value = 'status.themeJsonInvalid';
   } finally {
     event.target.value = '';
   }
@@ -385,7 +411,7 @@ onMounted(() => {
       return;
     } catch {
       clearThemeUrlParam();
-      shareError.value = 'Theme link is invalid; loaded saved session instead.';
+      shareErrorKey.value = 'status.themeLinkInvalid';
     }
   }
 
@@ -432,8 +458,9 @@ watch(
         <header class="app-header">
           <h1>Selecta</h1>
           <p>
-            Theme generator for
-            <a href="https://blogengine.me">Aegea</a>.
+            {{ t('app.descriptionPrefix') }}
+            <a :href="t('app.aegeaHref')">{{ t('app.aegeaName') }}</a
+            >.
           </p>
         </header>
 
@@ -441,8 +468,8 @@ watch(
           <PresetSelector :presets="themePresets" :selected-preset-id="selectedPresetId" @apply-preset="applyPreset" />
           <ThemeControls
             :meta="themeState.meta"
-            :metadata-errors="metadataErrors"
-            :contrast-warnings-by-field="contrastWarningsByField"
+            :metadata-errors="translatedMetadataErrors"
+            :contrast-warnings-by-field="translatedContrastWarningsByField"
             :field-locks="fieldLocks"
             :palette="themeState.palette"
             :typography="themeState.typography"
@@ -456,19 +483,29 @@ watch(
         </section>
       </div>
 
-      <section class="export-section" aria-label="Export">
-        <button class="random-button" type="button" @click="randomizeTheme">Random</button>
+      <section class="export-section" :aria-label="t('aria.export')">
+        <label class="language-control">
+          <span class="visually-hidden">{{ t('aria.language') }}</span>
+          <select class="language-select" :value="locale" :aria-label="t('aria.language')" @change="updateLocale">
+            <option v-for="availableLocale in supportedLocales" :key="availableLocale" :value="availableLocale">
+              {{ t(`language.${availableLocale}`) }}
+            </option>
+          </select>
+        </label>
+        <button class="random-button" type="button" @click="randomizeTheme">{{ t('actions.random') }}</button>
         <button class="unlock-button" type="button" :disabled="!hasFieldLocks" @click="unlockAllFields">
-          Unlock all
+          {{ t('actions.unlockAll') }}
         </button>
-        <button class="reset-button" type="button" @click="resetToDefaults">Reset to defaults</button>
+        <button class="reset-button" type="button" @click="resetToDefaults">{{ t('actions.resetToDefaults') }}</button>
         <button class="copy-link-button" type="button" :disabled="!canDownloadTheme" @click="copyThemeLink">
-          Copy link
+          {{ t('actions.copyLink') }}
         </button>
         <button class="export-json-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeJson">
-          Export JSON
+          {{ t('actions.exportJson') }}
         </button>
-        <button class="import-json-button" type="button" @click="openThemeJsonImport">Import JSON</button>
+        <button class="import-json-button" type="button" @click="openThemeJsonImport">
+          {{ t('actions.importJson') }}
+        </button>
         <input
           ref="themeJsonFileInput"
           class="import-json-input"
@@ -477,13 +514,13 @@ watch(
           @change="importThemeJson"
         />
         <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
-          Download theme ZIP
+          {{ t('actions.downloadThemeZip') }}
         </button>
-        <p v-if="shareMessage" class="share-message">{{ shareMessage }}</p>
-        <p v-if="shareError" class="share-error">{{ shareError }}</p>
-        <p v-if="importMessage" class="import-message">{{ importMessage }}</p>
-        <p v-if="importError" class="import-error">{{ importError }}</p>
-        <p v-if="!canDownloadTheme" class="download-error">Fix metadata errors to download the theme.</p>
+        <p v-if="shareMessageKey" class="share-message">{{ t(shareMessageKey) }}</p>
+        <p v-if="shareErrorKey" class="share-error">{{ t(shareErrorKey) }}</p>
+        <p v-if="importMessageKey" class="import-message">{{ t(importMessageKey) }}</p>
+        <p v-if="importErrorKey" class="import-error">{{ t(importErrorKey) }}</p>
+        <p v-if="!canDownloadTheme" class="download-error">{{ t('status.fixMetadata') }}</p>
       </section>
     </aside>
 
@@ -491,7 +528,7 @@ watch(
       class="app-pane-resizer"
       role="separator"
       tabindex="0"
-      aria-label="Resize controls panel"
+      :aria-label="t('aria.resizeControlsPanel')"
       aria-orientation="vertical"
       :aria-valuemin="controlsPaneMinWidth"
       :aria-valuemax="effectiveControlsPaneMaxWidth"
@@ -503,7 +540,7 @@ watch(
       @keydown="handleControlsPaneResizeKeydown"
     ></div>
 
-    <section class="app-preview-pane" aria-label="Preview">
+    <section class="app-preview-pane" :aria-label="t('aria.preview')">
       <AegeaPreview :theme-state="themeState" />
     </section>
   </main>

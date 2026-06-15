@@ -15,8 +15,8 @@ test('requires display name and folder name', () => {
       folderName: '  ',
     }),
     {
-      displayName: 'Display name is required.',
-      folderName: 'Folder name is required.',
+      displayName: 'displayNameRequired',
+      folderName: 'folderNameRequired',
     }
   );
 });
@@ -28,19 +28,19 @@ test('rejects invalid folder name characters', () => {
       folderName: 'My Theme',
     }),
     {
-      folderName: 'Use lowercase letters, numbers, and hyphens only.',
+      folderName: 'folderNameInvalid',
     }
   );
 });
 
 test('rejects leading, trailing, and repeated folder name hyphens', () => {
   assert.deepEqual(validateMetadata({ ...initialThemeState.meta, folderName: '-my-theme' }), {
-    folderName: 'Use lowercase letters, numbers, and hyphens only.',
+    folderName: 'folderNameInvalid',
   });
   assert.deepEqual(validateMetadata({ ...initialThemeState.meta, folderName: 'my-theme-' }), {
-    folderName: 'Use lowercase letters, numbers, and hyphens only.',
+    folderName: 'folderNameInvalid',
   });
   assert.deepEqual(validateMetadata({ ...initialThemeState.meta, folderName: 'my--theme' }), {
-    folderName: 'Use lowercase letters, numbers, and hyphens only.',
+    folderName: 'folderNameInvalid',
   });
 });

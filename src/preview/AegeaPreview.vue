@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { getThemeCssVariables } from '../theme/css.js';
-import { aegeaDemoContent } from './demoContent.js';
+import { getAegeaDemoContent } from './demoContent.js';
 import './style.css';
 
 const props = defineProps({
@@ -11,9 +12,11 @@ const props = defineProps({
   },
 });
 
+const { locale } = useI18n();
 const themeCssVariables = computed(() => getThemeCssVariables(props.themeState));
-const visibleMainMenuItems = computed(() => aegeaDemoContent.mainMenu.filter((item) => item.visible));
-const p2Notes = computed(() => aegeaDemoContent.notes);
+const aegeaDemoContent = computed(() => getAegeaDemoContent(locale.value));
+const visibleMainMenuItems = computed(() => aegeaDemoContent.value.mainMenu.filter((item) => item.visible));
+const p2Notes = computed(() => aegeaDemoContent.value.notes);
 
 const menuIconSvgById = {
   'favourite-on':
@@ -240,15 +243,15 @@ const menuIconSvgById = {
 
         <form class="e2-comment-form">
           <label>
-            <span class="label-text">Name</span>
+            <span class="label-text">{{ aegeaDemoContent.simpleForm.nameLabel }}</span>
             <input type="text" :value="aegeaDemoContent.simpleForm.name" />
           </label>
           <label>
-            <span class="label-text">Email</span>
+            <span class="label-text">{{ aegeaDemoContent.simpleForm.emailLabel }}</span>
             <input type="email" :value="aegeaDemoContent.simpleForm.email" />
           </label>
           <label>
-            <span class="label-text">Comment</span>
+            <span class="label-text">{{ aegeaDemoContent.simpleForm.textLabel }}</span>
             <textarea :value="aegeaDemoContent.simpleForm.text"></textarea>
           </label>
           <button type="button" class="e2-button e2-submit-button">

@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PALETTE_COLOR_CONTROLS } from '../theme/fieldLocks.js';
 import {
   FONT_SOURCE_GOOGLE,
@@ -9,6 +11,7 @@ import {
 } from '../theme/fonts.js';
 import { googleFontsCatalog } from '../theme/googleFontsCatalog.js';
 
+const { t } = useI18n();
 const props = defineProps({
   meta: {
     type: Object,
@@ -51,11 +54,11 @@ const emit = defineEmits([
 const metadataControls = [
   {
     key: 'displayName',
-    label: 'Display name',
+    labelKey: 'controls.displayName',
   },
   {
     key: 'folderName',
-    label: 'Folder name',
+    labelKey: 'controls.folderName',
   },
 ];
 
@@ -63,42 +66,47 @@ const fontControls = [
   {
     familyKey: 'mainFontFamily',
     sourceKey: 'mainFontSource',
-    label: 'Interface font',
+    labelKey: 'controls.interfaceFont',
   },
   {
     familyKey: 'noteFontFamily',
     sourceKey: 'noteFontSource',
-    label: 'Note text font',
+    labelKey: 'controls.noteTextFont',
   },
 ];
 
-const googleFontCategories = ['Sans Serif', 'Serif', 'Monospace', 'Display', 'Handwriting'];
+const googleFontCategories = [
+  { category: 'Sans Serif', labelKey: 'fontCategories.sansSerif' },
+  { category: 'Serif', labelKey: 'fontCategories.serif' },
+  { category: 'Monospace', labelKey: 'fontCategories.monospace' },
+  { category: 'Display', labelKey: 'fontCategories.display' },
+  { category: 'Handwriting', labelKey: 'fontCategories.handwriting' },
+];
 
-const fontSelectGroups = [
+const fontSelectGroups = computed(() => [
   {
-    label: 'System stacks',
+    label: t('controls.systemStacks'),
     options: systemStackVariants.map((s) => ({ value: `${FONT_SOURCE_SYSTEM}|${s.value}`, label: s.label })),
   },
   {
-    label: 'Preset fonts',
+    label: t('controls.presetFonts'),
     options: namedSystemFamilies.map((f) => ({ value: `${FONT_SOURCE_SYSTEM}|${f.value}`, label: f.label })),
   },
-  ...googleFontCategories.map((category) => ({
-    label: category,
+  ...googleFontCategories.map(({ category, labelKey }) => ({
+    label: t(labelKey),
     options: googleFontsCatalog
       .filter((font) => font.category === category)
       .map((font) => ({ value: `${FONT_SOURCE_GOOGLE}|${font.family}`, label: font.family })),
   })),
-];
-const knownFontSelectValues = new Set([
-  'plain|',
-  ...fontSelectGroups.flatMap((group) => group.options.map((opt) => opt.value)),
 ]);
+const knownFontSelectValues = computed(
+  () => new Set(['plain|', ...fontSelectGroups.value.flatMap((group) => group.options.map((opt) => opt.value))])
+);
 
 const typographyControls = [
   {
     key: 'noteTextSize',
-    label: 'Note text size',
+    labelKey: 'controls.noteTextSize',
     min: 14,
     max: 24,
     step: 1,
@@ -106,14 +114,14 @@ const typographyControls = [
   },
   {
     key: 'titleScale',
-    label: 'Title scale',
+    labelKey: 'controls.titleScale',
     min: 1.2,
     max: 2,
     step: 0.05,
   },
   {
     key: 'noteTextLineHeight',
-    label: 'Line height',
+    labelKey: 'controls.lineHeight',
     min: 1.3,
     max: 1.9,
     step: 0.05,
@@ -123,7 +131,7 @@ const typographyControls = [
 const layoutControls = [
   {
     key: 'maxWidth',
-    label: 'Content width',
+    labelKey: 'controls.contentWidth',
     min: 36,
     max: 64,
     step: 1,
@@ -131,7 +139,7 @@ const layoutControls = [
   },
   {
     key: 'margins',
-    label: 'Side margins',
+    labelKey: 'controls.sideMargins',
     min: 1,
     max: 4,
     step: 0.25,
@@ -145,7 +153,7 @@ function getFontSelectValue(control) {
 }
 
 function isKnownFontSelectValue(value) {
-  return knownFontSelectValues.has(value);
+  return knownFontSelectValues.value.has(value);
 }
 
 function updateFont(control, event) {
@@ -172,10 +180,10 @@ function updateMetadataField(control, event) {
 <template>
   <div class="theme-controls">
     <div class="control-group">
-      <h3>Metadata</h3>
+      <h3>{{ t('controls.metadata') }}</h3>
       <div v-for="control in metadataControls" :key="control.key" class="metadata-control">
         <div class="control-row">
-          <label class="control-label" :for="`metadata-${control.key}`">{{ control.label }}</label>
+          <label class="control-label" :for="`metadata-${control.key}`">{{ t(control.labelKey) }}</label>
           <input
             :id="`metadata-${control.key}`"
             class="text-control"
@@ -190,7 +198,7 @@ function updateMetadataField(control, event) {
               class="field-lock-input"
               type="checkbox"
               :checked="fieldLocks.meta[control.key]"
-              :aria-label="`Lock ${control.label} for random`"
+              :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
               @change="emit('toggle-field-lock', 'meta', control.key, $event.target.checked)"
             />
           </label>
@@ -202,18 +210,21 @@ function updateMetadataField(control, event) {
     </div>
 
     <div class="control-group">
-      <h3>Fonts</h3>
+      <h3>{{ t('controls.fonts') }}</h3>
       <div v-for="control in fontControls" :key="control.familyKey" class="font-control">
         <div class="control-row">
-          <label class="control-label" :for="`font-select-${control.familyKey}`">{{ control.label }}</label>
+          <label class="control-label" :for="`font-select-${control.familyKey}`">{{ t(control.labelKey) }}</label>
           <select
             :id="`font-select-${control.familyKey}`"
             class="select-control"
             :value="getFontSelectValue(control)"
             @change="updateFont(control, $event)"
           >
-            <option value="plain|">Plain (Aegea default)</option>
-            <optgroup v-if="!isKnownFontSelectValue(getFontSelectValue(control))" label="Custom">
+            <option value="plain|">{{ t('controls.plainFont') }}</option>
+            <optgroup
+              v-if="!isKnownFontSelectValue(getFontSelectValue(control))"
+              :label="t('controls.customFontGroup')"
+            >
               <option :value="getFontSelectValue(control)">
                 {{ typography[control.familyKey] }}
               </option>
@@ -229,7 +240,7 @@ function updateMetadataField(control, event) {
               class="field-lock-input"
               type="checkbox"
               :checked="fieldLocks.typography[control.familyKey]"
-              :aria-label="`Lock ${control.label} for random`"
+              :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
               @change="emit('toggle-field-lock', 'typography', control.familyKey, $event.target.checked)"
             />
           </label>
@@ -238,10 +249,10 @@ function updateMetadataField(control, event) {
     </div>
 
     <div class="control-group">
-      <h3>Typography</h3>
+      <h3>{{ t('controls.typography') }}</h3>
       <div v-for="control in typographyControls" :key="control.key" class="typography-control">
         <div class="control-row">
-          <label class="control-label" :for="`typography-${control.key}`">{{ control.label }}</label>
+          <label class="control-label" :for="`typography-${control.key}`">{{ t(control.labelKey) }}</label>
           <input
             :id="`typography-${control.key}`"
             class="range-control"
@@ -259,7 +270,7 @@ function updateMetadataField(control, event) {
                 class="field-lock-input"
                 type="checkbox"
                 :checked="fieldLocks.typography[control.key]"
-                :aria-label="`Lock ${control.label} for random`"
+                :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
                 @change="emit('toggle-field-lock', 'typography', control.key, $event.target.checked)"
               />
             </label>
@@ -269,10 +280,10 @@ function updateMetadataField(control, event) {
     </div>
 
     <div class="control-group">
-      <h3>Layout</h3>
+      <h3>{{ t('controls.layout') }}</h3>
       <div v-for="control in layoutControls" :key="control.key" class="layout-control">
         <div class="control-row">
-          <label class="control-label" :for="`layout-${control.key}`">{{ control.label }}</label>
+          <label class="control-label" :for="`layout-${control.key}`">{{ t(control.labelKey) }}</label>
           <input
             :id="`layout-${control.key}`"
             class="range-control"
@@ -290,7 +301,7 @@ function updateMetadataField(control, event) {
                 class="field-lock-input"
                 type="checkbox"
                 :checked="fieldLocks.layout[control.key]"
-                :aria-label="`Lock ${control.label} for random`"
+                :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
                 @change="emit('toggle-field-lock', 'layout', control.key, $event.target.checked)"
               />
             </label>
@@ -300,10 +311,10 @@ function updateMetadataField(control, event) {
     </div>
 
     <div class="control-group">
-      <h3>Colors</h3>
+      <h3>{{ t('controls.colors') }}</h3>
       <div v-for="control in PALETTE_COLOR_CONTROLS" :key="control.key" class="palette-control">
         <div class="control-row">
-          <label class="control-label" :for="`palette-${control.key}`">{{ control.label }}</label>
+          <label class="control-label" :for="`palette-${control.key}`">{{ t(`controls.${control.key}`) }}</label>
           <input
             :id="`palette-${control.key}`"
             class="color-control"
@@ -319,7 +330,7 @@ function updateMetadataField(control, event) {
               class="field-lock-input"
               type="checkbox"
               :checked="fieldLocks.palette[control.key]"
-              :aria-label="`Lock ${control.label} for random`"
+              :aria-label="t('aria.lockForRandom', { label: t(`controls.${control.key}`) })"
               @change="emit('toggle-field-lock', 'palette', control.key, $event.target.checked)"
             />
           </label>

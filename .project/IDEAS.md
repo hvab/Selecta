@@ -2,7 +2,7 @@
 
 Raw ideas and parked future work for Selecta. Keep this file lightweight. When
 an idea becomes the next implementation slice, move the concrete checklist to
-`.project/AI-HANDOFF.md`.
+`.project/PROGRESS.md`.
 
 ## Inbox
 

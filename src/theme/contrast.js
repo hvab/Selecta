@@ -48,8 +48,8 @@ function areAccentColorsConfusable(colorA, colorB) {
   return getHueDifference(colorA, colorB) < MIN_DISTINGUISHABLE_HUE_DIFFERENCE;
 }
 
-function addWarning(warnings, id, message, fields) {
-  warnings.push({ id, message, fields });
+function addWarning(warnings, id, fields) {
+  warnings.push({ id, fields });
 }
 
 export function isAccentPairDistinguishable(colorA, colorB) {
@@ -64,55 +64,43 @@ export function getContrastWarnings(palette) {
   const warnings = [];
 
   if (hasLowContrast(palette.foreground, palette.background)) {
-    addWarning(warnings, 'textOnBackground', 'Text may be hard to read on the background.', ['foreground']);
+    addWarning(warnings, 'textOnBackground', ['foreground']);
   }
 
   if (hasLowContrast(palette.headings, palette.background)) {
-    addWarning(warnings, 'headingsOnBackground', 'Headings may be hard to read on the background.', ['headings']);
+    addWarning(warnings, 'headingsOnBackground', ['headings']);
   }
 
   if (hasLowContrast(palette.link, palette.background)) {
-    addWarning(warnings, 'linksOnBackground', 'Links may be hard to read on the background.', ['link']);
+    addWarning(warnings, 'linksOnBackground', ['link']);
   }
 
   if (hasLowContrast(palette.linkVisited, palette.background)) {
-    addWarning(warnings, 'visitedLinksOnBackground', 'Visited links may be hard to read on the background.', [
-      'linkVisited',
-    ]);
+    addWarning(warnings, 'visitedLinksOnBackground', ['linkVisited']);
   }
 
   if (hasLowContrast(palette.hover, palette.background)) {
-    addWarning(warnings, 'hoverOnBackground', 'Hover color may be hard to see on the background.', ['hover']);
+    addWarning(warnings, 'hoverOnBackground', ['hover']);
   }
 
   if (hasLowContrast(palette.tag, palette.background)) {
-    addWarning(warnings, 'tagsOnBackground', 'Tags may be hard to read on the background.', ['tag']);
+    addWarning(warnings, 'tagsOnBackground', ['tag']);
   }
 
   if (hasLowContrast(palette.engineText, palette.background)) {
-    addWarning(warnings, 'secondaryTextOnBackground', 'Secondary text may be hard to read on the background.', [
-      'engineText',
-    ]);
+    addWarning(warnings, 'secondaryTextOnBackground', ['engineText']);
   }
 
   if (hasLowContrast(palette.active, palette.background)) {
-    addWarning(warnings, 'activeNavOnBackground', 'Active navigation may be hard to see on the background.', [
-      'active',
-    ]);
+    addWarning(warnings, 'activeNavOnBackground', ['active']);
   }
 
   if (hasLowContrast(palette.inputText, palette.inputBackground)) {
-    addWarning(warnings, 'inputTextOnInputBackground', 'Input text may be hard to read on the input background.', [
-      'inputText',
-      'inputBackground',
-    ]);
+    addWarning(warnings, 'inputTextOnInputBackground', ['inputText', 'inputBackground']);
   }
 
   if (hasLowContrast(palette.foreground, palette.markedTextBackground)) {
-    addWarning(warnings, 'textOnMarkedBackground', 'Text may be hard to read on marked text background.', [
-      'markedTextBackground',
-      'foreground',
-    ]);
+    addWarning(warnings, 'textOnMarkedBackground', ['markedTextBackground', 'foreground']);
   }
 
   if (
@@ -120,19 +108,19 @@ export function getContrastWarnings(palette) {
     hasLowContrast(palette.hover, palette.link) &&
     areAccentColorsConfusable(palette.hover, palette.link)
   ) {
-    addWarning(warnings, 'hoverVsLink', 'Hover color is hard to distinguish from link color.', ['hover', 'link']);
+    addWarning(warnings, 'hoverVsLink', ['hover', 'link']);
   }
 
   if (hasSameColor(palette.link, palette.linkVisited)) {
-    addWarning(warnings, 'linkSameAsVisited', 'Link and visited link use the same color.', ['link', 'linkVisited']);
+    addWarning(warnings, 'linkSameAsVisited', ['link', 'linkVisited']);
   }
 
   if (hasSameColor(palette.link, palette.hover)) {
-    addWarning(warnings, 'linkSameAsHover', 'Link and hover use the same color.', ['link', 'hover']);
+    addWarning(warnings, 'linkSameAsHover', ['link', 'hover']);
   }
 
   if (hasSameColor(palette.linkVisited, palette.hover)) {
-    addWarning(warnings, 'visitedSameAsHover', 'Visited link and hover use the same color.', ['linkVisited', 'hover']);
+    addWarning(warnings, 'visitedSameAsHover', ['linkVisited', 'hover']);
   }
 
   return warnings;
@@ -151,8 +139,8 @@ export function getContrastWarningsByField(palette) {
         warningsByField[field] = [];
       }
 
-      if (!warningsByField[field].includes(warning.message)) {
-        warningsByField[field].push(warning.message);
+      if (!warningsByField[field].includes(warning.id)) {
+        warningsByField[field].push(warning.id);
       }
     }
   }

@@ -6,6 +6,13 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+## 0.7.0 - 2026-06-15
+
+### Added
+
+- English/Russian UI language switcher with the selected language saved as an app preference.
+- Localized English/Russian preview content for checking Cyrillic typography in Google Fonts.
+
 ## 0.6.1 - 2026-06-15
 
 ### Fixed

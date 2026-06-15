@@ -152,6 +152,7 @@ pre {
 }
 
 .select-control,
+.language-select,
 .text-control {
   font: inherit;
 }
@@ -197,6 +198,7 @@ pre {
 .copy-link-button,
 .export-json-button,
 .import-json-button,
+.language-select,
 .random-button,
 .reset-button,
 .unlock-button {
@@ -236,6 +238,10 @@ pre {
   display: none;
 }
 
+.language-control {
+  display: inline-flex;
+}
+
 .export-section {
   display: flex;
   flex-wrap: wrap;
@@ -243,6 +249,18 @@ pre {
   padding: 1rem 2rem;
   background: #fff;
   border-top: 1px solid #ddd;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip-path: inset(50%);
 }
 
 @media (max-width: 40rem) {
