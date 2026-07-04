@@ -3,11 +3,12 @@ import { normalizeTypographyFontSources } from './theme/fonts.js';
 import { initialThemeState } from './theme/model.js';
 
 export const SESSION_STORAGE_KEY = 'selecta_session';
-export const SESSION_STORAGE_VERSION = 1;
+export const SESSION_STORAGE_VERSION = 2;
 
 const FIELD_LOCK_KEYS_BY_SECTION = {
   meta: META_LOCK_KEYS,
   palette: PALETTE_LOCK_KEYS,
+  darkPalette: PALETTE_LOCK_KEYS,
   typography: TYPOGRAPHY_LOCK_KEYS,
   layout: LAYOUT_LOCK_KEYS,
 };

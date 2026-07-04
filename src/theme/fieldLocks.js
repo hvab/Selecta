@@ -35,6 +35,7 @@ export function createEmptyFieldLocks() {
   return {
     meta: createSectionLocks(META_LOCK_KEYS),
     palette: createSectionLocks(PALETTE_LOCK_KEYS),
+    darkPalette: createSectionLocks(PALETTE_LOCK_KEYS),
     typography: createSectionLocks(TYPOGRAPHY_LOCK_KEYS),
     layout: createSectionLocks(LAYOUT_LOCK_KEYS),
   };

@@ -1,6 +1,6 @@
 import test, { afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { clearSession, loadSession, saveSession, SESSION_STORAGE_KEY } from './storage.js';
+import { clearSession, loadSession, saveSession, SESSION_STORAGE_KEY, SESSION_STORAGE_VERSION } from './storage.js';
 import { createEmptyFieldLocks } from './theme/fieldLocks.js';
 import { initialThemeState } from './theme/model.js';
 
@@ -98,7 +98,7 @@ test('returns null for invalid session shape', () => {
   localStorage.setItem(
     SESSION_STORAGE_KEY,
     JSON.stringify({
-      version: 1,
+      version: SESSION_STORAGE_VERSION,
       themeState: structuredClone(initialThemeState),
       fieldLocks: createEmptyFieldLocks(),
       uiState: {

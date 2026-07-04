@@ -73,82 +73,148 @@ the current Aegea checkout before changing preview or export behavior.
 - Aegea theme presets.
 - URL state and JSON export/import.
 - Google Fonts, including curated Cyrillic catalog cleanup.
+- English/Russian localization, including the language switcher, review fixes,
+  verification, and the `0.7.0` release.
 
 Historical setup notes live in `.project/SETUP-PLAN.md`.
 
 ## Active track
 
-English/Russian localization is implemented and awaiting review.
+Dark palette / dark mode support is planned.
 
-This slice adds `vue-i18n`, a persistent UI language switcher, and localized
-preview content for Cyrillic font checks.
+This slice should let the user enable Aegea dark mode support, edit light and
+dark palettes separately, preview both modes in Selecta, and export a child
+theme that follows Aegea's real dark-mode contract.
+The Selecta generator shell should also have its own light/dark appearance
+mode, separate from the generated theme palettes and preview mode, so the
+controls pane remains comfortable while editing either palette.
 
 ### Feature plan
 
-- [x] Confirm product decisions:
-  - first visit uses `navigator.language`, `ru-*` selects Russian, all other
-    values fall back to English;
-  - language is an app preference only, not URL, theme JSON, ZIP, or share state;
-  - Reset keeps the selected language;
-  - preview content is localized to check Cyrillic Google Fonts;
-  - English Aegea link uses `blogengine.me`, Russian Aegea link uses
-    `blogengine.ru`;
-  - header copy is English/Russian and links to the matching Aegea language
-    site.
-- [x] Add i18n foundation:
-  - add `vue-i18n`;
-  - create `src/i18n/index.js`;
-  - create `src/i18n/locales/en.js` and `src/i18n/locales/ru.js`;
-  - store selected locale in `localStorage` key `selecta_locale`;
-  - update `document.documentElement.lang` on initial load and language change.
-- [x] Localize generator shell:
-  - `src/App.vue` header, export panel, status messages, metadata errors,
-    contrast warnings, language switcher, and aria labels;
-  - `src/components/PresetSelector.vue` visible labels;
-  - `src/components/ThemeControls.vue` control labels, optgroups, lock aria
-    labels, and Google Font category labels.
-- [x] Localize preview content:
-  - use `system/preview/en.php` and `system/preview/ru.php` from the local Aegea
-    checkout as the content baseline;
-  - preserve Selecta-specific preview states: lead text, visited link, forced
-    hover link, `mark`, search snippet, tags, form labels, and footer;
-  - keep preview links language-specific for Aegea.
-- [x] Update project context:
-  - update `PREVIEW-BASELINE.md` to include `system/preview/ru.php`;
-  - update this file with the i18n status and invariants.
-- [x] Verify:
+- [x] Audit current Aegea dark contract:
+  - checked current Aegea checkout at commit `deb13007`;
+  - `system/themes/plain/theme-info.php` has `supports_dark_mode` set to `true`;
+  - `system/themes/plain/src/styles/variables.scss` defines light values in
+    `:root` and dark values in
+    `@media (prefers-color-scheme: dark) { :root .e2-responds-to-dark-mode { ... } }`;
+  - `system/theme/templates/main.tmpl.php` adds `e2-responds-to-dark-mode` to
+    `<body>` only when the current theme supports dark mode and the blog setting
+    `respond_to_dark_mode` is enabled;
+  - `system/theme/templates/form-preferences.tmpl.php` shows the Aegea
+    "Support Dark Mode" switch only for themes that support it;
+  - `system/theme/templates/note.tmpl.php` uses `use_likely_light` for sharing
+    widgets; Selecta does not preview sharing widgets yet, so keep generating
+    this metadata but do not block the dark palette slice on it;
+  - current Selecta preview uses `.aegea-preview` with inline light variables
+    and has no dark-mode preview class or preview-mode state;
+  - expected files/areas: `.project/PROGRESS.md` only;
+  - verification: read-only source audit; no app behavior changed.
+- [x] Extend the theme model for a separate dark palette:
+  - keep the existing `palette` section as the light palette for minimal diff;
+  - add a parallel `darkPalette` section with the same user-editable color keys;
+  - keep `meta.supportsDarkMode` as the exported Aegea capability flag;
+  - use Aegea `plain` dark values as the initial dark palette;
+  - expected files/areas: `src/theme/model.js`, `src/theme/serialize.js`,
+    `src/storage.js`, `src/theme/fieldLocks.js`, focused theme tests;
+  - changed: added `darkPalette` to the initial theme state, field locks, theme
+    JSON serialization, URL sharing payloads, and session validation;
+  - changed: bumped theme JSON serialization and session storage versions to `2`;
+  - verification: targeted model/serialization/storage/CSS/theme-info tests,
+    `npm test`, and `npm run build`.
+- [ ] Generate dark CSS and dark-capable theme metadata:
+  - refactor color-variable derivation so the same helper can produce variables
+    from either `palette` or `darkPalette`;
+  - keep base `:root` output for light values;
+  - when `meta.supportsDarkMode` is true, add the Aegea-compatible
+    `@media (prefers-color-scheme: dark) { :root .e2-responds-to-dark-mode { ... } }`
+    block;
+  - keep `theme-info.php` `colors` based on the light palette because Aegea uses
+    it for theme-list preview swatches;
+  - expected files/areas: `src/theme/css.js`, `src/theme/themeInfo.js`,
+    `src/theme/zip.js`, CSS/theme-info tests;
+  - verification: generated CSS contains no dark block when disabled and the
+    exact Aegea selector when enabled.
+- [ ] Add UI controls for enabling and editing dark mode:
+  - add a native checkbox/toggle for "supports dark mode";
+  - add a compact mode control for editing the light or dark palette;
+  - reuse the existing color controls for whichever palette is active;
+  - keep typography, layout, metadata, presets, and language controls outside the
+    theme palette mode;
+  - expected files/areas: `src/components/ThemeControls.vue`, `src/App.vue`,
+    locale files, shell CSS only if needed;
+  - verification: manual browser check that enabling dark mode reveals dark
+    palette editing without changing unrelated controls.
+- [ ] Add preview mode support:
+  - add a preview mode state for light/dark preview independent from the app UI
+    language;
+  - emulate Aegea's dark class in preview while keeping exported CSS selector
+    faithful to Aegea;
+  - ensure preview mode is app UI state, not exported theme metadata;
+  - expected files/areas: `src/App.vue`, `src/preview/AegeaPreview.vue`,
+    `src/preview/style.css`, `src/storage.js`;
+  - verification: manual browser check that preview switches between light and
+    dark palettes and survives reload according to the chosen UI-state rule.
+- [ ] Add generator-shell appearance mode:
+  - add a separate Selecta UI appearance state for the controls pane and app
+    chrome;
+  - do not derive shell colors from the generated theme palette;
+  - keep shell appearance independent from the light/dark palette being edited
+    and from the preview mode;
+  - persist it as app UI state only, not in theme JSON, share URLs, ZIP output,
+    or exported Aegea theme metadata;
+  - expected files/areas: `src/App.vue`, `src/style.css`, `src/storage.js`,
+    locale files if the control needs new labels;
+  - verification: manual browser check that the controls pane can be dark while
+    previewing/editing either light or dark theme palette.
+- [ ] Update Random, locks, and contrast warnings for two palettes:
+  - decide whether palette locks are per light/dark palette or shared before
+    coding; prefer per-palette locks if the UI remains understandable;
+  - make Random update the dark palette only when dark mode is enabled or when
+    the active edited palette is dark;
+  - show contrast warnings for the currently edited palette;
+  - expected files/areas: `src/theme/random.js`, `src/theme/fieldLocks.js`,
+    `src/theme/contrast.js`, `src/App.vue`, tests;
+  - verification: targeted Random/locks/contrast tests and manual spot check.
+- [ ] Update sharing/import/export state contracts:
+  - bump the theme serialization version if the JSON shape changes;
+  - make URL share and JSON export include the dark palette and dark-mode flag;
+  - keep UI language out of theme JSON, share URLs, ZIP output, and theme state;
+  - expected files/areas: `src/theme/serialize.js`, `src/storage.js`,
+    `src/App.vue`, serialization/storage tests;
+  - verification: exported JSON round-trips with dark mode enabled and disabled.
+- [ ] Update project docs and release notes:
+  - update `PREVIEW-BASELINE.md` only if the preview/export contract changes;
+  - add an `Unreleased` note in `CHANGELOG.md`;
+  - update this file after each completed implementation slice;
+  - expected files/areas: `.project/PROGRESS.md`, `PREVIEW-BASELINE.md`,
+    `CHANGELOG.md`;
+  - verification: documentation matches the implemented behavior.
+- [ ] Final verification:
+  - `npm test`;
   - `npm run lint`;
   - `npm run lint:styles`;
   - `npm run format:check`;
   - `npm run build`;
-  - browser check at `http://localhost:5174/Selecta/`: switching to Russian
-    changes UI and preview, reload preserves Russian, Reset keeps Russian, URL
-    stays free of language params.
-- [ ] Review:
-  - have another AI or human review the i18n implementation for missed hardcoded
-    strings, persistence edge cases, preview fidelity, and maintainability.
-- [x] Address review fixes:
-  - replace fragile English-message reverse maps with stable validation and
-    contrast keys;
-  - remove unused English labels from palette lock metadata;
-  - add i18n helper/message parity tests;
-  - document the localization feature in `CHANGELOG.md`.
-- [x] Remove author credit from the header:
-  - keep the header focused on Selecta and Aegea for now;
-  - decide separately where author credit belongs in the UI or docs.
-- [x] Prepare `0.7.0` release:
-  - move localization notes from `Unreleased` to `0.7.0 - 2026-06-15`;
-  - bump `package.json` and `package-lock.json` to `0.7.0`;
-  - rerun the release checks.
+  - manual browser check for light preview, dark preview, disabled dark export,
+    enabled dark export, Reset, Random, JSON import/export, URL share, and ZIP
+    contents.
 
 ### Implementation notes
 
-- `src/i18n/index.js` owns locale normalization, startup locale choice, storage,
-  and `html lang`.
-- `src/preview/demoContent.js` exports `getAegeaDemoContent(locale)` instead of a
-  single static preview content object.
-- Validation and contrast modules return stable message ids; `App.vue` translates
-  them at the UI boundary.
+- The previous English/Russian localization track is reviewed, verified,
+  released, and complete in `0.7.0`.
+- Current Selecta has only one exported palette. Dark mode work must not be
+  treated as just a preview toggle; it changes model, CSS generation,
+  serialization, Random/locks, contrast warnings, and ZIP output.
+- Selecta shell appearance is separate app UI state. It should protect the
+  controls pane from becoming unreadable while previewing a dark theme, but it
+  must not change exported theme files.
+- Aegea activates dark variables through the `e2-responds-to-dark-mode` class and
+  `prefers-color-scheme: dark`, not through a Selecta-specific selector.
+- The dark preview can emulate the Aegea class locally, but exported CSS should
+  use the real Aegea selector.
+- `theme-info.php` `colors` should stay tied to the light palette unless current
+  Aegea behavior proves otherwise.
 - `npm audit` reports 3 high severity warnings through
   `vite` / `@vitejs/plugin-vue` / `esbuild`; the suggested
   `npm audit fix --force` upgrades to Vite 8 and is a breaking dependency
@@ -156,15 +222,10 @@ preview content for Cyrillic font checks.
 
 ## Next steps
 
-- [x] Review the implemented English/Russian localization.
-- [ ] Decide where to mention the project author outside the compact app header.
-- [ ] Add a layout option for full-width content (`100%` viewport width).
-- [ ] Evaluate `vue-i18n` bundle-size/runtime-only setup, for example via
-      `@intlify/unplugin-vue-i18n`, before optimizing this feature further.
-- [ ] Decide separately whether to address the Vite/esbuild audit warnings in
-      this release.
-- [ ] If choosing Stage 13+, start with a read-only audit of current Aegea
-      `plain` variables, inheritance, and preview gaps.
+- [x] Implement the model and serialization slice for `darkPalette`.
+- [ ] Implement dark CSS generation and `theme-info.php` behavior.
+- [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
+      and Vite/esbuild audit decisions as separate future work.
 - [ ] Update this file after the chosen slice has a concrete next checklist.
 
 ## Ideas and backlog

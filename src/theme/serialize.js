@@ -1,7 +1,7 @@
 import { initialThemeState } from './model.js';
 import { normalizeTypographyFontSources } from './fonts.js';
 
-export const THEME_SERIALIZATION_VERSION = 1;
+export const THEME_SERIALIZATION_VERSION = 2;
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);

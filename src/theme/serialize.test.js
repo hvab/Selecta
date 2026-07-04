@@ -16,6 +16,7 @@ test('serializes and deserializes theme state', () => {
 
   themeState.meta.displayName = 'Serialized Theme';
   themeState.palette.link = '#123456';
+  themeState.darkPalette.link = '#abcdef';
   themeState.typography.noteTextLineHeight = 1.7;
   themeState.layout.maxWidth = '52rem';
 
