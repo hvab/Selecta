@@ -33,6 +33,7 @@ const appElement = ref(null);
 const defaultControlsPaneWidth = 416;
 const controlsPaneWidth = ref(defaultControlsPaneWidth);
 const activePaletteMode = ref('light');
+const previewMode = ref('light');
 const isResizingControlsPane = ref(false);
 const shareMessageKey = ref('');
 const shareErrorKey = ref('');
@@ -123,6 +124,7 @@ function getUiState() {
     sidebarWidth: controlsPaneWidth.value,
     folderNameEdited: folderNameEdited.value,
     activePaletteMode: activePaletteMode.value,
+    previewMode: previewMode.value,
   };
 }
 
@@ -131,6 +133,7 @@ function resetThemeState() {
   clearAllFieldLocks(fieldLocks);
   folderNameEdited.value = false;
   activePaletteMode.value = 'light';
+  previewMode.value = 'light';
 }
 
 function inferFolderNameEdited(meta) {
@@ -168,6 +171,7 @@ function applySharedThemeState(nextThemeState) {
   clearAllFieldLocks(fieldLocks);
   folderNameEdited.value = inferFolderNameEdited(nextThemeState.meta);
   activePaletteMode.value = nextThemeState.meta.supportsDarkMode ? activePaletteMode.value : 'light';
+  previewMode.value = nextThemeState.meta.supportsDarkMode ? previewMode.value : 'light';
 }
 
 function updateMetaField(key, value) {
@@ -176,6 +180,7 @@ function updateMetaField(key, value) {
 
   if (key === 'supportsDarkMode' && !value) {
     activePaletteMode.value = 'light';
+    previewMode.value = 'light';
   }
 
   if (key === 'displayName' && !folderNameEdited.value) {
@@ -194,6 +199,10 @@ function updatePaletteField(key, value) {
 
 function updatePaletteMode(value) {
   activePaletteMode.value = value === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
+}
+
+function updatePreviewMode(event) {
+  previewMode.value = event.target.value === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
 }
 
 function updateTypographyField(key, value) {
@@ -452,11 +461,12 @@ onMounted(() => {
     folderNameEdited.value = session.uiState.folderNameEdited;
     activePaletteMode.value =
       session.uiState.activePaletteMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
+    previewMode.value = session.uiState.previewMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
   }
 });
 
 watch(
-  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, activePaletteMode],
+  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, activePaletteMode, previewMode],
   () => {
     clearTimeout(sessionSaveTimeout);
 
@@ -526,6 +536,18 @@ watch(locale, updateDocumentMetadata, { immediate: true });
             </option>
           </select>
         </label>
+        <label class="preview-mode-control">
+          <span>{{ t('controls.previewMode') }}</span>
+          <select
+            class="preview-mode-select"
+            :value="previewMode"
+            :aria-label="t('aria.previewMode')"
+            @change="updatePreviewMode"
+          >
+            <option value="light">{{ t('controls.lightPreview') }}</option>
+            <option value="dark" :disabled="!themeState.meta.supportsDarkMode">{{ t('controls.darkPreview') }}</option>
+          </select>
+        </label>
         <button class="random-button" type="button" @click="randomizeTheme">{{ t('actions.random') }}</button>
         <button class="unlock-button" type="button" :disabled="!hasFieldLocks" @click="unlockAllFields">
           {{ t('actions.unlockAll') }}
@@ -575,7 +597,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     ></div>
 
     <section class="app-preview-pane" :aria-label="t('aria.preview')">
-      <AegeaPreview :theme-state="themeState" />
+      <AegeaPreview :theme-state="themeState" :preview-mode="previewMode" />
     </section>
   </main>
 </template>

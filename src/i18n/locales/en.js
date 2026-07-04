@@ -22,6 +22,7 @@ export const en = {
     preview: 'Preview',
     resizeControlsPanel: 'Resize controls panel',
     language: 'Language',
+    previewMode: 'Preview mode',
     lockForRandom: 'Lock {label} for random',
   },
   status: {
@@ -62,6 +63,9 @@ export const en = {
     paletteMode: 'Palette',
     lightPalette: 'Light',
     darkPalette: 'Dark',
+    previewMode: 'Preview',
+    lightPreview: 'Light',
+    darkPreview: 'Dark',
     background: 'Background',
     foreground: 'Text',
     headings: 'Headings',

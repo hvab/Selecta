@@ -153,6 +153,7 @@ pre {
 
 .select-control,
 .language-select,
+.preview-mode-select,
 .text-control {
   font: inherit;
 }
@@ -199,6 +200,7 @@ pre {
 .export-json-button,
 .import-json-button,
 .language-select,
+.preview-mode-select,
 .random-button,
 .reset-button,
 .unlock-button {
@@ -240,6 +242,12 @@ pre {
 
 .language-control {
   display: inline-flex;
+}
+
+.preview-mode-control {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
 }
 
 .export-section {

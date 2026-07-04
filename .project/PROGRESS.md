@@ -154,7 +154,7 @@ controls pane remains comfortable while editing either palette.
   - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
     `npm run format:check`, `npm run build`, and browser check at
     `http://localhost:5174/Selecta/`.
-- [ ] Add preview mode support:
+- [x] Add preview mode support:
   - add a preview mode state for light/dark preview independent from the app UI
     language;
   - emulate Aegea's dark class in preview while keeping exported CSS selector
@@ -162,8 +162,13 @@ controls pane remains comfortable while editing either palette.
   - ensure preview mode is app UI state, not exported theme metadata;
   - expected files/areas: `src/App.vue`, `src/preview/AegeaPreview.vue`,
     `src/preview/style.css`, `src/storage.js`;
-  - verification: manual browser check that preview switches between light and
-    dark palettes and survives reload according to the chosen UI-state rule.
+  - changed: added a separate light/dark preview mode persisted as UI state
+    only;
+  - changed: `AegeaPreview` can render variables from `darkPalette` while the
+    exported CSS selector stays tied to the real Aegea contract;
+  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, `npm run build`, and browser check at
+    `http://localhost:5174/Selecta/`.
 - [ ] Add generator-shell appearance mode:
   - add a separate Selecta UI appearance state for the controls pane and app
     chrome;
@@ -235,7 +240,8 @@ controls pane remains comfortable while editing either palette.
 - [x] Implement the model and serialization slice for `darkPalette`.
 - [x] Implement dark CSS generation and `theme-info.php` behavior.
 - [x] Add UI controls for enabling and editing dark mode.
-- [ ] Add preview mode support.
+- [x] Add preview mode support.
+- [ ] Add generator-shell appearance mode.
 - [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
       and Vite/esbuild audit decisions as separate future work.
 - [ ] Update this file after the chosen slice has a concrete next checklist.

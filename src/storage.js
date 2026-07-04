@@ -70,7 +70,8 @@ function isValidUiState(uiState) {
     typeof uiState.folderNameEdited === 'boolean' &&
     (uiState.activePaletteMode === undefined ||
       uiState.activePaletteMode === 'light' ||
-      uiState.activePaletteMode === 'dark')
+      uiState.activePaletteMode === 'dark') &&
+    (uiState.previewMode === undefined || uiState.previewMode === 'light' || uiState.previewMode === 'dark')
   );
 }
 

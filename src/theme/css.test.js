@@ -41,6 +41,17 @@ test('derives shared plain color variables from theme palette', () => {
   });
 });
 
+test('can derive preview variables from a provided palette', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.darkPalette.background = '#101820';
+  themeState.darkPalette.foreground = '#f0f4f8';
+
+  assert.equal(getThemeCssVariables(themeState, themeState.darkPalette)['--backgroundColor'], '#101820');
+  assert.equal(getThemeCssVariables(themeState, themeState.darkPalette)['--foregroundColor'], '#f0f4f8');
+  assert.equal(getThemeCssVariables(themeState)['--backgroundColor'], '#ffffff');
+});
+
 test('keeps custom font stacks and falls back from unsafe font-family values', () => {
   const themeState = structuredClone(initialThemeState);
 

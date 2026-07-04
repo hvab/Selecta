@@ -50,7 +50,7 @@ function formatCssVariables(variables, indentation = '  ') {
     .join('\n');
 }
 
-export function getThemeCssVariables(themeState) {
+export function getThemeCssVariables(themeState, palette = themeState.palette) {
   const noteTitleFontSize = scalePixelSize(themeState.typography.noteTextSize, themeState.typography.titleScale);
   const mainFontFamily = getThemeFontFamilyCssValue(
     themeState.typography.mainFontSource,
@@ -64,7 +64,7 @@ export function getThemeCssVariables(themeState) {
   );
 
   return {
-    ...getPaletteCssVariables(themeState.palette),
+    ...getPaletteCssVariables(palette),
     ...(mainFontFamily ? { '--mainFontFamily': mainFontFamily } : {}),
     ...(noteFontFamily ? { '--noteMainFontFamily': noteFontFamily } : {}),
     '--noteTitleFontSize': noteTitleFontSize,

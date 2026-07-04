@@ -10,10 +10,17 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  previewMode: {
+    type: String,
+    required: true,
+  },
 });
 
 const { locale } = useI18n();
-const themeCssVariables = computed(() => getThemeCssVariables(props.themeState));
+const isDarkPreview = computed(() => props.previewMode === 'dark' && props.themeState.meta.supportsDarkMode);
+const themeCssVariables = computed(() =>
+  getThemeCssVariables(props.themeState, isDarkPreview.value ? props.themeState.darkPalette : props.themeState.palette)
+);
 const aegeaDemoContent = computed(() => getAegeaDemoContent(locale.value));
 const visibleMainMenuItems = computed(() => aegeaDemoContent.value.mainMenu.filter((item) => item.visible));
 const p2Notes = computed(() => aegeaDemoContent.value.notes);
@@ -28,7 +35,7 @@ const menuIconSvgById = {
 </script>
 
 <template>
-  <section class="aegea-preview" :style="themeCssVariables">
+  <section class="aegea-preview" :class="{ 'e2-responds-to-dark-mode': isDarkPreview }" :style="themeCssVariables">
     <div class="common">
       <header class="flag">
         <div class="header-content">

@@ -22,6 +22,7 @@ export const ru = {
     preview: 'Предпросмотр',
     resizeControlsPanel: 'Изменить ширину панели настроек',
     language: 'Язык',
+    previewMode: 'Режим предпросмотра',
     lockForRandom: 'Зафиксировать {label} для случайной темы',
   },
   status: {
@@ -62,6 +63,9 @@ export const ru = {
     paletteMode: 'Палитра',
     lightPalette: 'Светлая',
     darkPalette: 'Тёмная',
+    previewMode: 'Предпросмотр',
+    lightPreview: 'Светлый',
+    darkPreview: 'Тёмный',
     background: 'Фон',
     foreground: 'Текст',
     headings: 'Заголовки',
