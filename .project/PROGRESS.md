@@ -169,7 +169,7 @@ controls pane remains comfortable while editing either palette.
   - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
     `npm run format:check`, `npm run build`, and browser check at
     `http://localhost:5174/Selecta/`.
-- [ ] Add generator-shell appearance mode:
+- [x] Add generator-shell appearance mode:
   - add a separate Selecta UI appearance state for the controls pane and app
     chrome;
   - do not derive shell colors from the generated theme palette;
@@ -179,8 +179,13 @@ controls pane remains comfortable while editing either palette.
     or exported Aegea theme metadata;
   - expected files/areas: `src/App.vue`, `src/style.css`, `src/storage.js`,
     locale files if the control needs new labels;
-  - verification: manual browser check that the controls pane can be dark while
-    previewing/editing either light or dark theme palette.
+  - changed: added a localized light/dark interface appearance control for
+    Selecta shell chrome;
+  - changed: shell appearance is saved in session UI state and kept out of theme
+    JSON, share URLs, ZIP output, and Aegea theme metadata;
+  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, `npm run build`, and browser check at
+    `http://localhost:5174/Selecta/`.
 - [ ] Update Random, locks, and contrast warnings for two palettes:
   - decide whether palette locks are per light/dark palette or shared before
     coding; prefer per-palette locks if the UI remains understandable;
@@ -241,7 +246,8 @@ controls pane remains comfortable while editing either palette.
 - [x] Implement dark CSS generation and `theme-info.php` behavior.
 - [x] Add UI controls for enabling and editing dark mode.
 - [x] Add preview mode support.
-- [ ] Add generator-shell appearance mode.
+- [x] Add generator-shell appearance mode.
+- [ ] Update Random, locks, and contrast warnings for two palettes.
 - [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
       and Vite/esbuild audit decisions as separate future work.
 - [ ] Update this file after the chosen slice has a concrete next checklist.

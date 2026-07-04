@@ -13,10 +13,36 @@ body {
 }
 
 .app {
+  --shell-background: #fff;
+  --shell-foreground: #111;
+  --shell-border: #ddd;
+  --shell-border-active: #999;
+  --shell-control-background: #fff;
+  --shell-control-foreground: #111;
+  --shell-control-border: #999;
+  --shell-error: #b00020;
+  --shell-success: #060;
+  --shell-warning: #8a5a00;
+
   display: grid;
   grid-template-columns: var(--controls-pane-width, 26rem) 0.5rem minmax(0, 1fr);
   height: 100vh;
   overflow: hidden;
+  color: var(--shell-foreground);
+  background: var(--shell-background);
+}
+
+.app[data-shell-appearance='dark'] {
+  --shell-background: #18191b;
+  --shell-foreground: #f2f4f7;
+  --shell-border: #3c4046;
+  --shell-border-active: #737984;
+  --shell-control-background: #25282d;
+  --shell-control-foreground: #f2f4f7;
+  --shell-control-border: #737984;
+  --shell-error: #ff8a9a;
+  --shell-success: #78d98d;
+  --shell-warning: #ffd27a;
 }
 
 h1,
@@ -33,6 +59,7 @@ p {
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
   min-height: 0;
+  background: var(--shell-background);
 }
 
 .app-controls-scroll,
@@ -57,7 +84,7 @@ p {
   position: relative;
   touch-action: none;
   cursor: col-resize;
-  background: #fff;
+  background: var(--shell-background);
 }
 
 .app-pane-resizer::before {
@@ -67,13 +94,13 @@ p {
   left: 50%;
   width: 1px;
   content: '';
-  background: #ddd;
+  background: var(--shell-border);
   transform: translateX(-50%);
 }
 
 .app-pane-resizer:hover::before,
 .app-pane-resizer:focus-visible::before {
-  background: #999;
+  background: var(--shell-border-active);
 }
 
 .controls-section {
@@ -109,7 +136,7 @@ pre {
 
 .control-group {
   padding-top: 0.75rem;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--shell-border);
 }
 
 .control-row {
@@ -154,6 +181,7 @@ pre {
 .select-control,
 .language-select,
 .preview-mode-select,
+.shell-appearance-select,
 .text-control {
   font: inherit;
 }
@@ -167,14 +195,14 @@ pre {
 .control-error {
   margin: 0.25rem 0 0;
   font-size: 0.8125rem;
-  color: #b00020;
+  color: var(--shell-error);
   overflow-wrap: anywhere;
 }
 
 .control-warnings .control-warning {
   margin: 0.25rem 0 0;
   font-size: 0.8125rem;
-  color: #8a5a00;
+  color: var(--shell-warning);
   overflow-wrap: anywhere;
 }
 
@@ -201,12 +229,30 @@ pre {
 .import-json-button,
 .language-select,
 .preview-mode-select,
+.shell-appearance-select,
 .random-button,
 .reset-button,
 .unlock-button {
   min-height: 2rem;
   padding: 0.35rem 0.75rem;
   font: inherit;
+}
+
+.download-button,
+.copy-link-button,
+.export-json-button,
+.import-json-button,
+.language-select,
+.preview-mode-select,
+.random-button,
+.reset-button,
+.select-control,
+.shell-appearance-select,
+.text-control,
+.unlock-button {
+  color: var(--shell-control-foreground);
+  background: var(--shell-control-background);
+  border: 1px solid var(--shell-control-border);
 }
 
 .download-button:disabled,
@@ -228,12 +274,12 @@ pre {
 .download-error,
 .import-error,
 .share-error {
-  color: #b00020;
+  color: var(--shell-error);
 }
 
 .import-message,
 .share-message {
-  color: #060;
+  color: var(--shell-success);
 }
 
 .import-json-input {
@@ -244,7 +290,8 @@ pre {
   display: inline-flex;
 }
 
-.preview-mode-control {
+.preview-mode-control,
+.shell-appearance-control {
   display: inline-flex;
   gap: 0.4rem;
   align-items: center;
@@ -255,8 +302,8 @@ pre {
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: #fff;
-  border-top: 1px solid #ddd;
+  background: var(--shell-background);
+  border-top: 1px solid var(--shell-border);
 }
 
 .visually-hidden {

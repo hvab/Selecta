@@ -71,7 +71,8 @@ function isValidUiState(uiState) {
     (uiState.activePaletteMode === undefined ||
       uiState.activePaletteMode === 'light' ||
       uiState.activePaletteMode === 'dark') &&
-    (uiState.previewMode === undefined || uiState.previewMode === 'light' || uiState.previewMode === 'dark')
+    (uiState.previewMode === undefined || uiState.previewMode === 'light' || uiState.previewMode === 'dark') &&
+    (uiState.shellAppearance === undefined || uiState.shellAppearance === 'light' || uiState.shellAppearance === 'dark')
   );
 }
 

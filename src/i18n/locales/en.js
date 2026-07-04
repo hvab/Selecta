@@ -23,6 +23,7 @@ export const en = {
     resizeControlsPanel: 'Resize controls panel',
     language: 'Language',
     previewMode: 'Preview mode',
+    shellAppearance: 'Interface appearance',
     lockForRandom: 'Lock {label} for random',
   },
   status: {
@@ -66,6 +67,9 @@ export const en = {
     previewMode: 'Preview',
     lightPreview: 'Light',
     darkPreview: 'Dark',
+    shellAppearance: 'Interface',
+    shellLight: 'Light',
+    shellDark: 'Dark',
     background: 'Background',
     foreground: 'Text',
     headings: 'Headings',

@@ -48,6 +48,7 @@ test('saves and loads a valid session', () => {
       folderNameEdited: true,
       activePaletteMode: 'dark',
       previewMode: 'dark',
+      shellAppearance: 'dark',
     },
   });
 
@@ -59,6 +60,7 @@ test('saves and loads a valid session', () => {
       folderNameEdited: true,
       activePaletteMode: 'dark',
       previewMode: 'dark',
+      shellAppearance: 'dark',
     },
   });
 });

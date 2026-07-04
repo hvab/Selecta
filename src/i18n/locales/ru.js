@@ -23,6 +23,7 @@ export const ru = {
     resizeControlsPanel: 'Изменить ширину панели настроек',
     language: 'Язык',
     previewMode: 'Режим предпросмотра',
+    shellAppearance: 'Оформление интерфейса',
     lockForRandom: 'Зафиксировать {label} для случайной темы',
   },
   status: {
@@ -66,6 +67,9 @@ export const ru = {
     previewMode: 'Предпросмотр',
     lightPreview: 'Светлый',
     darkPreview: 'Тёмный',
+    shellAppearance: 'Интерфейс',
+    shellLight: 'Светлый',
+    shellDark: 'Тёмный',
     background: 'Фон',
     foreground: 'Текст',
     headings: 'Заголовки',

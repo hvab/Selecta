@@ -34,6 +34,7 @@ const defaultControlsPaneWidth = 416;
 const controlsPaneWidth = ref(defaultControlsPaneWidth);
 const activePaletteMode = ref('light');
 const previewMode = ref('light');
+const shellAppearance = ref('light');
 const isResizingControlsPane = ref(false);
 const shareMessageKey = ref('');
 const shareErrorKey = ref('');
@@ -125,6 +126,7 @@ function getUiState() {
     folderNameEdited: folderNameEdited.value,
     activePaletteMode: activePaletteMode.value,
     previewMode: previewMode.value,
+    shellAppearance: shellAppearance.value,
   };
 }
 
@@ -134,6 +136,7 @@ function resetThemeState() {
   folderNameEdited.value = false;
   activePaletteMode.value = 'light';
   previewMode.value = 'light';
+  shellAppearance.value = 'light';
 }
 
 function inferFolderNameEdited(meta) {
@@ -203,6 +206,10 @@ function updatePaletteMode(value) {
 
 function updatePreviewMode(event) {
   previewMode.value = event.target.value === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
+}
+
+function updateShellAppearance(event) {
+  shellAppearance.value = event.target.value === 'dark' ? 'dark' : 'light';
 }
 
 function updateTypographyField(key, value) {
@@ -462,11 +469,12 @@ onMounted(() => {
     activePaletteMode.value =
       session.uiState.activePaletteMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
     previewMode.value = session.uiState.previewMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
+    shellAppearance.value = session.uiState.shellAppearance === 'dark' ? 'dark' : 'light';
   }
 });
 
 watch(
-  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, activePaletteMode, previewMode],
+  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, activePaletteMode, previewMode, shellAppearance],
   () => {
     clearTimeout(sessionSaveTimeout);
 
@@ -494,7 +502,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
   </Teleport>
 
-  <main ref="appElement" class="app" :style="appStyle">
+  <main ref="appElement" class="app" :data-shell-appearance="shellAppearance" :style="appStyle">
     <aside class="app-controls-pane">
       <div class="app-controls-scroll">
         <header class="app-header">
@@ -546,6 +554,18 @@ watch(locale, updateDocumentMetadata, { immediate: true });
           >
             <option value="light">{{ t('controls.lightPreview') }}</option>
             <option value="dark" :disabled="!themeState.meta.supportsDarkMode">{{ t('controls.darkPreview') }}</option>
+          </select>
+        </label>
+        <label class="shell-appearance-control">
+          <span>{{ t('controls.shellAppearance') }}</span>
+          <select
+            class="shell-appearance-select"
+            :value="shellAppearance"
+            :aria-label="t('aria.shellAppearance')"
+            @change="updateShellAppearance"
+          >
+            <option value="light">{{ t('controls.shellLight') }}</option>
+            <option value="dark">{{ t('controls.shellDark') }}</option>
           </select>
         </label>
         <button class="random-button" type="button" @click="randomizeTheme">{{ t('actions.random') }}</button>
