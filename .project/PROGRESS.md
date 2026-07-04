@@ -121,7 +121,7 @@ controls pane remains comfortable while editing either palette.
   - changed: bumped theme JSON serialization and session storage versions to `2`;
   - verification: targeted model/serialization/storage/CSS/theme-info tests,
     `npm test`, and `npm run build`.
-- [ ] Generate dark CSS and dark-capable theme metadata:
+- [x] Generate dark CSS and dark-capable theme metadata:
   - refactor color-variable derivation so the same helper can produce variables
     from either `palette` or `darkPalette`;
   - keep base `:root` output for light values;
@@ -132,8 +132,12 @@ controls pane remains comfortable while editing either palette.
     it for theme-list preview swatches;
   - expected files/areas: `src/theme/css.js`, `src/theme/themeInfo.js`,
     `src/theme/zip.js`, CSS/theme-info tests;
-  - verification: generated CSS contains no dark block when disabled and the
-    exact Aegea selector when enabled.
+  - changed: `generateThemeCss()` now emits the Aegea-compatible dark media
+    block only when `meta.supportsDarkMode` is true;
+  - changed: `theme-info.php` keeps theme-list `colors` tied to the light
+    palette and reflects `supports_dark_mode` from theme state;
+  - verification: targeted CSS/theme-info/ZIP tests, `npm test`, and
+    `npm run build`.
 - [ ] Add UI controls for enabling and editing dark mode:
   - add a native checkbox/toggle for "supports dark mode";
   - add a compact mode control for editing the light or dark palette;
@@ -223,7 +227,8 @@ controls pane remains comfortable while editing either palette.
 ## Next steps
 
 - [x] Implement the model and serialization slice for `darkPalette`.
-- [ ] Implement dark CSS generation and `theme-info.php` behavior.
+- [x] Implement dark CSS generation and `theme-info.php` behavior.
+- [ ] Add UI controls for enabling and editing dark mode.
 - [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
       and Vite/esbuild audit decisions as separate future work.
 - [ ] Update this file after the chosen slice has a concrete next checklist.

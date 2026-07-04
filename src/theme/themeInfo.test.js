@@ -15,6 +15,20 @@ test('generates theme info from theme state', () => {
   assert.match(themeInfo, /'link' => '#0066cc'/);
 });
 
+test('uses light palette colors in theme info when dark mode is enabled', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.meta.supportsDarkMode = true;
+  themeState.palette.background = '#fefefe';
+  themeState.darkPalette.background = '#101010';
+
+  const themeInfo = generateThemeInfo(themeState);
+
+  assert.match(themeInfo, /'supports_dark_mode' => true/);
+  assert.match(themeInfo, /'background' => '#fefefe'/);
+  assert.doesNotMatch(themeInfo, /'#101010'/);
+});
+
 test('escapes PHP single quoted strings in theme info', () => {
   const themeInfo = generateThemeInfo({
     ...initialThemeState,

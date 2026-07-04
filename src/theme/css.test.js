@@ -78,6 +78,24 @@ test('adds fallback to custom system font names without generic family', () => {
 
 test('does not add Google Fonts import for plain default typography', () => {
   assert.equal(generateThemeCss(initialThemeState).startsWith(':root {'), true);
+  assert.equal(generateThemeCss(initialThemeState).includes('prefers-color-scheme'), false);
+});
+
+test('adds dark palette variables only when dark mode support is enabled', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.meta.supportsDarkMode = true;
+  themeState.darkPalette.background = '#101820';
+  themeState.darkPalette.link = '#80c8ff';
+
+  const css = generateThemeCss(themeState);
+
+  assert.match(css, /@media \(prefers-color-scheme: dark\) \{/);
+  assert.match(css, /  :root \.e2-responds-to-dark-mode \{/);
+  assert.match(css, /    --backgroundColor: #101820;/);
+  assert.match(css, /    --backgroundTransparentColor: rgba\(16, 24, 32, 0\.8\);/);
+  assert.match(css, /    --linkColor: #80c8ff;/);
+  assert.match(css, /    --linkUnderlineColor: rgba\(128, 200, 255, 0\.15\);/);
 });
 
 test('does not emit unknown Google Font families without an import', () => {
