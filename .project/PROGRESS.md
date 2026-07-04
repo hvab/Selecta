@@ -138,7 +138,7 @@ controls pane remains comfortable while editing either palette.
     palette and reflects `supports_dark_mode` from theme state;
   - verification: targeted CSS/theme-info/ZIP tests, `npm test`, and
     `npm run build`.
-- [ ] Add UI controls for enabling and editing dark mode:
+- [x] Add UI controls for enabling and editing dark mode:
   - add a native checkbox/toggle for "supports dark mode";
   - add a compact mode control for editing the light or dark palette;
   - reuse the existing color controls for whichever palette is active;
@@ -146,8 +146,14 @@ controls pane remains comfortable while editing either palette.
     theme palette mode;
   - expected files/areas: `src/components/ThemeControls.vue`, `src/App.vue`,
     locale files, shell CSS only if needed;
-  - verification: manual browser check that enabling dark mode reveals dark
-    palette editing without changing unrelated controls.
+  - changed: added localized controls for `supportsDarkMode` and the edited
+    light/dark palette;
+  - changed: palette color controls and palette locks now target the active
+    light or dark palette;
+  - changed: active edited palette is persisted as UI state only;
+  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, `npm run build`, and browser check at
+    `http://localhost:5174/Selecta/`.
 - [ ] Add preview mode support:
   - add a preview mode state for light/dark preview independent from the app UI
     language;
@@ -228,7 +234,8 @@ controls pane remains comfortable while editing either palette.
 
 - [x] Implement the model and serialization slice for `darkPalette`.
 - [x] Implement dark CSS generation and `theme-info.php` behavior.
-- [ ] Add UI controls for enabling and editing dark mode.
+- [x] Add UI controls for enabling and editing dark mode.
+- [ ] Add preview mode support.
 - [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
       and Vite/esbuild audit decisions as separate future work.
 - [ ] Update this file after the chosen slice has a concrete next checklist.

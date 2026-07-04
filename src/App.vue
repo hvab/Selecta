@@ -32,6 +32,7 @@ const folderNameEdited = ref(false);
 const appElement = ref(null);
 const defaultControlsPaneWidth = 416;
 const controlsPaneWidth = ref(defaultControlsPaneWidth);
+const activePaletteMode = ref('light');
 const isResizingControlsPane = ref(false);
 const shareMessageKey = ref('');
 const shareErrorKey = ref('');
@@ -40,7 +41,10 @@ const importErrorKey = ref('');
 const themeJsonFileInput = ref(null);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
 const translatedMetadataErrors = computed(() => translateMessageMap(metadataErrors.value, 'validation'));
-const contrastWarningsByField = computed(() => getContrastWarningsByField(themeState.palette));
+const activePaletteSection = computed(() => (activePaletteMode.value === 'dark' ? 'darkPalette' : 'palette'));
+const activePalette = computed(() => themeState[activePaletteSection.value]);
+const activePaletteLocks = computed(() => fieldLocks[activePaletteSection.value]);
+const contrastWarningsByField = computed(() => getContrastWarningsByField(activePalette.value));
 const translatedContrastWarningsByField = computed(() => translateWarningMap(contrastWarningsByField.value));
 const hasFieldLocks = computed(() => hasAnyFieldLocked(fieldLocks));
 const canDownloadTheme = computed(() => Object.keys(metadataErrors.value).length === 0);
@@ -118,6 +122,7 @@ function getUiState() {
   return {
     sidebarWidth: controlsPaneWidth.value,
     folderNameEdited: folderNameEdited.value,
+    activePaletteMode: activePaletteMode.value,
   };
 }
 
@@ -125,6 +130,7 @@ function resetThemeState() {
   applyThemeState(structuredClone(initialThemeState));
   clearAllFieldLocks(fieldLocks);
   folderNameEdited.value = false;
+  activePaletteMode.value = 'light';
 }
 
 function inferFolderNameEdited(meta) {
@@ -161,11 +167,16 @@ function applySharedThemeState(nextThemeState) {
   applyThemeState(nextThemeState);
   clearAllFieldLocks(fieldLocks);
   folderNameEdited.value = inferFolderNameEdited(nextThemeState.meta);
+  activePaletteMode.value = nextThemeState.meta.supportsDarkMode ? activePaletteMode.value : 'light';
 }
 
 function updateMetaField(key, value) {
   clearStatusMessages();
   themeState.meta[key] = key === 'folderName' ? normalizeFolderName(value) : value;
+
+  if (key === 'supportsDarkMode' && !value) {
+    activePaletteMode.value = 'light';
+  }
 
   if (key === 'displayName' && !folderNameEdited.value) {
     themeState.meta.folderName = suggestFolderName(value);
@@ -178,7 +189,11 @@ function updateMetaField(key, value) {
 
 function updatePaletteField(key, value) {
   clearStatusMessages();
-  themeState.palette[key] = value;
+  activePalette.value[key] = value;
+}
+
+function updatePaletteMode(value) {
+  activePaletteMode.value = value === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
 }
 
 function updateTypographyField(key, value) {
@@ -435,11 +450,13 @@ onMounted(() => {
     applyFieldLocks(session.fieldLocks);
     controlsPaneWidth.value = getConstrainedControlsPaneWidth(session.uiState.sidebarWidth);
     folderNameEdited.value = session.uiState.folderNameEdited;
+    activePaletteMode.value =
+      session.uiState.activePaletteMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
   }
 });
 
 watch(
-  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited],
+  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, activePaletteMode],
   () => {
     clearTimeout(sessionSaveTimeout);
 
@@ -485,11 +502,14 @@ watch(locale, updateDocumentMetadata, { immediate: true });
             :metadata-errors="translatedMetadataErrors"
             :contrast-warnings-by-field="translatedContrastWarningsByField"
             :field-locks="fieldLocks"
-            :palette="themeState.palette"
+            :palette-locks="activePaletteLocks"
+            :active-palette-mode="activePaletteMode"
+            :palette="activePalette"
             :typography="themeState.typography"
             :layout="themeState.layout"
             @update:meta-field="updateMetaField"
             @update:palette-field="updatePaletteField"
+            @update:palette-mode="updatePaletteMode"
             @update:typography-field="updateTypographyField"
             @update:layout-field="updateLayoutField"
             @toggle-field-lock="toggleFieldLock"

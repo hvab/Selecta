@@ -65,7 +65,12 @@ function isValidFieldLocks(fieldLocks) {
 
 function isValidUiState(uiState) {
   return (
-    isPlainObject(uiState) && Number.isFinite(uiState.sidebarWidth) && typeof uiState.folderNameEdited === 'boolean'
+    isPlainObject(uiState) &&
+    Number.isFinite(uiState.sidebarWidth) &&
+    typeof uiState.folderNameEdited === 'boolean' &&
+    (uiState.activePaletteMode === undefined ||
+      uiState.activePaletteMode === 'light' ||
+      uiState.activePaletteMode === 'dark')
   );
 }
 

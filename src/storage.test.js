@@ -46,6 +46,7 @@ test('saves and loads a valid session', () => {
     uiState: {
       sidebarWidth: 512,
       folderNameEdited: true,
+      activePaletteMode: 'dark',
     },
   });
 
@@ -55,6 +56,7 @@ test('saves and loads a valid session', () => {
     uiState: {
       sidebarWidth: 512,
       folderNameEdited: true,
+      activePaletteMode: 'dark',
     },
   });
 });
