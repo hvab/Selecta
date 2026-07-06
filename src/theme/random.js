@@ -123,6 +123,7 @@ export function getRandomThemeState(currentState, fieldLocks = createEmptyFieldL
       folderName: fieldLocks.meta.folderName ? currentState.meta.folderName : `random-theme-${themeNumber}`,
     },
     palette: buildRandomPalette(currentState.palette, fieldLocks.palette),
+    darkPalette: buildRandomPalette(currentState.darkPalette, fieldLocks.darkPalette),
     typography: {
       mainFontSource: mainFont.source,
       mainFontFamily: mainFont.family,

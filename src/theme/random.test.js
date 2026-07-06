@@ -25,6 +25,12 @@ test('getRandomThemeState palette passes contrast checks', () => {
   }
 });
 
+test('getRandomThemeState dark palette passes contrast checks', () => {
+  for (let attempt = 0; attempt < 32; attempt += 1) {
+    assert.equal(isPaletteContrastValid(getRandomThemeState(initialThemeState).darkPalette), true);
+  }
+});
+
 test('buildRandomPalette keeps locked colors', () => {
   const fieldLocks = createEmptyFieldLocks();
 
@@ -42,6 +48,29 @@ test('buildRandomPalette keeps locked colors', () => {
 
     assert.equal(palette.background, '#112233');
     assert.equal(palette.link, '#aabbcc');
+  }
+});
+
+test('getRandomThemeState keeps locked dark palette colors', () => {
+  const fieldLocks = createEmptyFieldLocks();
+
+  fieldLocks.darkPalette.background = true;
+  fieldLocks.darkPalette.link = true;
+
+  const currentState = {
+    ...initialThemeState,
+    darkPalette: {
+      ...initialThemeState.darkPalette,
+      background: '#112233',
+      link: '#aabbcc',
+    },
+  };
+
+  for (let attempt = 0; attempt < 16; attempt += 1) {
+    const randomState = getRandomThemeState(currentState, fieldLocks);
+
+    assert.equal(randomState.darkPalette.background, '#112233');
+    assert.equal(randomState.darkPalette.link, '#aabbcc');
   }
 });
 

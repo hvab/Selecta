@@ -268,6 +268,14 @@ function resetToDefaults() {
   });
 }
 
+function randomizePalette(section, randomPalette) {
+  for (const [key, locked] of Object.entries(fieldLocks[section])) {
+    if (!locked) {
+      themeState[section][key] = randomPalette[key];
+    }
+  }
+}
+
 function randomizeTheme() {
   clearStatusMessages();
   const randomThemeState = getRandomThemeState(themeState, fieldLocks);
@@ -280,10 +288,10 @@ function randomizeTheme() {
     themeState.meta.folderName = randomThemeState.meta.folderName;
   }
 
-  for (const [key, locked] of Object.entries(fieldLocks.palette)) {
-    if (!locked) {
-      themeState.palette[key] = randomThemeState.palette[key];
-    }
+  randomizePalette('palette', randomThemeState.palette);
+
+  if (themeState.meta.supportsDarkMode || activePaletteMode.value === 'dark') {
+    randomizePalette('darkPalette', randomThemeState.darkPalette);
   }
 
   for (const [key, locked] of Object.entries(fieldLocks.typography)) {

@@ -186,7 +186,7 @@ controls pane remains comfortable while editing either palette.
   - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
     `npm run format:check`, `npm run build`, and browser check at
     `http://localhost:5174/Selecta/`.
-- [ ] Update Random, locks, and contrast warnings for two palettes:
+- [x] Update Random, locks, and contrast warnings for two palettes:
   - decide whether palette locks are per light/dark palette or shared before
     coding; prefer per-palette locks if the UI remains understandable;
   - make Random update the dark palette only when dark mode is enabled or when
@@ -194,7 +194,17 @@ controls pane remains comfortable while editing either palette.
   - show contrast warnings for the currently edited palette;
   - expected files/areas: `src/theme/random.js`, `src/theme/fieldLocks.js`,
     `src/theme/contrast.js`, `src/App.vue`, tests;
-  - verification: targeted Random/locks/contrast tests and manual spot check.
+  - changed: `getRandomThemeState()` now generates a contrast-checked
+    `darkPalette` and respects `fieldLocks.darkPalette`;
+  - changed: the app applies randomized dark colors only when dark mode support
+    is enabled;
+  - changed: contrast warnings continue to follow the currently edited palette,
+    using the existing active-palette warning path;
+  - verification: targeted Random/locks/contrast tests, `npm test`,
+    `npm run lint`, `npm run lint:styles`, `npm run format:check`, and
+    `npm run build`;
+  - manual check: pending in user browser because the in-app browser bridge
+    blocked `http://localhost:5174/Selecta/` by URL policy during this slice.
 - [ ] Update sharing/import/export state contracts:
   - bump the theme serialization version if the JSON shape changes;
   - make URL share and JSON export include the dark palette and dark-mode flag;
@@ -247,7 +257,8 @@ controls pane remains comfortable while editing either palette.
 - [x] Add UI controls for enabling and editing dark mode.
 - [x] Add preview mode support.
 - [x] Add generator-shell appearance mode.
-- [ ] Update Random, locks, and contrast warnings for two palettes.
+- [x] Update Random, locks, and contrast warnings for two palettes.
+- [ ] Update sharing/import/export state contracts.
 - [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
       and Vite/esbuild audit decisions as separate future work.
 - [ ] Update this file after the chosen slice has a concrete next checklist.
