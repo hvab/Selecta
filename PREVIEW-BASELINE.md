@@ -20,6 +20,15 @@
 - Aegea `11.5` body links use `text-decoration` with `text-decoration-color`; the deferred `12.0a` source keeps the same contract but refines it further. Selecta preview may approximate some link states with a scoped border-bottom subset where that is enough for theme tuning.
 - The deferred `12.0a` source adds bundled Inter and JetBrains Mono fonts. Selecta MVP still intentionally generates only system web-safe font choices.
 
+## Dark mode contract
+
+- Aegea dark-mode support is theme metadata plus runtime appearance state: themes declare `supports_dark_mode`, while Aegea applies dark variables only when the blog responds to dark mode.
+- Selecta exports light variables as the base `:root` block. When `supportsDarkMode` is enabled, it also exports dark variables under Aegea's real selector path: `@media (prefers-color-scheme: dark) { :root .e2-responds-to-dark-mode { ... } }`.
+- Selecta preview may emulate `.e2-responds-to-dark-mode` locally for the dark preview mode, but exported CSS should continue to use the Aegea selector rather than a Selecta-specific class.
+- `theme-info.php` `colors` stay tied to the light palette, matching the checked `plain` contract for theme-list preview colors.
+- Selecta interface appearance is separate app UI state. It must not affect generated CSS, `theme-info.php`, theme JSON, share URLs, or ZIP contents.
+- In the user-available Aegea theme set checked for Selecta presets, dark-mode-capable built-ins are `plain`, `acute`, `fiesta`, and `gal`. `chancery`, `douglas`, `holm`, `kolomna`, `vox`, and `vulcano` declare no dark-mode support.
+
 ## Demo content source
 
 The preview should use Aegea theme preview content from `system/preview/en.php` and `system/preview/ru.php`. Selecta keeps its own extra preview states for theme tuning, including visited links, forced hover links, lead text, and highlighted text.

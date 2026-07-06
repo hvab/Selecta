@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ThemeControls from './components/ThemeControls.vue';
 import PresetSelector from './components/PresetSelector.vue';
@@ -32,9 +32,9 @@ const folderNameEdited = ref(false);
 const appElement = ref(null);
 const defaultControlsPaneWidth = 416;
 const controlsPaneWidth = ref(defaultControlsPaneWidth);
-const activePaletteMode = ref('light');
-const previewMode = ref('light');
-const shellAppearance = ref('light');
+const themeMode = ref('light');
+const shellAppearance = ref('system');
+const systemPrefersDark = ref(false);
 const isResizingControlsPane = ref(false);
 const shareMessageKey = ref('');
 const shareErrorKey = ref('');
@@ -43,7 +43,7 @@ const importErrorKey = ref('');
 const themeJsonFileInput = ref(null);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
 const translatedMetadataErrors = computed(() => translateMessageMap(metadataErrors.value, 'validation'));
-const activePaletteSection = computed(() => (activePaletteMode.value === 'dark' ? 'darkPalette' : 'palette'));
+const activePaletteSection = computed(() => (themeMode.value === 'dark' ? 'darkPalette' : 'palette'));
 const activePalette = computed(() => themeState[activePaletteSection.value]);
 const activePaletteLocks = computed(() => fieldLocks[activePaletteSection.value]);
 const contrastWarningsByField = computed(() => getContrastWarningsByField(activePalette.value));
@@ -55,6 +55,8 @@ const selectedPresetId = computed(
     themePresets.find(
       (preset) =>
         hasSameSectionValues(themeState.palette, preset.palette) &&
+        (!themeState.meta.supportsDarkMode ||
+          (preset.supportsDarkMode && hasSameSectionValues(themeState.darkPalette, preset.darkPalette))) &&
         hasSameSectionValues(themeState.typography, preset.typography) &&
         hasSameSectionValues(themeState.layout, preset.layout)
     )?.id ?? ''
@@ -62,6 +64,9 @@ const selectedPresetId = computed(
 const appStyle = computed(() => ({
   '--controls-pane-width': `${controlsPaneWidth.value}px`,
 }));
+const effectiveShellAppearance = computed(() =>
+  shellAppearance.value === 'system' ? (systemPrefersDark.value ? 'dark' : 'light') : shellAppearance.value
+);
 const googleFontsPreviewUrl = computed(() => getSelectedGoogleFontsCss2Url(googleFontsCatalog, themeState.typography));
 
 const controlsPaneMinWidth = 320;
@@ -70,6 +75,7 @@ const previewPaneMinWidth = 360;
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
 let shouldSkipNextSessionSave = false;
+let colorSchemeMediaQuery = null;
 const themeUrlParam = 'theme';
 const fontSourceKeyByFamilyKey = {
   mainFontFamily: 'mainFontSource',
@@ -124,8 +130,7 @@ function getUiState() {
   return {
     sidebarWidth: controlsPaneWidth.value,
     folderNameEdited: folderNameEdited.value,
-    activePaletteMode: activePaletteMode.value,
-    previewMode: previewMode.value,
+    themeMode: themeMode.value,
     shellAppearance: shellAppearance.value,
   };
 }
@@ -134,9 +139,8 @@ function resetThemeState() {
   applyThemeState(structuredClone(initialThemeState));
   clearAllFieldLocks(fieldLocks);
   folderNameEdited.value = false;
-  activePaletteMode.value = 'light';
-  previewMode.value = 'light';
-  shellAppearance.value = 'light';
+  themeMode.value = 'light';
+  shellAppearance.value = 'system';
 }
 
 function inferFolderNameEdited(meta) {
@@ -173,8 +177,7 @@ function applySharedThemeState(nextThemeState) {
   applyThemeState(nextThemeState);
   clearAllFieldLocks(fieldLocks);
   folderNameEdited.value = inferFolderNameEdited(nextThemeState.meta);
-  activePaletteMode.value = nextThemeState.meta.supportsDarkMode ? activePaletteMode.value : 'light';
-  previewMode.value = nextThemeState.meta.supportsDarkMode ? previewMode.value : 'light';
+  themeMode.value = nextThemeState.meta.supportsDarkMode ? themeMode.value : 'light';
 }
 
 function updateMetaField(key, value) {
@@ -182,8 +185,7 @@ function updateMetaField(key, value) {
   themeState.meta[key] = key === 'folderName' ? normalizeFolderName(value) : value;
 
   if (key === 'supportsDarkMode' && !value) {
-    activePaletteMode.value = 'light';
-    previewMode.value = 'light';
+    themeMode.value = 'light';
   }
 
   if (key === 'displayName' && !folderNameEdited.value) {
@@ -200,16 +202,18 @@ function updatePaletteField(key, value) {
   activePalette.value[key] = value;
 }
 
-function updatePaletteMode(value) {
-  activePaletteMode.value = value === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
-}
+function updateThemeMode(event) {
+  const nextThemeMode = event.target.value === 'dark' ? 'dark' : 'light';
 
-function updatePreviewMode(event) {
-  previewMode.value = event.target.value === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
+  if (nextThemeMode === 'dark') {
+    themeState.meta.supportsDarkMode = true;
+  }
+
+  themeMode.value = nextThemeMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
 }
 
 function updateShellAppearance(event) {
-  shellAppearance.value = event.target.value === 'dark' ? 'dark' : 'light';
+  shellAppearance.value = ['system', 'dark', 'light'].includes(event.target.value) ? event.target.value : 'system';
 }
 
 function updateTypographyField(key, value) {
@@ -238,9 +242,12 @@ function applyPreset(presetId) {
     return;
   }
 
+  themeState.meta.supportsDarkMode = preset.supportsDarkMode;
   Object.assign(themeState.palette, preset.palette);
+  Object.assign(themeState.darkPalette, preset.darkPalette ?? initialThemeState.darkPalette);
   Object.assign(themeState.typography, preset.typography);
   Object.assign(themeState.layout, preset.layout);
+  themeMode.value = preset.supportsDarkMode ? themeMode.value : 'light';
   clearAllFieldLocks(fieldLocks);
 }
 
@@ -290,7 +297,7 @@ function randomizeTheme() {
 
   randomizePalette('palette', randomThemeState.palette);
 
-  if (themeState.meta.supportsDarkMode || activePaletteMode.value === 'dark') {
+  if (themeState.meta.supportsDarkMode) {
     randomizePalette('darkPalette', randomThemeState.darkPalette);
   }
 
@@ -453,7 +460,19 @@ function downloadThemeZip() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function handleColorSchemeChange(event) {
+  systemPrefersDark.value = event.matches;
+}
+
+function getStoredThemeMode(uiState) {
+  return uiState.themeMode ?? uiState.previewMode ?? uiState.activePaletteMode;
+}
+
 onMounted(() => {
+  colorSchemeMediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)') ?? null;
+  systemPrefersDark.value = colorSchemeMediaQuery?.matches ?? false;
+  colorSchemeMediaQuery?.addEventListener('change', handleColorSchemeChange);
+
   const themeParam = new URLSearchParams(window.location.search).get(themeUrlParam);
 
   if (themeParam) {
@@ -474,15 +493,20 @@ onMounted(() => {
     applyFieldLocks(session.fieldLocks);
     controlsPaneWidth.value = getConstrainedControlsPaneWidth(session.uiState.sidebarWidth);
     folderNameEdited.value = session.uiState.folderNameEdited;
-    activePaletteMode.value =
-      session.uiState.activePaletteMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
-    previewMode.value = session.uiState.previewMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
-    shellAppearance.value = session.uiState.shellAppearance === 'dark' ? 'dark' : 'light';
+    themeMode.value =
+      getStoredThemeMode(session.uiState) === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
+    shellAppearance.value = ['system', 'dark', 'light'].includes(session.uiState.shellAppearance)
+      ? session.uiState.shellAppearance
+      : 'system';
   }
 });
 
+onUnmounted(() => {
+  colorSchemeMediaQuery?.removeEventListener('change', handleColorSchemeChange);
+});
+
 watch(
-  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, activePaletteMode, previewMode, shellAppearance],
+  [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, themeMode, shellAppearance],
   () => {
     clearTimeout(sessionSaveTimeout);
 
@@ -510,7 +534,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
   </Teleport>
 
-  <main ref="appElement" class="app" :data-shell-appearance="shellAppearance" :style="appStyle">
+  <main ref="appElement" class="app" :data-shell-appearance="effectiveShellAppearance" :style="appStyle">
     <aside class="app-controls-pane">
       <div class="app-controls-scroll">
         <header class="app-header">
@@ -519,6 +543,19 @@ watch(locale, updateDocumentMetadata, { immediate: true });
             {{ t('app.descriptionPrefix') }}
             <a :href="t('app.aegeaHref')">{{ t('app.aegeaName') }}</a>
           </p>
+          <label class="shell-appearance-control">
+            <span>{{ t('controls.shellAppearance') }}</span>
+            <select
+              class="shell-appearance-select"
+              :value="shellAppearance"
+              :aria-label="t('aria.shellAppearance')"
+              @change="updateShellAppearance"
+            >
+              <option value="system">{{ t('controls.shellSystem') }}</option>
+              <option value="light">{{ t('controls.shellLight') }}</option>
+              <option value="dark">{{ t('controls.shellDark') }}</option>
+            </select>
+          </label>
         </header>
 
         <section class="controls-section">
@@ -529,13 +566,12 @@ watch(locale, updateDocumentMetadata, { immediate: true });
             :contrast-warnings-by-field="translatedContrastWarningsByField"
             :field-locks="fieldLocks"
             :palette-locks="activePaletteLocks"
-            :active-palette-mode="activePaletteMode"
+            :palette-section="activePaletteSection"
             :palette="activePalette"
             :typography="themeState.typography"
             :layout="themeState.layout"
             @update:meta-field="updateMetaField"
             @update:palette-field="updatePaletteField"
-            @update:palette-mode="updatePaletteMode"
             @update:typography-field="updateTypographyField"
             @update:layout-field="updateLayoutField"
             @toggle-field-lock="toggleFieldLock"
@@ -550,30 +586,6 @@ watch(locale, updateDocumentMetadata, { immediate: true });
             <option v-for="availableLocale in supportedLocales" :key="availableLocale" :value="availableLocale">
               {{ t(`language.${availableLocale}`) }}
             </option>
-          </select>
-        </label>
-        <label class="preview-mode-control">
-          <span>{{ t('controls.previewMode') }}</span>
-          <select
-            class="preview-mode-select"
-            :value="previewMode"
-            :aria-label="t('aria.previewMode')"
-            @change="updatePreviewMode"
-          >
-            <option value="light">{{ t('controls.lightPreview') }}</option>
-            <option value="dark" :disabled="!themeState.meta.supportsDarkMode">{{ t('controls.darkPreview') }}</option>
-          </select>
-        </label>
-        <label class="shell-appearance-control">
-          <span>{{ t('controls.shellAppearance') }}</span>
-          <select
-            class="shell-appearance-select"
-            :value="shellAppearance"
-            :aria-label="t('aria.shellAppearance')"
-            @change="updateShellAppearance"
-          >
-            <option value="light">{{ t('controls.shellLight') }}</option>
-            <option value="dark">{{ t('controls.shellDark') }}</option>
           </select>
         </label>
         <button class="random-button" type="button" @click="randomizeTheme">{{ t('actions.random') }}</button>
@@ -625,7 +637,21 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     ></div>
 
     <section class="app-preview-pane" :aria-label="t('aria.preview')">
-      <AegeaPreview :theme-state="themeState" :preview-mode="previewMode" />
+      <div class="preview-toolbar">
+        <label class="theme-mode-control">
+          <span>{{ t('controls.themeMode') }}</span>
+          <select
+            class="theme-mode-select"
+            :value="themeMode"
+            :aria-label="t('aria.themeMode')"
+            @change="updateThemeMode"
+          >
+            <option value="light">{{ t('controls.lightThemeMode') }}</option>
+            <option value="dark">{{ t('controls.darkThemeMode') }}</option>
+          </select>
+        </label>
+      </div>
+      <AegeaPreview :theme-state="themeState" :preview-mode="themeMode" />
     </section>
   </main>
 </template>

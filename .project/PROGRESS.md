@@ -22,9 +22,11 @@ The app currently has:
 - Google Fonts support through the CSS API with a curated Cyrillic catalog.
 - English/Russian app UI and localized preview content; the selected language is
   stored separately from theme/session state.
+- Dark-mode theme support with separate light/dark palettes, preview theme mode,
+  independent generator-shell appearance, and Aegea-compatible dark CSS output.
 - Generated `styles/main.css` and `theme-info.php` from one theme state model.
 
-Current prepared release: `0.7.0`.
+Current prepared release: `0.8.0`.
 
 ## Source of truth
 
@@ -75,12 +77,15 @@ the current Aegea checkout before changing preview or export behavior.
 - Google Fonts, including curated Cyrillic catalog cleanup.
 - English/Russian localization, including the language switcher, review fixes,
   verification, and the `0.7.0` release.
+- Dark palette / dark mode support, including built-in dark-capable Aegea
+  preset palettes, prepared for the `0.8.0` release.
 
 Historical setup notes live in `.project/SETUP-PLAN.md`.
 
 ## Active track
 
-Dark palette / dark mode support is planned.
+Dark palette / dark mode support is implemented and prepared for the `0.8.0`
+release.
 
 This slice should let the user enable Aegea dark mode support, edit light and
 dark palettes separately, preview both modes in Selecta, and export a child
@@ -205,37 +210,72 @@ controls pane remains comfortable while editing either palette.
     `npm run build`;
   - manual check: pending in user browser because the in-app browser bridge
     blocked `http://localhost:5174/Selecta/` by URL policy during this slice.
-- [ ] Update sharing/import/export state contracts:
+- [x] Update sharing/import/export state contracts:
   - bump the theme serialization version if the JSON shape changes;
   - make URL share and JSON export include the dark palette and dark-mode flag;
   - keep UI language out of theme JSON, share URLs, ZIP output, and theme state;
   - expected files/areas: `src/theme/serialize.js`, `src/storage.js`,
     `src/App.vue`, serialization/storage tests;
-  - verification: exported JSON round-trips with dark mode enabled and disabled.
-- [ ] Update project docs and release notes:
+  - changed: confirmed `THEME_SERIALIZATION_VERSION = 2` already covers the
+    current dark-mode shape;
+  - changed: added serialization tests for dark mode enabled, dark mode
+    disabled, URL sharing, and excluding UI-only state from theme JSON;
+  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, and `npm run build`.
+- [x] Update project docs and release notes:
   - update `PREVIEW-BASELINE.md` only if the preview/export contract changes;
   - add an `Unreleased` note in `CHANGELOG.md`;
   - update this file after each completed implementation slice;
   - expected files/areas: `.project/PROGRESS.md`, `PREVIEW-BASELINE.md`,
     `CHANGELOG.md`;
+  - changed: documented the dark-mode preview/export contract in
+    `PREVIEW-BASELINE.md`;
+  - changed: added an `Unreleased` changelog entry for dark-mode theme support;
   - verification: documentation matches the implemented behavior.
-- [ ] Final verification:
+- [x] Simplify theme and interface mode controls:
+  - replace separate palette and preview controls with one preview-side theme
+    mode control;
+  - keep `supportsDarkMode` as the exported Aegea capability flag, enabling it
+    automatically when the user switches to dark theme mode;
+  - move Selecta interface appearance into the app header and add
+    system/light/dark choices;
+  - keep interface appearance as UI state only, separate from generated themes;
+  - changed: `themeMode` now drives both the edited palette and preview mode;
+  - changed: `shellAppearance` now supports `system`, using
+    `prefers-color-scheme` for the effective app chrome mode;
+  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, and `npm run build`.
+- [x] Verify Aegea built-in preset dark-mode support:
+  - checked user-available Aegea themes `plain`, `acute`, `chancery`,
+    `douglas`, `fiesta`, `gal`, `holm`, `kolomna`, `vox`, and `vulcano`;
+  - dark-mode capable in Aegea: `plain`, `acute`, `fiesta`, and `gal`;
+  - no dark-mode support in Aegea: `chancery`, `douglas`, `holm`, `kolomna`,
+    `vox`, and `vulcano`;
+  - changed: Selecta presets now store `supportsDarkMode` and dark palettes for
+    the dark-capable built-ins;
+  - changed: applying a dark-capable preset updates both light and dark palettes,
+    so the right-side theme mode control previews the preset's dark colors;
+  - changed: applying a preset without Aegea dark support disables dark theme
+    mode and returns the preview to light mode;
+  - expected files/areas: `src/theme/presets.js`, `src/theme/presets.test.js`,
+    `src/App.vue`, `PREVIEW-BASELINE.md`, `CHANGELOG.md`;
+  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, and `npm run build`.
+- [x] Final verification:
   - `npm test`;
   - `npm run lint`;
   - `npm run lint:styles`;
   - `npm run format:check`;
   - `npm run build`;
-  - manual browser check for light preview, dark preview, disabled dark export,
-    enabled dark export, Reset, Random, JSON import/export, URL share, and ZIP
-    contents.
+  - manual browser review accepted by the user for the final dark-mode concept
+    and built-in preset behavior.
 
 ### Implementation notes
 
 - The previous English/Russian localization track is reviewed, verified,
   released, and complete in `0.7.0`.
-- Current Selecta has only one exported palette. Dark mode work must not be
-  treated as just a preview toggle; it changes model, CSS generation,
-  serialization, Random/locks, contrast warnings, and ZIP output.
+- Dark mode work is not just a preview toggle; it changes model, CSS
+  generation, serialization, Random/locks, contrast warnings, and ZIP output.
 - Selecta shell appearance is separate app UI state. It should protect the
   controls pane from becoming unreadable while previewing a dark theme, but it
   must not change exported theme files.
@@ -258,10 +298,13 @@ controls pane remains comfortable while editing either palette.
 - [x] Add preview mode support.
 - [x] Add generator-shell appearance mode.
 - [x] Update Random, locks, and contrast warnings for two palettes.
-- [ ] Update sharing/import/export state contracts.
+- [x] Update sharing/import/export state contracts.
+- [x] Update project docs and release notes.
+- [x] Simplify theme and interface mode controls.
+- [x] Verify Aegea built-in preset dark-mode support.
+- [x] Run final verification.
 - [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
       and Vite/esbuild audit decisions as separate future work.
-- [ ] Update this file after the chosen slice has a concrete next checklist.
 
 ## Ideas and backlog
 

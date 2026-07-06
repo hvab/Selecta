@@ -16,6 +16,7 @@ const expectedPresetIds = [
   'vox',
   'vulcano',
 ];
+const expectedDarkPresetIds = ['plain', 'acute', 'fiesta', 'gal'];
 
 test('includes the selected Aegea theme presets', () => {
   assert.deepEqual(
@@ -29,6 +30,25 @@ test('each preset has the full Selecta palette contract', () => {
 
   for (const preset of themePresets) {
     assert.deepEqual(Object.keys(preset.palette).sort(), paletteKeys, preset.id);
+  }
+});
+
+test('dark-capable presets mirror Aegea dark-mode support', () => {
+  assert.deepEqual(
+    themePresets.filter((preset) => preset.supportsDarkMode).map((preset) => preset.id),
+    expectedDarkPresetIds
+  );
+});
+
+test('dark-capable presets have the full Selecta dark palette contract', () => {
+  const paletteKeys = Object.keys(initialThemeState.darkPalette).sort();
+
+  for (const preset of themePresets) {
+    if (preset.supportsDarkMode) {
+      assert.deepEqual(Object.keys(preset.darkPalette).sort(), paletteKeys, preset.id);
+    } else {
+      assert.equal(preset.darkPalette, null, preset.id);
+    }
   }
 });
 
@@ -54,6 +74,8 @@ test('plain preset matches the Selecta default theme state', () => {
   const plainPreset = themePresets.find((preset) => preset.id === 'plain');
 
   assert.deepEqual(plainPreset.palette, initialThemeState.palette);
+  assert.deepEqual(plainPreset.darkPalette, initialThemeState.darkPalette);
+  assert.equal(plainPreset.supportsDarkMode, true);
   assert.deepEqual(plainPreset.typography, initialThemeState.typography);
   assert.deepEqual(plainPreset.layout, initialThemeState.layout);
 });
@@ -93,4 +115,15 @@ test('resolves inherited and var-based Aegea palette values to hex colors', () =
   assert.equal(presetsById.holm.palette.active, presetsById.holm.palette.link);
   assert.equal(presetsById.chancery.palette.foreground, '#111111');
   assert.equal(presetsById.acute.palette.active, '#ff4820');
+});
+
+test('resolves Aegea dark palette values for supported presets', () => {
+  const presetsById = Object.fromEntries(themePresets.map((preset) => [preset.id, preset]));
+
+  assert.equal(presetsById.acute.darkPalette.background, '#202020');
+  assert.equal(presetsById.acute.darkPalette.link, '#0080ff');
+  assert.equal(presetsById.fiesta.darkPalette.background, '#26212b');
+  assert.equal(presetsById.fiesta.darkPalette.headings, '#ff40b9');
+  assert.equal(presetsById.gal.darkPalette.background, '#27292a');
+  assert.equal(presetsById.gal.darkPalette.link, '#40a0f4');
 });

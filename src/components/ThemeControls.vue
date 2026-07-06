@@ -37,7 +37,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  activePaletteMode: {
+  paletteSection: {
     type: String,
     required: true,
   },
@@ -54,7 +54,6 @@ const props = defineProps({
 const emit = defineEmits([
   'update:meta-field',
   'update:palette-field',
-  'update:palette-mode',
   'update:typography-field',
   'update:layout-field',
   'toggle-field-lock',
@@ -338,21 +337,6 @@ function updateSupportsDarkMode(event) {
 
     <div class="control-group">
       <h3>{{ t('controls.colors') }}</h3>
-      <div class="palette-mode-control">
-        <div class="control-row">
-          <label class="control-label" for="palette-mode">{{ t('controls.paletteMode') }}</label>
-          <select
-            id="palette-mode"
-            class="select-control"
-            :value="activePaletteMode"
-            @change="emit('update:palette-mode', $event.target.value)"
-          >
-            <option value="light">{{ t('controls.lightPalette') }}</option>
-            <option value="dark" :disabled="!meta.supportsDarkMode">{{ t('controls.darkPalette') }}</option>
-          </select>
-          <span></span>
-        </div>
-      </div>
       <div v-for="control in PALETTE_COLOR_CONTROLS" :key="control.key" class="palette-control">
         <div class="control-row">
           <label class="control-label" :for="`palette-${control.key}`">{{ t(`controls.${control.key}`) }}</label>
@@ -372,14 +356,7 @@ function updateSupportsDarkMode(event) {
               type="checkbox"
               :checked="paletteLocks[control.key]"
               :aria-label="t('aria.lockForRandom', { label: t(`controls.${control.key}`) })"
-              @change="
-                emit(
-                  'toggle-field-lock',
-                  activePaletteMode === 'dark' ? 'darkPalette' : 'palette',
-                  control.key,
-                  $event.target.checked
-                )
-              "
+              @change="emit('toggle-field-lock', paletteSection, control.key, $event.target.checked)"
             />
           </label>
         </div>

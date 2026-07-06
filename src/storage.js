@@ -68,11 +68,15 @@ function isValidUiState(uiState) {
     isPlainObject(uiState) &&
     Number.isFinite(uiState.sidebarWidth) &&
     typeof uiState.folderNameEdited === 'boolean' &&
+    (uiState.themeMode === undefined || uiState.themeMode === 'light' || uiState.themeMode === 'dark') &&
     (uiState.activePaletteMode === undefined ||
       uiState.activePaletteMode === 'light' ||
       uiState.activePaletteMode === 'dark') &&
     (uiState.previewMode === undefined || uiState.previewMode === 'light' || uiState.previewMode === 'dark') &&
-    (uiState.shellAppearance === undefined || uiState.shellAppearance === 'light' || uiState.shellAppearance === 'dark')
+    (uiState.shellAppearance === undefined ||
+      uiState.shellAppearance === 'system' ||
+      uiState.shellAppearance === 'light' ||
+      uiState.shellAppearance === 'dark')
   );
 }
 

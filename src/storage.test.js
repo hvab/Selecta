@@ -46,9 +46,8 @@ test('saves and loads a valid session', () => {
     uiState: {
       sidebarWidth: 512,
       folderNameEdited: true,
-      activePaletteMode: 'dark',
-      previewMode: 'dark',
-      shellAppearance: 'dark',
+      themeMode: 'dark',
+      shellAppearance: 'system',
     },
   });
 
@@ -58,9 +57,8 @@ test('saves and loads a valid session', () => {
     uiState: {
       sidebarWidth: 512,
       folderNameEdited: true,
-      activePaletteMode: 'dark',
-      previewMode: 'dark',
-      shellAppearance: 'dark',
+      themeMode: 'dark',
+      shellAppearance: 'system',
     },
   });
 });

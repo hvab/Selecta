@@ -6,9 +6,12 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+## 0.8.0 - 2026-07-06
+
 ### Added
 
 - Localized app name, document title, description, and keywords for English and Russian.
+- Dark-mode theme support: separate light/dark palettes, Aegea-compatible dark CSS output, dark preview mode, independent Selecta interface appearance, built-in dark palettes for Aegea dark-capable presets, Random/locks support for both palettes, and JSON/URL round-trips for the dark theme state.
 
 ## 0.7.0 - 2026-06-15
 

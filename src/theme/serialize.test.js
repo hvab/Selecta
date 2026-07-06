@@ -23,10 +23,37 @@ test('serializes and deserializes theme state', () => {
   assert.deepEqual(deserializeTheme(serializeTheme(themeState)), themeState);
 });
 
+test('round-trips dark mode enabled theme state through JSON and URL params', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.meta.supportsDarkMode = true;
+  themeState.darkPalette.background = '#101820';
+  themeState.darkPalette.link = '#66ccff';
+
+  assert.deepEqual(deserializeTheme(serializeTheme(themeState)), themeState);
+  assert.deepEqual(decodeThemeFromUrlParam(encodeThemeToUrlParam(themeState)), themeState);
+});
+
+test('round-trips dark mode disabled theme state without dropping dark palette data', () => {
+  const themeState = structuredClone(initialThemeState);
+
+  themeState.meta.supportsDarkMode = false;
+  themeState.darkPalette.background = '#101820';
+  themeState.darkPalette.link = '#66ccff';
+
+  assert.deepEqual(deserializeTheme(serializeTheme(themeState)), themeState);
+});
+
 test('serializes only known theme state fields', () => {
   const themeState = structuredClone(initialThemeState);
 
   themeState.meta.extra = 'ignored';
+  themeState.locale = 'ru';
+  themeState.previewMode = 'dark';
+  themeState.shellAppearance = 'dark';
+  themeState.uiState = {
+    activePaletteMode: 'dark',
+  };
   themeState.extraSection = {
     value: 'ignored',
   };
@@ -35,6 +62,10 @@ test('serializes only known theme state fields', () => {
 
   assert.equal(serialized.version, THEME_SERIALIZATION_VERSION);
   assert.equal(serialized.meta.extra, undefined);
+  assert.equal(serialized.locale, undefined);
+  assert.equal(serialized.previewMode, undefined);
+  assert.equal(serialized.shellAppearance, undefined);
+  assert.equal(serialized.uiState, undefined);
   assert.equal(serialized.extraSection, undefined);
 });
 
