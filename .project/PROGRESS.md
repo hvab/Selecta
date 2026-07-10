@@ -285,10 +285,6 @@ controls pane remains comfortable while editing either palette.
   use the real Aegea selector.
 - `theme-info.php` `colors` should stay tied to the light palette unless current
   Aegea behavior proves otherwise.
-- `npm audit` reports 3 high severity warnings through
-  `vite` / `@vitejs/plugin-vue` / `esbuild`; the suggested
-  `npm audit fix --force` upgrades to Vite 8 and is a breaking dependency
-  change, so it is left as a separate decision.
 
 ## Next steps
 
@@ -303,8 +299,7 @@ controls pane remains comfortable while editing either palette.
 - [x] Simplify theme and interface mode controls.
 - [x] Verify Aegea built-in preset dark-mode support.
 - [x] Run final verification.
-- [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
-      and Vite/esbuild audit decisions as separate future work.
+- [ ] Keep author-credit placement and full-width layout as separate future work.
 
 ## Ideas and backlog
 
