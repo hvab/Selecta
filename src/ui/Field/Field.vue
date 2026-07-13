@@ -47,3 +47,12 @@ defineProps({
     </div>
   </div>
 </template>
+
+<style scoped>
+@media (max-width: 40rem) {
+  .hb-field.hb-field_layout_inline {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+}
+</style>

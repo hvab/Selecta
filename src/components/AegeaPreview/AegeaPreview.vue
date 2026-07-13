@@ -1,9 +1,8 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getThemeCssVariables } from '../theme/css.js';
+import { getThemeCssVariables } from '../../theme/css.js';
 import { getAegeaDemoContent } from './demoContent.js';
-import './style.css';
 
 const props = defineProps({
   themeState: {
@@ -293,3 +292,5 @@ const menuIconSvgById = {
     </div>
   </section>
 </template>
+
+<style src="./AegeaPreview.css"></style>

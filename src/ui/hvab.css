@@ -6,6 +6,9 @@
 @import url('hvab-blocks/tokens/motion.css');
 @import url('hvab-blocks/tokens/size.css');
 @import url('hvab-blocks/tokens/focus.css');
+@import url('hvab-blocks/blocks/text/text.css');
+@import url('hvab-blocks/blocks/link/link.css');
+@import url('hvab-blocks/blocks/card/card.css');
 @import url('hvab-blocks/blocks/field/field.css');
 @import url('hvab-blocks/blocks/text-input/text-input.css');
 @import url('hvab-blocks/blocks/select/select.css');

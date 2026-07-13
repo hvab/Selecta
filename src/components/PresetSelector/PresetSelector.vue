@@ -1,7 +1,8 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
-import Field from '../ui/Field/Field.vue';
-import Select from '../ui/Select/Select.vue';
+import ControlGroup from '../../ui/ControlGroup/ControlGroup.vue';
+import Field from '../../ui/Field/Field.vue';
+import Select from '../../ui/Select/Select.vue';
 
 const { t } = useI18n();
 
@@ -24,9 +25,8 @@ function getPresetLabel(preset) {
 </script>
 
 <template>
-  <div class="theme-controls preset-controls">
-    <div class="control-group">
-      <h3>{{ t('controls.presets') }}</h3>
+  <div class="preset-controls">
+    <ControlGroup :title="t('controls.presets')">
       <Field layout="inline" :label="t('controls.preset')" label-for="preset-selector">
         <Select id="preset-selector" :value="selectedPresetId" @change="emit('apply-preset', $event.target.value)">
           <option value="">{{ t('controls.custom') }}</option>
@@ -35,6 +35,6 @@ function getPresetLabel(preset) {
           </option>
         </Select>
       </Field>
-    </div>
+    </ControlGroup>
   </div>
 </template>

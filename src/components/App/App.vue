@@ -1,31 +1,31 @@
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import ThemeControls from './components/ThemeControls.vue';
-import PresetSelector from './components/PresetSelector.vue';
-import AegeaPreview from './preview/AegeaPreview.vue';
-import Button from './ui/Button/Button.vue';
-import Select from './ui/Select/Select.vue';
-import { saveStoredLocale, setDocumentLocale, supportedLocales } from './i18n/index.js';
-import { clearSession, loadSession, saveSession } from './storage.js';
-import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
-import { initialThemeState } from './theme/model.js';
-import { themePresets } from './theme/presets.js';
+import ThemeControls from '../ThemeControls/ThemeControls.vue';
+import PresetSelector from '../PresetSelector/PresetSelector.vue';
+import AegeaPreview from '../AegeaPreview/AegeaPreview.vue';
+import Button from '../../ui/Button/Button.vue';
+import Select from '../../ui/Select/Select.vue';
+import { saveStoredLocale, setDocumentLocale, supportedLocales } from '../../i18n/index.js';
+import { clearSession, loadSession, saveSession } from '../../storage.js';
+import { normalizeFolderName, suggestFolderName } from '../../theme/metadata.js';
+import { initialThemeState } from '../../theme/model.js';
+import { themePresets } from '../../theme/presets.js';
 import {
   decodeThemeFromUrlParam,
   deserializeThemeFile,
   encodeThemeToUrlParam,
   getThemeJsonFileName,
   serializeTheme,
-} from './theme/serialize.js';
-import { clearAllFieldLocks, createEmptyFieldLocks, hasAnyFieldLocked } from './theme/fieldLocks.js';
-import { getRandomThemeState } from './theme/random.js';
-import { getContrastWarningsByField } from './theme/contrast.js';
-import { validateMetadata } from './theme/validation.js';
-import { generateThemeZip, getThemeZipFileName } from './theme/zip.js';
-import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './theme/fonts.js';
-import { getSelectedGoogleFontsCss2Url } from './theme/googleFonts.js';
-import { googleFontsCatalog } from './theme/googleFontsCatalog.js';
+} from '../../theme/serialize.js';
+import { clearAllFieldLocks, createEmptyFieldLocks, hasAnyFieldLocked } from '../../theme/fieldLocks.js';
+import { getRandomThemeState } from '../../theme/random.js';
+import { getContrastWarningsByField } from '../../theme/contrast.js';
+import { validateMetadata } from '../../theme/validation.js';
+import { generateThemeZip, getThemeZipFileName } from '../../theme/zip.js';
+import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from '../../theme/fonts.js';
+import { getSelectedGoogleFontsCss2Url } from '../../theme/googleFonts.js';
+import { googleFontsCatalog } from '../../theme/googleFontsCatalog.js';
 
 const { locale, t } = useI18n();
 const themeState = reactive(structuredClone(initialThemeState));
@@ -537,13 +537,15 @@ watch(locale, updateDocumentMetadata, { immediate: true });
   </Teleport>
 
   <main ref="appElement" class="app" :data-color-scheme="effectiveShellAppearance" :style="appStyle">
-    <aside class="app-controls-pane">
-      <div class="app-controls-scroll">
-        <header class="app-header">
-          <h1>{{ t('app.name') }}</h1>
-          <p>
+    <aside class="app__controls-pane">
+      <div class="app__controls-scroll">
+        <header class="app__header">
+          <h1 class="app__header-title hb-text hb-text_typography_header-2">{{ t('app.name') }}</h1>
+          <p class="app__header-description hb-text hb-text_typography_body-3 hb-text_color_secondary">
             {{ t('app.descriptionPrefix') }}
-            <a :href="t('app.aegeaHref')">{{ t('app.aegeaName') }}</a>
+            <a :href="t('app.aegeaHref')" class="hb-link hb-link_view_secondary hb-link_underline">
+              {{ t('app.aegeaName') }}
+            </a>
           </p>
           <label class="shell-appearance-control">
             <span>{{ t('controls.shellAppearance') }}</span>
@@ -555,7 +557,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
           </label>
         </header>
 
-        <section class="controls-section">
+        <section class="app__controls-section">
           <PresetSelector :presets="themePresets" :selected-preset-id="selectedPresetId" @apply-preset="applyPreset" />
           <ThemeControls
             :meta="themeState.meta"
@@ -576,9 +578,8 @@ watch(locale, updateDocumentMetadata, { immediate: true });
         </section>
       </div>
 
-      <section class="export-section" :aria-label="t('aria.export')">
-        <label class="language-control">
-          <span class="visually-hidden">{{ t('aria.language') }}</span>
+      <section class="app__export-section export-section" :aria-label="t('aria.export')">
+        <label class="export-section__language-control">
           <Select :value="locale" :aria-label="t('aria.language')" @change="updateLocale">
             <option v-for="availableLocale in supportedLocales" :key="availableLocale" :value="availableLocale">
               {{ t(`language.${availableLocale}`) }}
@@ -599,7 +600,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
         <Button view="outlined" @click="openThemeJsonImport">{{ t('actions.importJson') }}</Button>
         <input
           ref="themeJsonFileInput"
-          class="import-json-input"
+          class="export-section__import-json-input"
           type="file"
           accept=".json,application/json"
           @change="importThemeJson"
@@ -616,7 +617,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     </aside>
 
     <div
-      class="app-pane-resizer"
+      class="app__pane-resizer"
       role="separator"
       tabindex="0"
       :aria-label="t('aria.resizeControlsPanel')"
@@ -631,7 +632,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
       @keydown="handleControlsPaneResizeKeydown"
     ></div>
 
-    <section class="app-preview-pane" :aria-label="t('aria.preview')">
+    <section class="app__preview-pane" :aria-label="t('aria.preview')">
       <div class="preview-toolbar">
         <label class="theme-mode-control">
           <span>{{ t('controls.themeMode') }}</span>
@@ -645,3 +646,10 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     </section>
   </main>
 </template>
+
+<style>
+body {
+  margin: 0;
+}
+</style>
+<style scoped src="./App.css"></style>

@@ -1,24 +1,25 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PALETTE_COLOR_CONTROLS } from '../theme/fieldLocks.js';
+import { PALETTE_COLOR_CONTROLS } from '../../theme/fieldLocks.js';
 import {
   FONT_SOURCE_GOOGLE,
   FONT_SOURCE_PLAIN,
   FONT_SOURCE_SYSTEM,
   namedSystemFamilies,
   systemStackVariants,
-} from '../theme/fonts.js';
-import { googleFontsCatalog } from '../theme/googleFontsCatalog.js';
-import Checkbox from '../ui/Checkbox/Checkbox.vue';
-import ColorInput from '../ui/ColorInput/ColorInput.vue';
-import Field from '../ui/Field/Field.vue';
-import RangeInput from '../ui/RangeInput/RangeInput.vue';
-import Select from '../ui/Select/Select.vue';
-import Switch from '../ui/Switch/Switch.vue';
-import TextInput from '../ui/TextInput/TextInput.vue';
+} from '../../theme/fonts.js';
+import { googleFontsCatalog } from '../../theme/googleFontsCatalog.js';
+import ColorInput from '../../ui/ColorInput/ColorInput.vue';
+import ControlGroup from '../../ui/ControlGroup/ControlGroup.vue';
+import Field from '../../ui/Field/Field.vue';
+import Select from '../../ui/Select/Select.vue';
+import Switch from '../../ui/Switch/Switch.vue';
+import TextInput from '../../ui/TextInput/TextInput.vue';
+import FieldLock from '../FieldLock/FieldLock.vue';
+import RangeControlField from '../RangeControlField/RangeControlField.vue';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const props = defineProps({
   meta: {
     type: Object,
@@ -187,6 +188,12 @@ function getNumericValue(control, value) {
   return control.unit ? `${value}${control.unit}` : Number(value);
 }
 
+function formatDisplayValue(control, value) {
+  const numberFormatter = new Intl.NumberFormat(locale.value);
+
+  return numberFormatter.format(control.unit ? getControlValue(control, value) : value);
+}
+
 function updateMetadataField(control, event) {
   emit('update:meta-field', control.key, event.target.value);
 }
@@ -198,12 +205,10 @@ function updateSupportsDarkMode(event) {
 
 <template>
   <div class="theme-controls">
-    <div class="control-group">
-      <h3>{{ t('controls.metadata') }}</h3>
+    <ControlGroup :title="t('controls.metadata')">
       <Field
         v-for="control in metadataControls"
         :key="control.key"
-        class="metadata-control"
         layout="inline"
         :label="t(control.labelKey)"
         :label-for="`metadata-${control.key}`"
@@ -219,29 +224,22 @@ function updateSupportsDarkMode(event) {
           @input="updateMetadataField(control, $event)"
         />
         <template #addons>
-          <Checkbox
-            :checked="fieldLocks.meta[control.key]"
-            :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
-            @change="emit('toggle-field-lock', 'meta', control.key, $event.target.checked)"
+          <FieldLock
+            :locked="fieldLocks.meta[control.key]"
+            :label="t(control.labelKey)"
+            @update:locked="emit('toggle-field-lock', 'meta', control.key, $event)"
           />
         </template>
       </Field>
-      <Field
-        class="metadata-control"
-        layout="inline"
-        :label="t('controls.supportsDarkMode')"
-        label-for="metadata-supportsDarkMode"
-      >
+      <Field layout="inline" :label="t('controls.supportsDarkMode')" label-for="metadata-supportsDarkMode">
         <Switch id="metadata-supportsDarkMode" :checked="meta.supportsDarkMode" @change="updateSupportsDarkMode" />
       </Field>
-    </div>
+    </ControlGroup>
 
-    <div class="control-group">
-      <h3>{{ t('controls.fonts') }}</h3>
+    <ControlGroup :title="t('controls.fonts')">
       <Field
         v-for="control in fontControls"
         :key="control.familyKey"
-        class="font-control"
         layout="inline"
         :label="t(control.labelKey)"
         :label-for="`font-select-${control.familyKey}`"
@@ -264,79 +262,55 @@ function updateSupportsDarkMode(event) {
           </optgroup>
         </Select>
         <template #addons>
-          <Checkbox
-            :checked="fieldLocks.typography[control.familyKey]"
-            :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
-            @change="emit('toggle-field-lock', 'typography', control.familyKey, $event.target.checked)"
+          <FieldLock
+            :locked="fieldLocks.typography[control.familyKey]"
+            :label="t(control.labelKey)"
+            @update:locked="emit('toggle-field-lock', 'typography', control.familyKey, $event)"
           />
         </template>
       </Field>
-    </div>
+    </ControlGroup>
 
-    <div class="control-group">
-      <h3>{{ t('controls.typography') }}</h3>
-      <Field
+    <ControlGroup :title="t('controls.typography')">
+      <RangeControlField
         v-for="control in typographyControls"
+        :id="`typography-${control.key}`"
         :key="control.key"
-        class="typography-control"
-        layout="inline"
         :label="t(control.labelKey)"
-        :label-for="`typography-${control.key}`"
-      >
-        <RangeInput
-          :id="`typography-${control.key}`"
-          :min="control.min"
-          :max="control.max"
-          :step="control.step"
-          :value="getControlValue(control, typography[control.key])"
-          @input="emit('update:typography-field', control.key, getNumericValue(control, $event.target.value))"
-        />
-        <template #addons>
-          <output class="control-value" :for="`typography-${control.key}`">{{ typography[control.key] }}</output>
-          <Checkbox
-            :checked="fieldLocks.typography[control.key]"
-            :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
-            @change="emit('toggle-field-lock', 'typography', control.key, $event.target.checked)"
-          />
-        </template>
-      </Field>
-    </div>
+        :min="control.min"
+        :max="control.max"
+        :step="control.step"
+        :model-value="getControlValue(control, typography[control.key])"
+        :display-value="formatDisplayValue(control, typography[control.key])"
+        :unit="control.unit"
+        :locked="fieldLocks.typography[control.key]"
+        @update:model-value="emit('update:typography-field', control.key, getNumericValue(control, $event))"
+        @update:locked="emit('toggle-field-lock', 'typography', control.key, $event)"
+      />
+    </ControlGroup>
 
-    <div class="control-group">
-      <h3>{{ t('controls.layout') }}</h3>
-      <Field
+    <ControlGroup :title="t('controls.layout')">
+      <RangeControlField
         v-for="control in layoutControls"
+        :id="`layout-${control.key}`"
         :key="control.key"
-        class="layout-control"
-        layout="inline"
         :label="t(control.labelKey)"
-        :label-for="`layout-${control.key}`"
-      >
-        <RangeInput
-          :id="`layout-${control.key}`"
-          :min="control.min"
-          :max="control.max"
-          :step="control.step"
-          :value="getControlValue(control, layout[control.key])"
-          @input="emit('update:layout-field', control.key, getNumericValue(control, $event.target.value))"
-        />
-        <template #addons>
-          <output class="control-value" :for="`layout-${control.key}`">{{ layout[control.key] }}</output>
-          <Checkbox
-            :checked="fieldLocks.layout[control.key]"
-            :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
-            @change="emit('toggle-field-lock', 'layout', control.key, $event.target.checked)"
-          />
-        </template>
-      </Field>
-    </div>
+        :min="control.min"
+        :max="control.max"
+        :step="control.step"
+        :model-value="getControlValue(control, layout[control.key])"
+        :display-value="formatDisplayValue(control, layout[control.key])"
+        :unit="control.unit"
+        :locked="fieldLocks.layout[control.key]"
+        @update:model-value="emit('update:layout-field', control.key, getNumericValue(control, $event))"
+        @update:locked="emit('toggle-field-lock', 'layout', control.key, $event)"
+      />
+    </ControlGroup>
 
-    <div class="control-group">
-      <h3>{{ t('controls.colors') }}</h3>
+    <ControlGroup :title="t('controls.colors')">
       <Field
         v-for="control in PALETTE_COLOR_CONTROLS"
         :key="control.key"
-        class="palette-control"
         layout="inline"
         :label="t(`controls.${control.key}`)"
         :label-for="`palette-${control.key}`"
@@ -345,6 +319,7 @@ function updateSupportsDarkMode(event) {
       >
         <ColorInput
           :id="`palette-${control.key}`"
+          class="theme-controls__palette-color-input"
           :value="palette[control.key]"
           :aria-describedby="
             contrastWarningsByField[control.key]?.length ? `palette-${control.key}-warnings` : undefined
@@ -352,18 +327,30 @@ function updateSupportsDarkMode(event) {
           @input="emit('update:palette-field', control.key, $event.target.value)"
         />
         <template #addons>
-          <Checkbox
-            :checked="paletteLocks[control.key]"
-            :aria-label="t('aria.lockForRandom', { label: t(`controls.${control.key}`) })"
-            @change="emit('toggle-field-lock', paletteSection, control.key, $event.target.checked)"
+          <FieldLock
+            :locked="paletteLocks[control.key]"
+            :label="t(`controls.${control.key}`)"
+            @update:locked="emit('toggle-field-lock', paletteSection, control.key, $event)"
           />
         </template>
         <template v-if="contrastWarningsByField[control.key]?.length" #message>
-          <p v-for="message in contrastWarningsByField[control.key]" :key="`${control.key}-${message}`">
+          <div v-for="message in contrastWarningsByField[control.key]" :key="`${control.key}-${message}`">
             {{ message }}
-          </p>
+          </div>
         </template>
       </Field>
-    </div>
+    </ControlGroup>
   </div>
 </template>
+
+<style scoped>
+.theme-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--hb-gap-2);
+}
+
+.theme-controls__palette-color-input {
+  --hb-color-input-control-width: 100%;
+}
+</style>
