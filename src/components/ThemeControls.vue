@@ -10,6 +10,13 @@ import {
   systemStackVariants,
 } from '../theme/fonts.js';
 import { googleFontsCatalog } from '../theme/googleFontsCatalog.js';
+import Checkbox from '../ui/Checkbox/Checkbox.vue';
+import ColorInput from '../ui/ColorInput/ColorInput.vue';
+import Field from '../ui/Field/Field.vue';
+import RangeInput from '../ui/RangeInput/RangeInput.vue';
+import Select from '../ui/Select/Select.vue';
+import Switch from '../ui/Switch/Switch.vue';
+import TextInput from '../ui/TextInput/TextInput.vue';
 
 const { t } = useI18n();
 const props = defineProps({
@@ -193,187 +200,170 @@ function updateSupportsDarkMode(event) {
   <div class="theme-controls">
     <div class="control-group">
       <h3>{{ t('controls.metadata') }}</h3>
-      <div v-for="control in metadataControls" :key="control.key" class="metadata-control">
-        <div class="control-row">
-          <label class="control-label" :for="`metadata-${control.key}`">{{ t(control.labelKey) }}</label>
-          <input
-            :id="`metadata-${control.key}`"
-            class="text-control"
-            type="text"
-            :value="meta[control.key]"
-            :aria-describedby="metadataErrors[control.key] ? `metadata-${control.key}-error` : undefined"
-            :aria-invalid="metadataErrors[control.key] ? 'true' : undefined"
-            @input="updateMetadataField(control, $event)"
+      <Field
+        v-for="control in metadataControls"
+        :key="control.key"
+        class="metadata-control"
+        layout="inline"
+        :label="t(control.labelKey)"
+        :label-for="`metadata-${control.key}`"
+        :message="metadataErrors[control.key]"
+        :message-id="metadataErrors[control.key] ? `metadata-${control.key}-error` : ''"
+        message-view="error"
+      >
+        <TextInput
+          :id="`metadata-${control.key}`"
+          :value="meta[control.key]"
+          :aria-describedby="metadataErrors[control.key] ? `metadata-${control.key}-error` : undefined"
+          :aria-invalid="metadataErrors[control.key] ? 'true' : undefined"
+          @input="updateMetadataField(control, $event)"
+        />
+        <template #addons>
+          <Checkbox
+            :checked="fieldLocks.meta[control.key]"
+            :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
+            @change="emit('toggle-field-lock', 'meta', control.key, $event.target.checked)"
           />
-          <label class="field-lock">
-            <input
-              class="field-lock-input"
-              type="checkbox"
-              :checked="fieldLocks.meta[control.key]"
-              :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
-              @change="emit('toggle-field-lock', 'meta', control.key, $event.target.checked)"
-            />
-          </label>
-        </div>
-        <p v-if="metadataErrors[control.key]" :id="`metadata-${control.key}-error`" class="control-error">
-          {{ metadataErrors[control.key] }}
-        </p>
-      </div>
-      <div class="metadata-control">
-        <div class="control-row">
-          <span class="control-label">{{ t('controls.supportsDarkMode') }}</span>
-          <input
-            id="metadata-supportsDarkMode"
-            class="checkbox-control"
-            type="checkbox"
-            :checked="meta.supportsDarkMode"
-            @change="updateSupportsDarkMode"
-          />
-          <span></span>
-        </div>
-      </div>
+        </template>
+      </Field>
+      <Field
+        class="metadata-control"
+        layout="inline"
+        :label="t('controls.supportsDarkMode')"
+        label-for="metadata-supportsDarkMode"
+      >
+        <Switch id="metadata-supportsDarkMode" :checked="meta.supportsDarkMode" @change="updateSupportsDarkMode" />
+      </Field>
     </div>
 
     <div class="control-group">
       <h3>{{ t('controls.fonts') }}</h3>
-      <div v-for="control in fontControls" :key="control.familyKey" class="font-control">
-        <div class="control-row">
-          <label class="control-label" :for="`font-select-${control.familyKey}`">{{ t(control.labelKey) }}</label>
-          <select
-            :id="`font-select-${control.familyKey}`"
-            class="select-control"
-            :value="getFontSelectValue(control)"
-            @change="updateFont(control, $event)"
-          >
-            <option value="plain|">{{ t('controls.plainFont') }}</option>
-            <optgroup
-              v-if="!isKnownFontSelectValue(getFontSelectValue(control))"
-              :label="t('controls.customFontGroup')"
-            >
-              <option :value="getFontSelectValue(control)">
-                {{ typography[control.familyKey] }}
-              </option>
-            </optgroup>
-            <optgroup v-for="group in fontSelectGroups" :key="group.label" :label="group.label">
-              <option v-for="opt in group.options" :key="opt.value" :value="opt.value">
-                {{ opt.label }}
-              </option>
-            </optgroup>
-          </select>
-          <label class="field-lock">
-            <input
-              class="field-lock-input"
-              type="checkbox"
-              :checked="fieldLocks.typography[control.familyKey]"
-              :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
-              @change="emit('toggle-field-lock', 'typography', control.familyKey, $event.target.checked)"
-            />
-          </label>
-        </div>
-      </div>
+      <Field
+        v-for="control in fontControls"
+        :key="control.familyKey"
+        class="font-control"
+        layout="inline"
+        :label="t(control.labelKey)"
+        :label-for="`font-select-${control.familyKey}`"
+      >
+        <Select
+          :id="`font-select-${control.familyKey}`"
+          :value="getFontSelectValue(control)"
+          @change="updateFont(control, $event)"
+        >
+          <option value="plain|">{{ t('controls.plainFont') }}</option>
+          <optgroup v-if="!isKnownFontSelectValue(getFontSelectValue(control))" :label="t('controls.customFontGroup')">
+            <option :value="getFontSelectValue(control)">
+              {{ typography[control.familyKey] }}
+            </option>
+          </optgroup>
+          <optgroup v-for="group in fontSelectGroups" :key="group.label" :label="group.label">
+            <option v-for="opt in group.options" :key="opt.value" :value="opt.value">
+              {{ opt.label }}
+            </option>
+          </optgroup>
+        </Select>
+        <template #addons>
+          <Checkbox
+            :checked="fieldLocks.typography[control.familyKey]"
+            :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
+            @change="emit('toggle-field-lock', 'typography', control.familyKey, $event.target.checked)"
+          />
+        </template>
+      </Field>
     </div>
 
     <div class="control-group">
       <h3>{{ t('controls.typography') }}</h3>
-      <div v-for="control in typographyControls" :key="control.key" class="typography-control">
-        <div class="control-row">
-          <label class="control-label" :for="`typography-${control.key}`">{{ t(control.labelKey) }}</label>
-          <input
-            :id="`typography-${control.key}`"
-            class="range-control"
-            type="range"
-            :min="control.min"
-            :max="control.max"
-            :step="control.step"
-            :value="getControlValue(control, typography[control.key])"
-            @input="emit('update:typography-field', control.key, getNumericValue(control, $event.target.value))"
+      <Field
+        v-for="control in typographyControls"
+        :key="control.key"
+        class="typography-control"
+        layout="inline"
+        :label="t(control.labelKey)"
+        :label-for="`typography-${control.key}`"
+      >
+        <RangeInput
+          :id="`typography-${control.key}`"
+          :min="control.min"
+          :max="control.max"
+          :step="control.step"
+          :value="getControlValue(control, typography[control.key])"
+          @input="emit('update:typography-field', control.key, getNumericValue(control, $event.target.value))"
+        />
+        <template #addons>
+          <output class="control-value" :for="`typography-${control.key}`">{{ typography[control.key] }}</output>
+          <Checkbox
+            :checked="fieldLocks.typography[control.key]"
+            :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
+            @change="emit('toggle-field-lock', 'typography', control.key, $event.target.checked)"
           />
-          <span class="control-row-actions">
-            <output class="control-value" :for="`typography-${control.key}`">{{ typography[control.key] }}</output>
-            <label class="field-lock">
-              <input
-                class="field-lock-input"
-                type="checkbox"
-                :checked="fieldLocks.typography[control.key]"
-                :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
-                @change="emit('toggle-field-lock', 'typography', control.key, $event.target.checked)"
-              />
-            </label>
-          </span>
-        </div>
-      </div>
+        </template>
+      </Field>
     </div>
 
     <div class="control-group">
       <h3>{{ t('controls.layout') }}</h3>
-      <div v-for="control in layoutControls" :key="control.key" class="layout-control">
-        <div class="control-row">
-          <label class="control-label" :for="`layout-${control.key}`">{{ t(control.labelKey) }}</label>
-          <input
-            :id="`layout-${control.key}`"
-            class="range-control"
-            type="range"
-            :min="control.min"
-            :max="control.max"
-            :step="control.step"
-            :value="getControlValue(control, layout[control.key])"
-            @input="emit('update:layout-field', control.key, getNumericValue(control, $event.target.value))"
+      <Field
+        v-for="control in layoutControls"
+        :key="control.key"
+        class="layout-control"
+        layout="inline"
+        :label="t(control.labelKey)"
+        :label-for="`layout-${control.key}`"
+      >
+        <RangeInput
+          :id="`layout-${control.key}`"
+          :min="control.min"
+          :max="control.max"
+          :step="control.step"
+          :value="getControlValue(control, layout[control.key])"
+          @input="emit('update:layout-field', control.key, getNumericValue(control, $event.target.value))"
+        />
+        <template #addons>
+          <output class="control-value" :for="`layout-${control.key}`">{{ layout[control.key] }}</output>
+          <Checkbox
+            :checked="fieldLocks.layout[control.key]"
+            :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
+            @change="emit('toggle-field-lock', 'layout', control.key, $event.target.checked)"
           />
-          <span class="control-row-actions">
-            <output class="control-value" :for="`layout-${control.key}`">{{ layout[control.key] }}</output>
-            <label class="field-lock">
-              <input
-                class="field-lock-input"
-                type="checkbox"
-                :checked="fieldLocks.layout[control.key]"
-                :aria-label="t('aria.lockForRandom', { label: t(control.labelKey) })"
-                @change="emit('toggle-field-lock', 'layout', control.key, $event.target.checked)"
-              />
-            </label>
-          </span>
-        </div>
-      </div>
+        </template>
+      </Field>
     </div>
 
     <div class="control-group">
       <h3>{{ t('controls.colors') }}</h3>
-      <div v-for="control in PALETTE_COLOR_CONTROLS" :key="control.key" class="palette-control">
-        <div class="control-row">
-          <label class="control-label" :for="`palette-${control.key}`">{{ t(`controls.${control.key}`) }}</label>
-          <input
-            :id="`palette-${control.key}`"
-            class="color-control"
-            type="color"
-            :value="palette[control.key]"
-            :aria-describedby="
-              contrastWarningsByField[control.key]?.length ? `palette-${control.key}-warnings` : undefined
-            "
-            @input="emit('update:palette-field', control.key, $event.target.value)"
+      <Field
+        v-for="control in PALETTE_COLOR_CONTROLS"
+        :key="control.key"
+        class="palette-control"
+        layout="inline"
+        :label="t(`controls.${control.key}`)"
+        :label-for="`palette-${control.key}`"
+        :message-id="contrastWarningsByField[control.key]?.length ? `palette-${control.key}-warnings` : ''"
+        message-view="warning"
+      >
+        <ColorInput
+          :id="`palette-${control.key}`"
+          :value="palette[control.key]"
+          :aria-describedby="
+            contrastWarningsByField[control.key]?.length ? `palette-${control.key}-warnings` : undefined
+          "
+          @input="emit('update:palette-field', control.key, $event.target.value)"
+        />
+        <template #addons>
+          <Checkbox
+            :checked="paletteLocks[control.key]"
+            :aria-label="t('aria.lockForRandom', { label: t(`controls.${control.key}`) })"
+            @change="emit('toggle-field-lock', paletteSection, control.key, $event.target.checked)"
           />
-          <label class="field-lock">
-            <input
-              class="field-lock-input"
-              type="checkbox"
-              :checked="paletteLocks[control.key]"
-              :aria-label="t('aria.lockForRandom', { label: t(`controls.${control.key}`) })"
-              @change="emit('toggle-field-lock', paletteSection, control.key, $event.target.checked)"
-            />
-          </label>
-        </div>
-        <div
-          v-if="contrastWarningsByField[control.key]?.length"
-          :id="`palette-${control.key}-warnings`"
-          class="control-warnings"
-        >
-          <p
-            v-for="message in contrastWarningsByField[control.key]"
-            :key="`${control.key}-${message}`"
-            class="control-warning"
-          >
+        </template>
+        <template v-if="contrastWarningsByField[control.key]?.length" #message>
+          <p v-for="message in contrastWarningsByField[control.key]" :key="`${control.key}-${message}`">
             {{ message }}
           </p>
-        </div>
-      </div>
+        </template>
+      </Field>
     </div>
   </div>
 </template>

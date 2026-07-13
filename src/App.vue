@@ -4,6 +4,8 @@ import { useI18n } from 'vue-i18n';
 import ThemeControls from './components/ThemeControls.vue';
 import PresetSelector from './components/PresetSelector.vue';
 import AegeaPreview from './preview/AegeaPreview.vue';
+import Button from './ui/Button/Button.vue';
+import Select from './ui/Select/Select.vue';
 import { saveStoredLocale, setDocumentLocale, supportedLocales } from './i18n/index.js';
 import { clearSession, loadSession, saveSession } from './storage.js';
 import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
@@ -534,7 +536,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
   </Teleport>
 
-  <main ref="appElement" class="app" :data-shell-appearance="effectiveShellAppearance" :style="appStyle">
+  <main ref="appElement" class="app" :data-color-scheme="effectiveShellAppearance" :style="appStyle">
     <aside class="app-controls-pane">
       <div class="app-controls-scroll">
         <header class="app-header">
@@ -545,16 +547,11 @@ watch(locale, updateDocumentMetadata, { immediate: true });
           </p>
           <label class="shell-appearance-control">
             <span>{{ t('controls.shellAppearance') }}</span>
-            <select
-              class="shell-appearance-select"
-              :value="shellAppearance"
-              :aria-label="t('aria.shellAppearance')"
-              @change="updateShellAppearance"
-            >
+            <Select :value="shellAppearance" :aria-label="t('aria.shellAppearance')" @change="updateShellAppearance">
               <option value="system">{{ t('controls.shellSystem') }}</option>
               <option value="light">{{ t('controls.shellLight') }}</option>
               <option value="dark">{{ t('controls.shellDark') }}</option>
-            </select>
+            </Select>
           </label>
         </header>
 
@@ -582,26 +579,24 @@ watch(locale, updateDocumentMetadata, { immediate: true });
       <section class="export-section" :aria-label="t('aria.export')">
         <label class="language-control">
           <span class="visually-hidden">{{ t('aria.language') }}</span>
-          <select class="language-select" :value="locale" :aria-label="t('aria.language')" @change="updateLocale">
+          <Select :value="locale" :aria-label="t('aria.language')" @change="updateLocale">
             <option v-for="availableLocale in supportedLocales" :key="availableLocale" :value="availableLocale">
               {{ t(`language.${availableLocale}`) }}
             </option>
-          </select>
+          </Select>
         </label>
-        <button class="random-button" type="button" @click="randomizeTheme">{{ t('actions.random') }}</button>
-        <button class="unlock-button" type="button" :disabled="!hasFieldLocks" @click="unlockAllFields">
+        <Button view="outlined" @click="randomizeTheme">{{ t('actions.random') }}</Button>
+        <Button view="outlined" :disabled="!hasFieldLocks" @click="unlockAllFields">
           {{ t('actions.unlockAll') }}
-        </button>
-        <button class="reset-button" type="button" @click="resetToDefaults">{{ t('actions.resetToDefaults') }}</button>
-        <button class="copy-link-button" type="button" :disabled="!canDownloadTheme" @click="copyThemeLink">
+        </Button>
+        <Button view="outlined" @click="resetToDefaults">{{ t('actions.resetToDefaults') }}</Button>
+        <Button view="outlined" :disabled="!canDownloadTheme" @click="copyThemeLink">
           {{ t('actions.copyLink') }}
-        </button>
-        <button class="export-json-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeJson">
+        </Button>
+        <Button view="outlined" :disabled="!canDownloadTheme" @click="downloadThemeJson">
           {{ t('actions.exportJson') }}
-        </button>
-        <button class="import-json-button" type="button" @click="openThemeJsonImport">
-          {{ t('actions.importJson') }}
-        </button>
+        </Button>
+        <Button view="outlined" @click="openThemeJsonImport">{{ t('actions.importJson') }}</Button>
         <input
           ref="themeJsonFileInput"
           class="import-json-input"
@@ -609,9 +604,9 @@ watch(locale, updateDocumentMetadata, { immediate: true });
           accept=".json,application/json"
           @change="importThemeJson"
         />
-        <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
+        <Button view="action" :disabled="!canDownloadTheme" @click="downloadThemeZip">
           {{ t('actions.downloadThemeZip') }}
-        </button>
+        </Button>
         <p v-if="shareMessageKey" class="share-message">{{ t(shareMessageKey) }}</p>
         <p v-if="shareErrorKey" class="share-error">{{ t(shareErrorKey) }}</p>
         <p v-if="importMessageKey" class="import-message">{{ t(importMessageKey) }}</p>
@@ -640,15 +635,10 @@ watch(locale, updateDocumentMetadata, { immediate: true });
       <div class="preview-toolbar">
         <label class="theme-mode-control">
           <span>{{ t('controls.themeMode') }}</span>
-          <select
-            class="theme-mode-select"
-            :value="themeMode"
-            :aria-label="t('aria.themeMode')"
-            @change="updateThemeMode"
-          >
+          <Select :value="themeMode" :aria-label="t('aria.themeMode')" @change="updateThemeMode">
             <option value="light">{{ t('controls.lightThemeMode') }}</option>
             <option value="dark">{{ t('controls.darkThemeMode') }}</option>
-          </select>
+          </Select>
         </label>
       </div>
       <AegeaPreview :theme-state="themeState" :preview-mode="themeMode" />

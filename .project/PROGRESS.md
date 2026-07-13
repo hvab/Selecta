@@ -25,6 +25,8 @@ The app currently has:
 - Dark-mode theme support with separate light/dark palettes, preview theme mode,
   independent generator-shell appearance, and Aegea-compatible dark CSS output.
 - Generated `styles/main.css` and `theme-info.php` from one theme state model.
+- Shell UI block adoption is complete: the generator shell now uses local Vue
+  adapters over `hvab-blocks` CSS blocks, without a shell redesign.
 
 Current prepared release: `0.8.0`.
 
@@ -82,7 +84,7 @@ the current Aegea checkout before changing preview or export behavior.
 
 Historical setup notes live in `.project/SETUP-PLAN.md`.
 
-## Active track
+## Completed dark-mode track (historical)
 
 Dark palette / dark mode support is implemented and prepared for the `0.8.0`
 release.
@@ -286,7 +288,7 @@ controls pane remains comfortable while editing either palette.
 - `theme-info.php` `colors` should stay tied to the light palette unless current
   Aegea behavior proves otherwise.
 
-## Next steps
+## Historical dark-mode checklist
 
 - [x] Implement the model and serialization slice for `darkPalette`.
 - [x] Implement dark CSS generation and `theme-info.php` behavior.
@@ -300,6 +302,178 @@ controls pane remains comfortable while editing either palette.
 - [x] Verify Aegea built-in preset dark-mode support.
 - [x] Run final verification.
 - [ ] Keep author-credit placement and full-width layout as separate future work.
+
+## Completed shell UI block-adoption track (historical)
+
+Shell UI block adoption with `hvab-blocks` is the next planned track. Its goal
+is to add the library from GitHub as a pinned npm dependency, add local Vue
+adapter components around its documented CSS blocks, and move the existing
+generator-shell controls onto that contract. This is not a visual-design track:
+retain the current information architecture, control behaviour, responsive
+layout, copy, and Aegea preview unchanged.
+
+`hvab-blocks` is CSS-only. Selecta's `src/ui/` Vue components own the stable
+component API, slots, attribute/event forwarding, accessibility wiring, and
+class/modifier mapping. The application continues to own state, file import,
+persistence, and responsive page layout.
+
+### Blocks selected from the current shell audit
+
+Required in this track:
+
+- `field` for the existing label/control/addon/message rows in
+  `ThemeControls.vue` and `PresetSelector.vue`;
+- `text-input` for display and folder names;
+- `select` for preset, font, language, shell-appearance, and theme-mode
+  selectors;
+- `range-input` for typography and layout sliders;
+- `color-input` for palette colors;
+- `checkbox` for the per-field Random locks;
+- `switch` for the `supportsDarkMode` boolean;
+- `button` for Random, Unlock all, Reset, copy-link, JSON import/export, and
+  ZIP download actions.
+
+The hidden JSON file input has no matching library block and remains a native
+file input behind its visible trigger button. The drag pane resizer also stays
+consumer-owned because `hvab-blocks` deliberately provides no layout or resize
+primitive.
+
+Explicitly out of scope until a requested design slice: `card`, `tabs`,
+`dialog`, `toast`, `alert`, `link`, `text`, `label`, and all overlay/navigation
+blocks. Status copy may keep its current semantic markup in this track; do not
+introduce a toast or alert design implicitly. The Aegea preview uses its own
+real markup/CSS contract and must not receive `hb-*` classes or tokens.
+
+### Feature plan
+
+- [x] Add the GitHub dependency and establish the integration entry point:
+  - use the current immutable release tag:
+    `"hvab-blocks": "github:hvab/hvab-blocks#0.1.0"`;
+  - upgrade deliberately by changing this Git ref to a reviewed newer tag and
+    updating the lockfile; do not depend on a moving branch;
+  - consume selectively rather than importing `hvab-blocks/index.css`, so the
+    shell loads only the required blocks and all token files they require;
+  - expected files/areas: `package.json`, `package-lock.json`, a new local
+    shell entry stylesheet, `src/main.js`;
+  - changed: installed `hvab-blocks` from GitHub tag `0.1.0`; added
+    `src/ui/hvab.css` with tokens first and the eight selected block styles
+    second; imported it before Selecta's local shell stylesheet;
+  - verification: `npm install github:hvab/hvab-blocks#0.1.0` resolved the
+    pinned GitHub commit in `package-lock.json`; `npm run build` passed with all
+    selected CSS exports loaded by Vite.
+- [x] Create the local Selecta UI adapter layer before changing consumers:
+  - [x] add `src/ui/Button/Button.vue` as a native button adapter with
+        `view`, `size`, and `type` props; native attributes, events, and consumer
+        classes fall through to its single root button;
+  - [x] add `Field/Field.vue` with label, default control, addons, and message
+        slots; `layout="inline"` and `messageView` map to the documented
+        modifiers while validation semantics remain with the caller;
+  - [x] add `TextInput/TextInput.vue` as a native input adapter with `type`
+        and `size` props; value, input events, invalid/disabled states, and
+        other native attributes fall through to the input;
+  - [x] add `Select/Select.vue` as a native select adapter with a `size` prop;
+        option and optgroup markup, values, change events, and native states
+        remain with the caller;
+  - [x] add `RangeInput/RangeInput.vue` with its documented wrapper/input
+        structure; class/style stay on the wrapper, while range attributes and
+        events are forwarded to the native input;
+  - [x] add `ColorInput/ColorInput.vue` as a native color-input adapter with a
+        `size` prop; color values, picker behavior, events, and native states
+        remain with the caller;
+  - [x] add `Checkbox/Checkbox.vue` with its documented label/input/box
+        structure; visible content is an optional default slot, and native
+        checkbox attributes/events are forwarded to the input;
+  - [x] add `Switch/Switch.vue` with the documented label/input/track
+        structure; the checkbox remains the state and accessibility host;
+  - each component renders the documented native host and `hb-*` class names;
+    it exposes only the props/slots needed by Selecta and forwards native
+    attributes and events without reimplementing library CSS;
+  - keep field label, control, addon, and message composition as slots so
+    validation/warning semantics remain at the caller;
+  - expected files/areas: `src/ui/**`, new shell integration stylesheet;
+  - verification: component markup follows the corresponding current
+    `hvab-blocks` README and no wrapper creates custom popup behaviour;
+    completed Button, Field, TextInput, Select, RangeInput, ColorInput, Checkbox, and Switch adapters pass `npm run lint`,
+    `npm run lint:styles`, and `npm run format:check`.
+- [x] Establish the Selecta-to-hvab token bridge without selecting a new visual
+      design:
+  - [x] import `ref`, `color`, `typography`, `radius`, `spacing`, `motion`, `size`,
+        and `focus` before block CSS, in the documented order;
+  - [x] import only `field`, `text-input`, `select`, `range-input`, `color-input`,
+        `checkbox`, `switch`, and `button` CSS;
+  - [x] bind the effective existing shell appearance to
+        `data-color-scheme="light|dark"` alongside its current state attribute;
+        changed: the `.app` root now receives both attributes, so all future
+        `hb-*` descendants inherit the matching library color scheme;
+  - [x] keep the library's public `--hb-*` token values unchanged after the
+        import; do not override block selectors, private `--_*` tokens, or use
+        `!important`;
+        changed: removed the temporary Selecta token mapping so the shell uses
+        the library's own light/dark visual contract until a design slice calls
+        for deliberate overrides;
+        changed: removed the legacy `--shell-*` aliases and changed the
+        remaining shell composition/status rules to read the matching public
+        library tokens directly;
+  - expected files/areas: new shell integration stylesheet, `src/main.js`,
+    `src/App.vue`, `src/style.css` only where old control styling becomes dead;
+  - verification: `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, and `npm run build` pass; browser verification
+    confirms the restored library default
+    `--hb-color-base-generic: rgb(0 0 0 / 5%)` in the light scheme.
+- [x] Replace the theme-editor form controls with the selected documented
+      blocks:
+  - convert each row to `hb-field`, using `hb-field_layout_inline` where the
+    current three-column arrangement applies;
+  - map metadata errors to `aria-invalid="true"` plus
+    `hb-field__message_view_error`, and contrast warnings to
+    `hb-field__message_view_warning`, preserving `aria-describedby`;
+  - put control classes on the documented native host/wrapper for text, select,
+    range, and color controls;
+  - preserve all event handling, numeric conversions, font `optgroup`s, locks,
+    and localization;
+  - expected files/areas: `src/components/ThemeControls.vue`,
+    `src/components/PresetSelector.vue`, shell CSS;
+  - changed: migrated preset, metadata, font, slider, palette, warning, and
+    Random-lock markup to Field plus the matching native adapter; retained the
+    prior ids, event handlers, values, option groups, `aria-invalid`, and
+    `aria-describedby` relationships;
+  - verification: browser DOM check exposes native textboxes, sliders, color
+    controls, checkboxes, and the dark-mode switch with their previous labels.
+- [x] Replace shell-header, preview-toolbar, and export action controls:
+  - apply `hb-select` to language, shell-appearance, and theme-mode controls;
+  - use `hb-switch` for dark-mode support and `hb-checkbox` for field locks
+    with visible/accessible labels following the block contract;
+  - assign button priority only from the existing action hierarchy; no new
+    labels, icons, grouping, or layout are part of this step;
+  - preserve native `disabled` attributes, hidden JSON file input flow, live
+    status text, and pane-resizer keyboard/pointer behaviour;
+  - expected files/areas: `src/App.vue`, `src/components/ThemeControls.vue`,
+    shell CSS;
+  - changed: migrated interface appearance, language, and theme-mode selectors
+    to Select; migrated export actions to Button with outlined secondary actions
+    and the existing ZIP download as the sole action button; preserved the
+    hidden JSON file input and all current handlers/disabled conditions;
+  - verification: browser DOM check exposes the same named controls and keeps
+    `Unlock all` disabled when no locks are active.
+- [x] Remove superseded local control chrome and document the adopted contract:
+  - delete only CSS declarations replaced by the imported blocks; retain
+    Selecta-owned composition, spacing, pane sizing, mobile layout, and status
+    placement;
+  - record the installed `hvab-blocks` source/version and selected block list
+    here, including any public token overrides;
+  - expected files/areas: `src/style.css`, `.project/PROGRESS.md`;
+  - changed: removed the superseded local control, lock, error, and button
+    chrome; retained Selecta-owned shell layout, status-message placement,
+    pane sizing, and mobile composition;
+  - verification: `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, and `npm run build` pass; browser inspection
+    confirms all adopted block hosts and the restored system scheme. No Aegea
+    preview or export behavior changed.
+
+## Next steps
+
+- [ ] Select a separate shell-design slice before changing visual composition,
+      spacing, copy, or component priorities beyond the adopted block defaults.
 
 ## Ideas and backlog
 
