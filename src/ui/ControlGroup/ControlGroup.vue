@@ -9,7 +9,10 @@ defineProps({
 
 <template>
   <div class="control-group hb-card hb-card_view_filled">
-    <h3 class="control-group__title hb-text hb-text_typography_subheader-3">{{ title }}</h3>
+    <div class="control-group__header">
+      <h3 class="control-group__title hb-text hb-text_typography_subheader-3">{{ title }}</h3>
+      <slot name="actions" />
+    </div>
     <slot />
   </div>
 </template>
@@ -21,6 +24,13 @@ defineProps({
   display: flex;
   flex-direction: column;
   gap: var(--hb-gap-2);
+}
+
+.control-group__header {
+  display: flex;
+  gap: var(--hb-gap-2);
+  align-items: center;
+  justify-content: space-between;
 }
 
 .control-group__title {

@@ -17,6 +17,7 @@ import Select from '../../ui/Select/Select.vue';
 import Switch from '../../ui/Switch/Switch.vue';
 import TextInput from '../../ui/TextInput/TextInput.vue';
 import FieldLock from '../FieldLock/FieldLock.vue';
+import GroupLock from '../GroupLock/GroupLock.vue';
 import RangeControlField from '../RangeControlField/RangeControlField.vue';
 
 const { t, locale } = useI18n();
@@ -64,6 +65,7 @@ const emit = defineEmits([
   'update:palette-field',
   'update:typography-field',
   'update:layout-field',
+  'toggle-group-lock',
   'toggle-field-lock',
 ]);
 
@@ -77,6 +79,8 @@ const metadataControls = [
     labelKey: 'controls.folderName',
   },
 ];
+
+const metadataLockKeys = metadataControls.map(({ key }) => key);
 
 const fontControls = [
   {
@@ -163,6 +167,11 @@ const layoutControls = [
   },
 ];
 
+const fontLockKeys = fontControls.map(({ familyKey }) => familyKey);
+const typographyLockKeys = typographyControls.map(({ key }) => key);
+const layoutLockKeys = layoutControls.map(({ key }) => key);
+const paletteLockKeys = PALETTE_COLOR_CONTROLS.map(({ key }) => key);
+
 function getFontSelectValue(control) {
   const source = props.typography[control.sourceKey];
   return `${source}|${source === FONT_SOURCE_PLAIN ? '' : props.typography[control.familyKey]}`;
@@ -201,11 +210,32 @@ function updateMetadataField(control, event) {
 function updateSupportsDarkMode(event) {
   emit('update:meta-field', 'supportsDarkMode', event.target.checked);
 }
+
+function getGroupLockState(locks, keys) {
+  const lockedFieldCount = keys.filter((key) => locks[key]).length;
+
+  if (lockedFieldCount === 0) {
+    return 'none';
+  }
+
+  return lockedFieldCount === keys.length ? 'all' : 'mixed';
+}
+
+function toggleGroupLock(section, keys) {
+  emit('toggle-group-lock', section, keys, getGroupLockState(props.fieldLocks[section], keys) !== 'all');
+}
 </script>
 
 <template>
   <div class="theme-controls">
     <ControlGroup :title="t('controls.metadata')">
+      <template #actions>
+        <GroupLock
+          :label="t('controls.metadata')"
+          :state="getGroupLockState(fieldLocks.meta, metadataLockKeys)"
+          @toggle="toggleGroupLock('meta', metadataLockKeys)"
+        />
+      </template>
       <Field
         v-for="control in metadataControls"
         :key="control.key"
@@ -237,6 +267,13 @@ function updateSupportsDarkMode(event) {
     </ControlGroup>
 
     <ControlGroup :title="t('controls.fonts')">
+      <template #actions>
+        <GroupLock
+          :label="t('controls.fonts')"
+          :state="getGroupLockState(fieldLocks.typography, fontLockKeys)"
+          @toggle="toggleGroupLock('typography', fontLockKeys)"
+        />
+      </template>
       <Field
         v-for="control in fontControls"
         :key="control.familyKey"
@@ -272,6 +309,13 @@ function updateSupportsDarkMode(event) {
     </ControlGroup>
 
     <ControlGroup :title="t('controls.typography')">
+      <template #actions>
+        <GroupLock
+          :label="t('controls.typography')"
+          :state="getGroupLockState(fieldLocks.typography, typographyLockKeys)"
+          @toggle="toggleGroupLock('typography', typographyLockKeys)"
+        />
+      </template>
       <RangeControlField
         v-for="control in typographyControls"
         :id="`typography-${control.key}`"
@@ -290,6 +334,13 @@ function updateSupportsDarkMode(event) {
     </ControlGroup>
 
     <ControlGroup :title="t('controls.layout')">
+      <template #actions>
+        <GroupLock
+          :label="t('controls.layout')"
+          :state="getGroupLockState(fieldLocks.layout, layoutLockKeys)"
+          @toggle="toggleGroupLock('layout', layoutLockKeys)"
+        />
+      </template>
       <RangeControlField
         v-for="control in layoutControls"
         :id="`layout-${control.key}`"
@@ -308,6 +359,13 @@ function updateSupportsDarkMode(event) {
     </ControlGroup>
 
     <ControlGroup :title="t('controls.colors')">
+      <template #actions>
+        <GroupLock
+          :label="t('controls.colors')"
+          :state="getGroupLockState(paletteLocks, paletteLockKeys)"
+          @toggle="toggleGroupLock(paletteSection, paletteLockKeys)"
+        />
+      </template>
       <Field
         v-for="control in PALETTE_COLOR_CONTROLS"
         :key="control.key"

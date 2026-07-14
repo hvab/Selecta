@@ -1,12 +1,17 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import ControlGroup from '../../ui/ControlGroup/ControlGroup.vue';
+import Button from '../../ui/Button/Button.vue';
 import Field from '../../ui/Field/Field.vue';
 import Select from '../../ui/Select/Select.vue';
 
 const { t } = useI18n();
 
 defineProps({
+  importError: {
+    type: String,
+    default: '',
+  },
   presets: {
     type: Array,
     required: true,
@@ -17,7 +22,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(['apply-preset']);
+const emit = defineEmits(['apply-preset', 'import-theme']);
 
 function getPresetLabel(preset) {
   return t(`presetLabels.${preset.id}`);
@@ -35,6 +40,26 @@ function getPresetLabel(preset) {
           </option>
         </Select>
       </Field>
+      <Field
+        :message="importError"
+        message-id="theme-json-import-error"
+        message-view="error"
+      >
+        <Button
+          class="preset-controls__import-button"
+          view="outlined"
+          :aria-describedby="importError ? 'theme-json-import-error' : undefined"
+          @click="emit('import-theme')"
+        >
+          {{ t('actions.importJson') }}
+        </Button>
+      </Field>
     </ControlGroup>
   </div>
 </template>
+
+<style scoped>
+.preset-controls__import-button {
+  width: 100%;
+}
+</style>
