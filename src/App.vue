@@ -24,14 +24,21 @@ import { generateThemeZip, getThemeZipFileName } from './theme/zip.js';
 import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './theme/fonts.js';
 import { getSelectedGoogleFontsCss2Url } from './theme/googleFonts.js';
 import { googleFontsCatalog } from './theme/googleFontsCatalog.js';
+import { constrainControlsPaneWidth, controlsPaneMinWidth } from './ui/panelLayout.js';
+import { usePanelLayout } from './ui/usePanelLayout.js';
 
 const { locale, t } = useI18n();
 const themeState = reactive(structuredClone(initialThemeState));
 const fieldLocks = reactive(createEmptyFieldLocks());
 const folderNameEdited = ref(false);
 const appElement = ref(null);
-const defaultControlsPaneWidth = 416;
-const controlsPaneWidth = ref(defaultControlsPaneWidth);
+const {
+  controlsPaneWidth,
+  effectiveControlsPaneWidth,
+  effectiveControlsPaneMaxWidth,
+  paneResizerElement,
+  getConstrainedControlsPaneWidth,
+} = usePanelLayout(appElement);
 const themeMode = ref('light');
 const shellAppearance = ref('system');
 const systemPrefersDark = ref(false);
@@ -62,16 +69,13 @@ const selectedPresetId = computed(
     )?.id ?? ''
 );
 const appStyle = computed(() => ({
-  '--controls-pane-width': `${controlsPaneWidth.value}px`,
+  '--controls-pane-width': `${effectiveControlsPaneWidth.value}px`,
 }));
 const effectiveShellAppearance = computed(() =>
   shellAppearance.value === 'system' ? (systemPrefersDark.value ? 'dark' : 'light') : shellAppearance.value
 );
 const googleFontsPreviewUrl = computed(() => getSelectedGoogleFontsCss2Url(googleFontsCatalog, themeState.typography));
 
-const controlsPaneMinWidth = 320;
-const controlsPaneMaxWidth = 672;
-const previewPaneMinWidth = 360;
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
 let shouldSkipNextSessionSave = false;
@@ -85,11 +89,6 @@ const fontFamilyKeyBySourceKey = {
   mainFontSource: 'mainFontFamily',
   noteFontSource: 'noteFontFamily',
 };
-const effectiveControlsPaneMaxWidth = computed(() => {
-  const appWidth = appElement.value?.getBoundingClientRect().width ?? window.innerWidth;
-
-  return Math.max(controlsPaneMinWidth, Math.min(controlsPaneMaxWidth, appWidth - previewPaneMinWidth));
-});
 
 function translateMessageMap(messagesByField, namespace) {
   return Object.fromEntries(
@@ -104,10 +103,6 @@ function translateWarningMap(warningsByField) {
       messages.map((messageKey) => t(`contrast.${messageKey}`)),
     ])
   );
-}
-
-function getConstrainedControlsPaneWidth(value) {
-  return Math.min(Math.max(value, controlsPaneMinWidth), effectiveControlsPaneMaxWidth.value);
 }
 
 function hasSameSectionValues(section, referenceSection) {
@@ -351,7 +346,7 @@ function handleControlsPaneResize(event) {
 }
 
 function resizeControlsPaneByStep(step) {
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(controlsPaneWidth.value + step);
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(effectiveControlsPaneWidth.value + step);
 }
 
 function handleControlsPaneResizeKeydown(event) {
@@ -491,7 +486,7 @@ onMounted(() => {
   if (session) {
     applyThemeState(session.themeState);
     applyFieldLocks(session.fieldLocks);
-    controlsPaneWidth.value = getConstrainedControlsPaneWidth(session.uiState.sidebarWidth);
+    controlsPaneWidth.value = constrainControlsPaneWidth(session.uiState.sidebarWidth);
     folderNameEdited.value = session.uiState.folderNameEdited;
     themeMode.value =
       getStoredThemeMode(session.uiState) === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
@@ -621,6 +616,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     </aside>
 
     <div
+      ref="paneResizerElement"
       class="app-pane-resizer"
       role="separator"
       tabindex="0"
@@ -628,7 +624,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
       aria-orientation="vertical"
       :aria-valuemin="controlsPaneMinWidth"
       :aria-valuemax="effectiveControlsPaneMaxWidth"
-      :aria-valuenow="Math.round(controlsPaneWidth)"
+      :aria-valuenow="effectiveControlsPaneWidth"
       @pointerdown="startControlsPaneResize"
       @pointermove="handleControlsPaneResize"
       @pointerup="stopControlsPaneResize"

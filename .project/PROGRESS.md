@@ -290,6 +290,62 @@ controls pane remains comfortable while editing either palette.
   `npm audit fix --force` upgrades to Vite 8 and is a breaking dependency
   change, so it is left as a separate decision.
 
+## Active technical fix: panel sizing (R03)
+
+Scope: reactive sizing of the generator shell only, preserving the current
+320 px controls minimum, 672 px maximum, 360 px preview budget, and 40rem
+stacked-layout breakpoint. Preview markup and theme/export contracts do not change.
+The selected sidebar width stays separate from the constrained rendered width;
+resize must not overwrite the saved preference. Below the combined minima, keep
+the existing controls-minimum fallback rather than introduce a new layout policy.
+
+- [x] Verify current remote base and reproduce stale sizing before edits.
+  - Base: `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`, isolated branch.
+  - Chrome: 1280 to 768 after ArrowRight x16 gives controls 672 px,
+    divider 8 px, preview 88 px, ARIA max 672.
+- [x] Extract width constraints and reactive container/divider measurement.
+  - Areas: new `src/ui/` modules and narrow `src/App.vue` integration.
+  - Observe container and divider, measure before restore, disconnect on unmount.
+  - Use effective width for rendering/ARIA and keyboard stepping; preserve
+    preferred width in existing session UI state. Keep persistence slice separate.
+  - Checks: focused Node tests for resize, divider, min/max clamp, startup,
+    resize without window resize, and observer cleanup.
+- [x] Verify browser transitions and project checks; prepare draft fix PR.
+  - Chrome: 1280/768/375 transitions, restore, keyboard, pointer if available,
+    language changes; check actual DOM widths and ARIA together.
+  - Commands: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, `npm run build`.
+  - Record pre-existing failures and browser/environment limits explicitly.
+
+Iteration result:
+
+- Added pure constraints plus a Vue composable that observes the actual container
+  and divider border boxes, measures at mount, and disconnects at unmount.
+  Rendering and separator ARIA use the effective width; pointer and keyboard
+  share its clamp. Session state keeps the preferred width, so shrinking and
+  expanding the window restores the preference without a resize-only save.
+- Added six regression tests covering container/divider changes, fractional
+  budgets, minimum fallback, default/restored widths, preferred/effective width
+  separation, keyboard stepping from the effective width, and observer/fallback
+  listener cleanup.
+- Verified: `npm test` 105/105, `npm run lint`, `npm run lint:styles`,
+  `npm run build`, changed-file Prettier check, and `git diff --check` pass.
+  `npm run format:check` fails only on two unchanged audit prompt files;
+  the exact same failure was reproduced on a clean archive of the base commit.
+- Chrome: before the fix, 1280 -> 768 retained 672/8/88 px and ARIA max 672.
+  After the fix, 768 gives 400/8/360 px after resize and narrow reload; expanding
+  restores preferred 672. Keyboard and real pointer drag clamp to 320..400.
+  375 -> 768, EN/RU, and clean production-build startup pass. At 375, stacked
+  layout has document width 375 and visible ZIP control. At 688, pane widths
+  are 320/8/360; at 641, the existing minimum fallback gives 320/8/313.
+- Limits: Safari/Firefox, zoom and touch were not available/tested. Checks ran
+  on macOS with Node 24.20.0 and the existing installed dependencies, not a clean
+  Node 22/Linux install. Theme output and Aegea markup were not modified.
+- Next small step: review the draft fix PR and coordinate its `src/App.vue`
+  import/restore and this progress section with the separate session-save fix.
+  Merge the session-save slice first, then resolve this narrow sizing integration
+  against it; rerun the combined browser/session checks before merging.
+
 ## Next steps
 
 - [x] Implement the model and serialization slice for `darkPalette`.
