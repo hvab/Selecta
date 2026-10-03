@@ -25,6 +25,8 @@ The app currently has:
 - Dark-mode theme support with separate light/dark palettes, preview theme mode,
   independent generator-shell appearance, and Aegea-compatible dark CSS output.
 - Generated `styles/main.css` and `theme-info.php` from one theme state model.
+- Shell UI block adoption is complete: the generator shell now uses local Vue
+  adapters over `hvab-blocks` CSS blocks, without a shell redesign.
 
 Current prepared release: `0.8.0`.
 
@@ -82,7 +84,7 @@ the current Aegea checkout before changing preview or export behavior.
 
 Historical setup notes live in `.project/SETUP-PLAN.md`.
 
-## Active track
+## Completed dark-mode track (historical)
 
 Dark palette / dark mode support is implemented and prepared for the `0.8.0`
 release.
@@ -285,12 +287,8 @@ controls pane remains comfortable while editing either palette.
   use the real Aegea selector.
 - `theme-info.php` `colors` should stay tied to the light palette unless current
   Aegea behavior proves otherwise.
-- `npm audit` reports 3 high severity warnings through
-  `vite` / `@vitejs/plugin-vue` / `esbuild`; the suggested
-  `npm audit fix --force` upgrades to Vite 8 and is a breaking dependency
-  change, so it is left as a separate decision.
 
-## Next steps
+## Historical dark-mode checklist
 
 - [x] Implement the model and serialization slice for `darkPalette`.
 - [x] Implement dark CSS generation and `theme-info.php` behavior.
@@ -303,8 +301,470 @@ controls pane remains comfortable while editing either palette.
 - [x] Simplify theme and interface mode controls.
 - [x] Verify Aegea built-in preset dark-mode support.
 - [x] Run final verification.
-- [ ] Keep author-credit placement, full-width layout, `vue-i18n` optimization,
-      and Vite/esbuild audit decisions as separate future work.
+- [ ] Keep author-credit placement and full-width layout as separate future work.
+
+## Completed shell UI block-adoption track (historical)
+
+Shell UI block adoption with `hvab-blocks` is the next planned track. Its goal
+is to add the library from GitHub as a pinned npm dependency, add local Vue
+adapter components around its documented CSS blocks, and move the existing
+generator-shell controls onto that contract. This is not a visual-design track:
+retain the current information architecture, control behaviour, responsive
+layout, copy, and Aegea preview unchanged.
+
+`hvab-blocks` is CSS-only. Selecta's `src/ui/` Vue components own the stable
+component API, slots, attribute/event forwarding, accessibility wiring, and
+class/modifier mapping. The application continues to own state, file import,
+persistence, and responsive page layout.
+
+### Blocks selected from the current shell audit
+
+Required in this track:
+
+- `field` for the existing label/control/addon/message rows in
+  `ThemeControls.vue` and `PresetSelector.vue`;
+- `text-input` for display and folder names;
+- `select` for preset, font, language, shell-appearance, and theme-mode
+  selectors;
+- `range-input` for typography and layout sliders;
+- `color-input` for palette colors;
+- `checkbox` for the per-field Random locks;
+- `switch` for the `supportsDarkMode` boolean;
+- `button` for Random, Unlock all, Reset, copy-link, JSON import/export, and
+  ZIP download actions.
+
+The hidden JSON file input has no matching library block and remains a native
+file input behind its visible trigger button. The drag pane resizer also stays
+consumer-owned because `hvab-blocks` deliberately provides no layout or resize
+primitive.
+
+Explicitly out of scope until a requested design slice: `card`, `tabs`,
+`dialog`, `toast`, `alert`, `link`, `text`, `label`, and all overlay/navigation
+blocks. Status copy may keep its current semantic markup in this track; do not
+introduce a toast or alert design implicitly. The Aegea preview uses its own
+real markup/CSS contract and must not receive `hb-*` classes or tokens.
+
+### Feature plan
+
+- [x] Add the GitHub dependency and establish the integration entry point:
+  - use the current immutable release tag:
+    `"hvab-blocks": "github:hvab/hvab-blocks#0.1.0"`;
+  - upgrade deliberately by changing this Git ref to a reviewed newer tag and
+    updating the lockfile; do not depend on a moving branch;
+  - consume selectively rather than importing `hvab-blocks/index.css`, so the
+    shell loads only the required blocks and all token files they require;
+  - expected files/areas: `package.json`, `package-lock.json`, a new local
+    shell entry stylesheet, `src/main.js`;
+  - changed: installed `hvab-blocks` from GitHub tag `0.1.0`; added
+    `src/ui/hvab.css` with tokens first and the eight selected block styles
+    second; imported it before Selecta's local shell stylesheet;
+  - verification: `npm install github:hvab/hvab-blocks#0.1.0` resolved the
+    pinned GitHub commit in `package-lock.json`; `npm run build` passed with all
+    selected CSS exports loaded by Vite.
+- [x] Create the local Selecta UI adapter layer before changing consumers:
+  - [x] add `src/ui/Button/Button.vue` as a native button adapter with
+        `view`, `size`, and `type` props; native attributes, events, and consumer
+        classes fall through to its single root button;
+  - [x] add `Field/Field.vue` with label, default control, addons, and message
+        slots; `layout="inline"` and `messageView` map to the documented
+        modifiers while validation semantics remain with the caller;
+  - [x] add `TextInput/TextInput.vue` as a native input adapter with `type`
+        and `size` props; value, input events, invalid/disabled states, and
+        other native attributes fall through to the input;
+  - [x] add `Select/Select.vue` as a native select adapter with a `size` prop;
+        option and optgroup markup, values, change events, and native states
+        remain with the caller;
+  - [x] add `RangeInput/RangeInput.vue` with its documented wrapper/input
+        structure; class/style stay on the wrapper, while range attributes and
+        events are forwarded to the native input;
+  - [x] add `ColorInput/ColorInput.vue` as a native color-input adapter with a
+        `size` prop; color values, picker behavior, events, and native states
+        remain with the caller;
+  - [x] add `Checkbox/Checkbox.vue` with its documented label/input/box
+        structure; visible content is an optional default slot, and native
+        checkbox attributes/events are forwarded to the input;
+  - [x] add `Switch/Switch.vue` with the documented label/input/track
+        structure; the checkbox remains the state and accessibility host;
+  - each component renders the documented native host and `hb-*` class names;
+    it exposes only the props/slots needed by Selecta and forwards native
+    attributes and events without reimplementing library CSS;
+  - keep field label, control, addon, and message composition as slots so
+    validation/warning semantics remain at the caller;
+  - expected files/areas: `src/ui/**`, new shell integration stylesheet;
+  - verification: component markup follows the corresponding current
+    `hvab-blocks` README and no wrapper creates custom popup behaviour;
+    completed Button, Field, TextInput, Select, RangeInput, ColorInput, Checkbox, and Switch adapters pass `npm run lint`,
+    `npm run lint:styles`, and `npm run format:check`.
+- [x] Establish the Selecta-to-hvab token bridge without selecting a new visual
+      design:
+  - [x] import `ref`, `color`, `typography`, `radius`, `spacing`, `motion`, `size`,
+        and `focus` before block CSS, in the documented order;
+  - [x] import only `field`, `text-input`, `select`, `range-input`, `color-input`,
+        `checkbox`, `switch`, and `button` CSS;
+  - [x] bind the effective existing shell appearance to
+        `data-color-scheme="light|dark"` alongside its current state attribute;
+        changed: the `.app` root now receives both attributes, so all future
+        `hb-*` descendants inherit the matching library color scheme;
+  - [x] keep the library's public `--hb-*` token values unchanged after the
+        import; do not override block selectors, private `--_*` tokens, or use
+        `!important`;
+        changed: removed the temporary Selecta token mapping so the shell uses
+        the library's own light/dark visual contract until a design slice calls
+        for deliberate overrides;
+        changed: removed the legacy `--shell-*` aliases and changed the
+        remaining shell composition/status rules to read the matching public
+        library tokens directly;
+  - expected files/areas: new shell integration stylesheet, `src/main.js`,
+    `src/App.vue`, `src/style.css` only where old control styling becomes dead;
+  - verification: `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, and `npm run build` pass; browser verification
+    confirms the restored library default
+    `--hb-color-base-generic: rgb(0 0 0 / 5%)` in the light scheme.
+- [x] Replace the theme-editor form controls with the selected documented
+      blocks:
+  - convert each row to `hb-field`, using `hb-field_layout_inline` where the
+    current three-column arrangement applies;
+  - map metadata errors to `aria-invalid="true"` plus
+    `hb-field__message_view_error`, and contrast warnings to
+    `hb-field__message_view_warning`, preserving `aria-describedby`;
+  - put control classes on the documented native host/wrapper for text, select,
+    range, and color controls;
+  - preserve all event handling, numeric conversions, font `optgroup`s, locks,
+    and localization;
+  - expected files/areas: `src/components/ThemeControls.vue`,
+    `src/components/PresetSelector.vue`, shell CSS;
+  - changed: migrated preset, metadata, font, slider, palette, warning, and
+    Random-lock markup to Field plus the matching native adapter; retained the
+    prior ids, event handlers, values, option groups, `aria-invalid`, and
+    `aria-describedby` relationships;
+  - verification: browser DOM check exposes native textboxes, sliders, color
+    controls, checkboxes, and the dark-mode switch with their previous labels.
+- [x] Replace shell-header, preview-toolbar, and export action controls:
+  - apply `hb-select` to language, shell-appearance, and theme-mode controls;
+  - use `hb-switch` for dark-mode support and `hb-checkbox` for field locks
+    with visible/accessible labels following the block contract;
+  - assign button priority only from the existing action hierarchy; no new
+    labels, icons, grouping, or layout are part of this step;
+  - preserve native `disabled` attributes, hidden JSON file input flow, live
+    status text, and pane-resizer keyboard/pointer behaviour;
+  - expected files/areas: `src/App.vue`, `src/components/ThemeControls.vue`,
+    shell CSS;
+  - changed: migrated interface appearance, language, and theme-mode selectors
+    to Select; migrated export actions to Button with outlined secondary actions
+    and the existing ZIP download as the sole action button; preserved the
+    hidden JSON file input and all current handlers/disabled conditions;
+  - verification: browser DOM check exposes the same named controls and keeps
+    `Unlock all` disabled when no locks are active.
+- [x] Remove superseded local control chrome and document the adopted contract:
+  - delete only CSS declarations replaced by the imported blocks; retain
+    Selecta-owned composition, spacing, pane sizing, mobile layout, and status
+    placement;
+  - record the installed `hvab-blocks` source/version and selected block list
+    here, including any public token overrides;
+  - expected files/areas: `src/style.css`, `.project/PROGRESS.md`;
+  - changed: removed the superseded local control, lock, error, and button
+    chrome; retained Selecta-owned shell layout, status-message placement,
+    pane sizing, and mobile composition;
+  - verification: `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, and `npm run build` pass; browser inspection
+    confirms all adopted block hosts and the restored system scheme. No Aegea
+    preview or export behavior changed.
+
+## Active track: global action hierarchy and header layout (planned)
+
+Status: the first header-layout slice is implemented and awaiting manual browser
+review. This track changes only the generator shell, not the Aegea preview
+markup or exported-theme contract.
+
+### Agreed interaction model
+
+- Replace the separate shell header and preview toolbar with one global top bar.
+  Its desktop order is: localized Selecta name and short generator context,
+  `Theme` light/dark toggle, `Interface` light/dark toggle, `RU / EN`, `Share`
+  menu, and the primary `Download ZIP` action at the right edge.
+- `Theme` clearly means the edited palette and Aegea preview mode. Selecting
+  dark continues to enable Aegea dark-mode support as it does now; it is not a
+  cosmetic-only preview control.
+- `Interface` is a separate two-position segmented control with sun/moon
+  icons. Remove the visible and persisted `system` choice: on first visit,
+  resolve the OS preference to `light` or `dark`, then store only that concrete
+  value. Old sessions with a `system` value are incompatible and ignored.
+- Use a compact textual `RU / EN` language switcher, not flags or a select.
+- `Share` contains only outward actions: copy the theme link and download the
+  theme JSON. Keep JSON import out of this menu because it replaces the current
+  work state; place `Import theme` beside the preset selector at the top of the
+  controls pane.
+- Keep `Randomize` and `Reset` as two prominent actions in the first row above
+  all controls in the left pane. `Download ZIP` remains the only global primary
+  action; `Reset` stays visually quieter and requires a deliberate confirmation
+  if it discards unsaved work.
+- Remove the whole-theme `Unlock all` action. Each editable-card header gains a
+  group lock that locks or unlocks all fields in that card. Its mixed state must
+  be represented accessibly and visually; per-field locks remain available.
+- At narrow widths, keep the Selecta name and ZIP action on the first header
+  row; place the remaining toolbar controls on a second horizontally scrollable
+  row. Do not hide ZIP in an overflow menu.
+
+### Implementation plan
+
+- [x] Audit the current component split and the existing i18n keys
+      before choosing the exact component boundaries; expected areas:
+      `src/components/App/`, `src/components/ThemeControls/`, `src/ui/`, and
+      `src/i18n/`.
+  - changed: confirmed the completed component split keeps App responsible for
+    global actions and shell composition, while ThemeControls and AegeaPreview
+    remain separate; the header slice does not overlap the CSS refactor.
+- [x] Build the global responsive header and move existing global controls into
+      it without changing their theme/export semantics; expected areas:
+      `src/components/App/` and shell-only styles.
+  - changed: moved the Selecta identity, current theme-mode select, current
+    interface-appearance select, language select, and existing ZIP action into
+    one app-wide header; removed the duplicate preview toolbar; kept the
+    remaining actions and all handlers unchanged in the left pane.
+  - changed: narrow screens keep the brand and ZIP action in the first header
+    row, with the remaining existing controls in a horizontally scrollable
+    second row.
+  - verification: pending manual browser review of desktop and narrow layouts.
+- [x] Replace persisted `system` shell appearance with initial OS-preference
+      resolution to a concrete light/dark value; expected areas:
+      `src/components/App/` and `src/storage.js`.
+  - changed: interface appearance now starts as a concrete OS-derived light or
+    dark value, exposes only those two choices, and no longer follows later OS
+    changes.
+  - changed: `system` and missing shell-appearance values are invalid session
+    data, so their old sessions are ignored instead of migrated.
+  - verification: pending manual browser review of first visit and explicit
+    light/dark selection.
+- [x] Add distinct, labelled two-option controls for theme palette/preview mode
+      and interface appearance; retain the current dark-palette/export contract.
+      Expected areas: App component, UI controls, and shell styles.
+  - changed: both controls show explicit localized group labels, while their
+    light/dark native-radio options use sun/moon icons with accessible labels.
+  - changed: theme mode and interface appearance now use separate toggle groups;
+    selecting dark theme still enables the generated theme's dark-mode support,
+    while the interface toggle changes only shell appearance.
+  - verification: pending manual browser review of appearance, keyboard radio
+    navigation, and independent theme/interface state changes.
+- [x] Relocate Randomize, Reset, preset selection, and JSON import according to
+      the agreed hierarchy; make Reset confirmation behaviour explicit before
+      implementation. Expected areas: App, preset component, i18n, and shell
+      styles.
+  - changed: Randomize and Reset are now large first-row actions in the controls
+    pane; JSON import is in the preset card, with its file input and status copy
+    kept beside that action.
+  - changed: Reset uses a native localized confirmation before it replaces the
+    current theme, clears locks, and resets session state.
+  - verification: pending manual browser review of action placement, reset
+    confirmation, and successful JSON import from the preset card.
+- [x] Replace the global unlock action with card-level group locks, including an
+      accessible mixed state; expected areas: ThemeControls, lock controls,
+      i18n, and shell UI.
+  - changed: removed the whole-theme unlock action and added header locks for
+    metadata, fonts, typography, layout, and the currently edited palette.
+  - changed: a partially locked card displays an indeterminate state; activating
+    it locks all fields in that card, while activating a fully locked card
+    unlocks all of its fields. The dark-mode capability switch remains outside
+    locks because Random does not change it.
+  - verification: pending manual browser review of per-card scope, mixed state,
+    and Random respecting the resulting locks.
+- [x] Consolidate copy-link and JSON-export actions into the `Share` menu while
+      retaining status feedback and the existing hidden file-input flow. Expected
+      areas: App, i18n, and shell styles.
+  - changed: moved Copy link and Export JSON into a native Share menu in the
+    global header; kept JSON import beside presets, where it replaces the
+    current work state rather than sharing it.
+  - changed: copy-link success/error feedback appears inside the open menu;
+    ZIP remains the sole primary action, with metadata validation feedback next
+    to it.
+  - verification: pending manual browser review of the menu, copy feedback,
+    JSON export, and narrow-layout placement.
+
+## Active track: `hvab-blocks` 0.2.0 radio-group migration (planned)
+
+Status: the global action-hierarchy work is ready for browser review. The
+radio-group migration is implemented and must not change preview, export, or
+locale-storage contracts.
+
+### Implementation plan
+
+- [x] Upgrade `hvab-blocks` from the pinned `0.1.0` tag to `0.2.0`, refresh the
+      lockfile, and inspect the release's documented radio-group CSS/markup
+      contract. Changed: installed the published `v0.2.0` tag (commit
+      `b9c78a6bdccbc6d511032381b04c9b5143cc3719`) and selectively imported
+      `radio-group.css`; verified package and lockfile resolve to `0.2.0`, and
+      the upstream block uses native radio inputs in `hb-radio-group` /
+      `hb-radio-group__option` / `hb-radio-group__content`. Manual check: the
+      existing shell still loads unchanged after this dependency-only slice.
+- [x] Add one local Vue adapter for the upstream radio-group block and replace
+      the light/dark Theme and Interface `ModeToggle` instances without changing
+      their current state or side effects. Changed: added `RadioGroup`, which
+      renders the upstream native radio markup and accepts option labels/icons;
+      both header mode controls now use it with their existing state handlers;
+      deletion of `ModeToggle` was deferred to the final migration step. Manual
+      check: each group keeps independent state and native keyboard radio
+      navigation.
+- [x] Replace the language select with the same radio-group adapter using the
+      compact `RU` and `EN` labels. Changed: locale persistence and document
+      metadata keep their existing handlers; only the native select host was
+      replaced. Manual check: changing language updates the UI and survives
+      reload.
+- [x] Remove the superseded local `ModeToggle` and record the final
+      `hvab-blocks` version/selected block in this file. Changed: removed the
+      unused local component; the shell now consumes `radio-group.css` from
+      `hvab-blocks` `v0.2.0` alongside the existing selected blocks.
+
+## Planned track: headless overlay behavior for Share and Reset
+
+Status: Share and Reset now use the selected headless primitives. This track
+must not change theme state, sharing/export behavior, or the generator-shell
+visual language.
+
+### Chosen composition
+
+- Add `reka-ui` as the single Vue headless dependency after checking its current
+  release and lockfile result. It supplies the required accessible primitives in
+  one package: `DropdownMenu` for Share and `Dialog` for Reset
+  confirmation. Do not add Headless UI or Floating UI alongside it.
+- Keep all visible styling in `hvab-blocks`: import `popover.css` for the Share
+  panel and `modal.css` for Reset. `reka-ui` owns only portal,
+  anchoring, collisions, dismissal, keyboard handling, focus return/trap, and
+  inert background behavior.
+- Use a dropdown menu, not a generic popover, for Share because its contents
+  are command items. Use a dialog for Reset: it retains the explicit confirm
+  action but also supports dismissal by clicking outside the panel.
+- Keep portal overlays in one shell layer contract: the top bar stays in normal
+  document stacking, the Reka floating-content wrapper uses the floating layer,
+  and the modal veil uses the higher modal layer. Do not set a local stacking
+  value only on the menu surface.
+- Preserve the existing local `Button` component, localized copy, and action
+  handlers. The reset action must be split into opening the confirmation and a
+  separate confirmed reset handler; `window.confirm` must disappear.
+
+### Implementation plan
+
+- [x] Dependency and contract slice: install one reviewed `reka-ui` release,
+      refresh the lockfile, and selectively import the needed `hvab-blocks`
+      overlay styles. Changed: installed `reka-ui` `2.10.1` and imported
+      `popover.css`, `modal.css`, and `dialog.css`; verified its menu and
+      dialog triggers support `as-child`, and both content hosts use Portal.
+      Manual check: existing controls and header remain unchanged.
+- [x] Add compact local Vue adapters over the specific Reka primitives rather
+      than exposing library markup throughout the app: one for dropdown action
+      menus and one for dialogs. Changed: added `ActionMenu` with local
+      action data and a trigger slot, plus controlled `ConfirmDialog` with
+      trigger, Cancel, and confirm-action slots; both use `as-child` with the
+      existing root-button adapter and apply only `hb-*` visual classes. Manual
+      check: mounted examples receive `data-state` and can be themed only by
+      `hb-*` classes.
+  - changed: the Share panel uses a namespaced unscoped selector because its
+    DOM is teleported outside the component; keep ordinary local component DOM
+    styles scoped, and reserve unscoped selectors for portal hosts only.
+- [x] Migrate Share alone: replace native `details` with the dropdown adapter,
+      portal the content, apply `hb-popover`, and keep Copy link / Export JSON
+      actions and their status feedback. Changed: selected actions close the
+      menu through Reka while success/error feedback remains next to the Share
+      trigger. Manual check: Enter/Space/Arrow keys, Escape, click outside,
+      focus return, collision near viewport edges, and closing after either
+      action.
+- [x] Migrate Reset alone: replace `window.confirm` with a dialog styled by
+      `hb-modal`; add a localized question, Cancel, and destructive Confirm
+      labels. Changed: Reset now opens controlled `ConfirmDialog`; Cancel,
+      Escape, and clicks outside the panel leave current work untouched, while
+      confirm calls the unchanged reset handler after the dialog closes. Manual
+      check: focus stays trapped while open and returns to Reset.
+- [x] Correct the overlay stacking and minimal-dialog composition after browser
+      review. Changed: removed the top bar stacking context; the actual Reka
+      floating-content wrapper now uses the shared floating layer, while the
+      reset veil uses the higher modal layer. Reset retains a single question
+      and actions without dialog header or dividers, but restores the standard
+      480px panel width and 24px/32px spacing. The question and all action-track
+      status messages use explicit `hb-text` typography roles.
+  - changed: interface colour scheme is applied to the document root, so Reka
+    portal content inherits the same dark/light `hvab-blocks` tokens as the
+    generator shell.
+- [x] Restore `hb-dialog` composition for Reset. Changed: the panel now uses
+      the library's `hb-dialog`, `__body`, and `__footer` elements without a
+      header or dividers. Reka `Dialog` replaces `AlertDialog` so clicking the
+      overlay closes the modal without resetting the theme.
+- [ ] Review desktop, narrow layout, light/dark shell appearance, and reduced
+      viewport height; then remove only the superseded native-menu/confirmation
+      CSS and record the installed `reka-ui` version and final block list here.
+  - code-review changed: Share success uses a polite live region and its error
+    uses an alert role.
+
+## Next steps
+
+- [ ] Browser-review the three header radio groups: independent Theme and
+      Interface state, `RU` / `EN` switching and persistence, keyboard radio
+      navigation, and the narrow top-bar layout.
+- [ ] Browser-review Share and Reset overlays on desktop and narrow screens;
+      then remove only superseded native-menu and confirmation remnants.
+
+## Planned track: feedback surfaces and action status
+
+Status: planned after visual review found that action outcomes are rendered as
+detached text nodes and can change the header layout. This track affects only
+generator-shell feedback presentation, not theme state, import/export data, or
+the Aegea preview.
+
+### Audit result
+
+- Metadata validation and contrast warnings already use the local `Field`
+  adapter with `hb-field__message` and error/warning views; retain that pattern.
+- JSON import success/error, Share success/error, and the disabled ZIP reason
+  are standalone `App` paragraphs styled by local color classes. They are the
+  remaining feedback hardcodes.
+- `hvab-blocks` provides the right visual primitives: `field` for feedback
+  belonging to a control, `tooltip` for a short anchored outcome, and `alert`
+  only for a persistent standalone notification. Reka UI already supplies the
+  required tooltip portal, position, and dismissal behavior.
+
+### Implementation plan
+
+- [x] Add one local controlled tooltip adapter over Reka `Tooltip`, styled by
+      `hb-tooltip` and an optional arrow; import `tooltip.css`. Its portal CSS
+      must follow the existing overlay-layer contract, and it must support a
+      short programmatic open interval without changing layout.
+  - expected areas: `src/ui/`, `src/ui/hvab.css`, and shell overlay styles.
+  - changed: added `FeedbackTooltip` with an explicit controlled `open` value,
+    immediate trigger response, bottom placement by default, its own Reka
+    provider, and the tooltip block's CSS arrow.
+  - manual check: collision at header edges, keyboard focus, Escape, and
+    automatic close without a stale timer reopening it.
+- [x] Move JSON import feedback into `PresetSelector`: pass the translated
+      error from App and render it as the Import button's `Field` message with
+      the `error` view. Do not keep a detached App paragraph. Successful import
+      needs no extra banner because the selected values visibly update.
+  - expected areas: `src/components/App/` and `src/components/PresetSelector/`.
+  - changed: invalid JSON now appears as the Import JSON field message and is
+    linked to that button through `aria-describedby`; the unused import-success
+    copy and local import-status styles are removed.
+  - manual check: invalid JSON is adjacent to Import JSON, has field error
+    styling, and a successful import clears it.
+- [x] Replace Share's layout-affecting status paragraphs with a controlled
+      feedback tooltip anchored to the Share button. Copy success opens it
+      briefly; copy/link errors use the same anchored surface with the tooltip
+      block's public color tokens and remain announced through a nonvisual
+      polite/error status region.
+  - expected areas: `src/components/App/`, the new tooltip adapter, and i18n
+    status handling.
+  - changed: `FeedbackTooltip` is a sibling overlay with an explicit reference
+    to the Share button, not a child of `ActionMenu`. Nesting its `TooltipRoot`
+    had shadowed the menu's popper context and placed an opened menu off-screen.
+    Opening Share clears active feedback before the direct menu trigger opens.
+  - manual check: header controls never move; Copy link shows feedback, errors
+    are announced, and the menu still closes and returns focus correctly.
+- [ ] Remove the redundant disabled-ZIP paragraph after verifying metadata
+      fields provide the actionable errors. If an explanation is still needed,
+      add it as an anchored disabled-control tooltip rather than a new header
+      row; do not use `hb-alert` for this short control-specific reason.
+  - expected areas: `src/components/App/` and shell status styles.
+  - manual check: invalid metadata blocks ZIP without moving the header and
+    leaves the relevant metadata field errors visible.
+- [ ] Delete the superseded `share-*`, `import-*`, and `download-error` local
+      feedback CSS only after all three feedback paths are moved. Reserve
+      `hb-alert` for a future persistent global notification, not transient
+      action confirmation.
 
 ## Ideas and backlog
 
