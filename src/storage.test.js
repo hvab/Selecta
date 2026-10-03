@@ -158,7 +158,7 @@ test('ignores sessions with unsupported theme parents', () => {
     saveSession({
       themeState,
       fieldLocks: createEmptyFieldLocks(),
-      uiState: { sidebarWidth: 416, folderNameEdited: false, shellAppearance: 'system' },
+      uiState: { sidebarWidth: 416, folderNameEdited: false, shellAppearance: 'light' },
     });
 
     assert.equal(loadSession(), null);
@@ -176,11 +176,26 @@ test('ignores sessions with overflowing numeric theme values', () => {
         version: SESSION_STORAGE_VERSION,
         themeState,
         fieldLocks: createEmptyFieldLocks(),
-        uiState: { sidebarWidth: 416, folderNameEdited: false, shellAppearance: 'system' },
+        uiState: { sidebarWidth: 416, folderNameEdited: false, shellAppearance: 'light' },
       }).replace('"overflow-marker"', value);
       localStorage.setItem(SESSION_STORAGE_KEY, json);
 
       assert.equal(loadSession(), null);
     }
+  }
+});
+
+test('restores finite theme values with current light and dark shell state', () => {
+  setLocalStorage(createMemoryStorage());
+
+  for (const shellAppearance of ['light', 'dark']) {
+    const themeState = structuredClone(initialThemeState);
+    themeState.typography.titleScale = 3;
+    themeState.typography.noteTextLineHeight = 2.2;
+    const uiState = { sidebarWidth: 416, folderNameEdited: false, shellAppearance };
+    const fieldLocks = createEmptyFieldLocks();
+    saveSession({ themeState, fieldLocks, uiState });
+
+    assert.deepEqual(loadSession(), { themeState, fieldLocks, uiState });
   }
 });

@@ -59,7 +59,7 @@ the current Aegea checkout before changing preview or export behavior.
 - Code font is still controlled by Aegea `plain`; Selecta edits interface and
   note text font slots.
 
-## Active validation slice
+## Validation slice on the previous published base
 
 Scope: keep imported and restored themes based on `plain`, and reject non-finite
 numeric model values. The published shell still supports `system`; preserve its
@@ -103,6 +103,33 @@ CSS grammar, payload limits, migrations, or UI changes.
 The formatting failure above describes the first R01 check before R02.
 Only the prerequisite prompt formatting and this progress update extend R01;
 its runtime code and validation scope remain unchanged.
+
+## Active R01 synchronization with the new UI base
+
+Base: `origin/main` at `8662ce5`. Its documented UI contract requires a concrete
+`light`/`dark` shell appearance and ignores old `system`/missing values. Preserve
+that policy; theme JSON/URL still excludes shell state and keeps `basedOn=plain`.
+The preceding validation notes describe verification before the UI merge.
+
+- [x] Merge current main normally, retaining the new UI and both independent
+      progress sections. Inspect `storage.js`, App restore/import handlers,
+      the theme model, and SPEC; theme-field contracts are unchanged.
+- [x] Adapt only R01 session regression fixtures to valid light/dark UI state;
+      prove invalid parent/overflow rejection and valid restored finite values.
+      Areas: `src/storage.test.js`. Verification: all 23 selected R01 tests pass.
+      The seven rejection regressions fail again against the unmodified new base;
+      positive restore checks accept both current shell modes and finite values
+      outside UI slider ranges. No session migration or runtime policy changed.
+- [x] Run the five quality commands and verify browser URL rejection in the
+      new UI: build passes; 108/109 tests pass, with only the base's stale `system`
+      fixture failing; JS/style lint and full formatting expose the known base
+      failures. Chrome still rejects unsupported-parent and overflow URLs,
+      preserves the theme, and provides EN/RU error feedback in the new shell.
+      A new local clean install is blocked by npm's Git-package restriction;
+      local checks use a copy of the already installed project dependencies.
+- [ ] Incorporate the verified new quality prerequisite, keeping both progress
+      sections and all main UI changes. Push normally and verify full CI on the
+      exact final head; the previous green run is historical evidence only.
 
 ## Completed tracks
 
