@@ -372,3 +372,24 @@ path in a real local Aegea instance.
 - Do not store language in theme JSON, share URLs, or ZIP output.
 - Do not stage, commit, switch branches, or push unless the user explicitly asks.
 - Keep diffs scoped; avoid reformatting unrelated files.
+
+## Technical iteration: remote quality gate (R02)
+
+Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
+The remote implementation still supports shell `system`; its valid-session
+fixture is correct. Tests (99/99), JavaScript/style lint, and build pass. Only
+Prettier fails on the two already tracked audit prompt documents.
+
+- [x] Format only `audit/1-astra-xhigh-prompt.md` and
+      `audit/2-sol-6-1-xhigh-verify-prompt.md`, preserving their content.
+      Verify with `npm run format:check` and a scoped diff.
+- [x] Rerun `npm test`, `npm run lint`, `npm run lint:styles`,
+      `npm run format:check`, and `npm run build`: all pass locally.
+      Keep the independent plain-font fix and local UI work out of this branch.
+
+No lint rules, thresholds, session behavior, or audit reports are changed.
+The prompt changes add exactly four blank lines; ignoring blank lines produces
+no diff. No new test is needed for Markdown formatting.
+
+Local verification uses Node 24/macOS. Next small step: create a draft PR and
+verify the existing Node 22/Linux CI without running deployment.
