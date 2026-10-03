@@ -311,6 +311,41 @@ controls pane remains comfortable while editing either palette.
 Use `.project/IDEAS.md` for raw feature ideas and parked future work. Move only
 the selected next slice from `IDEAS.md` into `Active track` / `Next steps`.
 
+## Technical iteration: Aegea 11.5 plain font parity (R04)
+
+Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
+Source oracle: clean Aegea `11.5` / `v4199` checkout at the exact documented
+commit `e1d058356e5426bb1878785c6f4ab4e68b6c4995`. Its plain source and
+compiled CSS use a system stack; Selecta currently defaults to InterVariable.
+
+- [x] Replace only `src/preview/style.css`'s default main font family with
+      the Aegea 11.5 stack; keep note/small inheritance and explicit sources.
+      Added baseline provenance in `PREVIEW-BASELINE.md`. Named families
+      use optional CSS quoting accepted by existing stylelint, preserving the
+      canonical family names and their order. No lint rules change.
+- [x] Add focused regression checks for the actual preview CSS default, plain
+      ZIP inheritance in light/dark, and unchanged system/Google overrides.
+      Verified: 102/102 tests pass; the new parity regression fails on the
+      unpatched baseline CSS. Chrome EN/RU and light/dark plain inheritance
+      pass; explicit Sans-serif/Georgia overrides pass; PT Sans in both slots
+      produces one Google CSS link, removed on return to plain.
+- [x] Run JS/style lint, build, formatting, and scoped diff. Tests, JS/style
+      lint and build pass locally; scoped formatting passes. Full formatting
+      still has only the independently reproduced baseline failure fixed by
+      R02 (draft PR #1). Keep its prerequisite patch in a separate commit
+      so the font implementation remains independently reviewable.
+
+Consumer limit: local PHP cannot start because a required libzip dylib is
+missing. Source/compiled-CSS and browser checks do not replace a live Aegea
+install or paired width/linebreak verification. Do not change engine target.
+
+Combined R02 + R04 verification in an isolated copy: all five commands pass,
+including full formatting and 102/102 tests. R02 CI Node 22/Linux also passes.
+
+Next small step: commit the isolated font fix, adopt the tested R02 patch as
+a separate prerequisite commit, create a draft PR, and inspect Node 22/Linux
+CI. Merge R02 first. Live Aegea visual verification remains open.
+
 ## Verification
 
 Common checks:
