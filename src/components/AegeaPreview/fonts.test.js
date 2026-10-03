@@ -2,16 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { strFromU8, unzipSync } from 'fflate';
-import { generateThemeCss, getThemeCssVariables } from '../theme/css.js';
-import { SERIF_FONT_STACK, UI_FONT_STACK } from '../theme/fonts.js';
-import { initialThemeState } from '../theme/model.js';
-import { generateThemeZip } from '../theme/zip.js';
+import { generateThemeCss, getThemeCssVariables } from '../../theme/css.js';
+import { SERIF_FONT_STACK, UI_FONT_STACK } from '../../theme/fonts.js';
+import { initialThemeState } from '../../theme/model.js';
+import { generateThemeZip } from '../../theme/zip.js';
 
 // Aegea 11.5/v4199, e1d058356e5426bb1878785c6f4ab4e68b6c4995, plain variables.scss
 const plainMainFontFamily =
   'system-ui, -apple-system, BlinkMacSystemFont, "SF UI Text", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif';
 
-const previewCss = readFileSync(new URL('./style.css', import.meta.url), 'utf8');
+const previewCss = readFileSync(new URL('./AegeaPreview.css', import.meta.url), 'utf8');
 const previewDefaults = previewCss.match(/\.aegea-preview\s*\{([^}]+)\}/)[1];
 
 function getPreviewDefault(property) {
