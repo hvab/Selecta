@@ -766,6 +766,104 @@ the Aegea preview.
       `hb-alert` for a future persistent global notification, not transient
       action confirmation.
 
+## Technical fix: panel sizing (R03)
+
+Scope: reactive sizing of the generator shell only, preserving the current
+320 px controls minimum, 672 px maximum, 360 px preview budget, and 40rem
+stacked-layout breakpoint. Preview markup and theme/export contracts do not change.
+The selected sidebar width stays separate from the constrained rendered width;
+resize must not overwrite the saved preference. Below the combined minima, keep
+the existing controls-minimum fallback rather than introduce a new layout policy.
+
+- [x] Verify current remote base and reproduce stale sizing before edits.
+  - Base: `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`, isolated branch.
+  - Chrome: 1280 to 768 after ArrowRight x16 gives controls 672 px,
+    divider 8 px, preview 88 px, ARIA max 672.
+- [x] Extract width constraints and reactive container/divider measurement.
+  - Areas: new `src/ui/` modules and narrow `src/App.vue` integration.
+  - Observe container and divider, measure before restore, disconnect on unmount.
+  - Use effective width for rendering/ARIA and keyboard stepping; preserve
+    preferred width in existing session UI state. Keep persistence slice separate.
+  - Checks: focused Node tests for resize, divider, min/max clamp, startup,
+    resize without window resize, and observer cleanup.
+- [x] Verify browser transitions and project checks; prepare draft fix PR.
+  - Chrome: 1280/768/375 transitions, restore, keyboard, pointer if available,
+    language changes; check actual DOM widths and ARIA together.
+  - Commands: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, `npm run build`.
+  - Record pre-existing failures and browser/environment limits explicitly.
+
+Original iteration result on the pre-UI base (historical):
+
+- Added pure constraints plus a Vue composable that observes the actual container
+  and divider border boxes, measures at mount, and disconnects at unmount.
+  Rendering and separator ARIA use the effective width; pointer and keyboard
+  share its clamp. Session state keeps the preferred width, so shrinking and
+  expanding the window restores the preference without a resize-only save.
+- Added six regression tests covering container/divider changes, fractional
+  budgets, minimum fallback, default/restored widths, preferred/effective width
+  separation, keyboard stepping from the effective width, and observer/fallback
+  listener cleanup.
+- Verified: `npm test` 105/105, `npm run lint`, `npm run lint:styles`,
+  `npm run build`, changed-file Prettier check, and `git diff --check` pass.
+  `npm run format:check` fails only on two unchanged audit prompt files;
+  the exact same failure was reproduced on a clean archive of the base commit.
+- Chrome: before the fix, 1280 -> 768 retained 672/8/88 px and ARIA max 672.
+  After the fix, 768 gives 400/8/360 px after resize and narrow reload; expanding
+  restores preferred 672. Keyboard and real pointer drag clamp to 320..400.
+  375 -> 768, EN/RU, and clean production-build startup pass. At 375, stacked
+  layout has document width 375 and visible ZIP control. At 688, pane widths
+  are 320/8/360; at 641, the existing minimum fallback gives 320/8/313.
+- Limits: Safari/Firefox, zoom and touch were not available/tested. Checks ran
+  on macOS with Node 24.20.0 and the existing installed dependencies, not a clean
+  Node 22/Linux install. Theme output and Aegea markup were not modified.
+- Next small step: review the draft fix PR and coordinate its `src/App.vue`
+  import/restore and this progress section with the separate session-save fix.
+  Merge the session-save slice first, then resolve this narrow sizing integration
+  against it; rerun the combined browser/session checks before merging.
+
+### Revalidation against the current UI
+
+New base: `8662ce5a7a94fff4df4f95bab34a0f48eea9b561`. The separate
+UI merge moved App and introduced `.app__workspace`; the original resize bug
+is still reproduced in Chrome (1280 -> 768 yields 672/8/88, ARIA max 672).
+
+- [x] Read the new base and PR conflicts; reproduce before adapting code.
+- [x] Preserve the new UI and move the narrow sizing integration into
+      `src/components/App/App.vue`, measuring the actual `.app__workspace` and
+      keeping the pointer origin aligned with it. Keep all persistence/reset
+      lifecycle changes owned by the separate session-save fix.
+  - Checks: scoped diff vs new main, six focused panel regressions, build/lint.
+- [x] Repeat Chrome resize/restore/keyboard/pointer/mobile/EN/RU against the new
+      UI. Push the own branch without force and inspect exact-HEAD CI next.
+  - Check both feasible and insufficient budgets without changing the 40rem
+    breakpoint or minimum fallback. Coordinate inherited quality failures with
+    the separate quality worker; do not repeat the rejected R02 cherry-pick.
+
+Revalidation result:
+
+- The new App keeps its topbar, controls, theme actions and persistence lifecycle.
+  Only sizing imports/state, effective rendering/ARIA, pointer origin, keyboard
+  stepping, width restore and workspace/divider refs are adapted.
+- Chrome production build: clean 768 px startup gives 400/8/360, resize from
+  preferred 672 gives 400/8/360, and narrow reload after the existing debounce
+  retains preferred 672 on expansion. An immediate pre-debounce reload remains
+  the separate session-save issue; this iteration does not change that policy.
+  Keyboard starts at the effective width (400 -> 384), clamps to 320..400;
+  real pointer drag uses the same bounds. EN/RU and 375 -> 768 pass; at 375 the
+  document width is 375 and ZIP is visible/enabled within the viewport. At 688,
+  widths are 320/8/360. Below the combined minima, preserve the current controls
+  minimum and use the remaining preview space; do not introduce a new breakpoint.
+- Focused regressions 6/6 and build pass. All tests: 104/105; the stale `system`
+  session fixture also fails on the clean new base (98/99). Changed-file ESLint,
+  Prettier and scoped diff pass. Full JS lint fails only on PresetSelector:43;
+  stylelint has seven existing App.css errors; formatting has five existing
+  audit/prompt/PresetSelector failures. Each failure was reproduced unchanged
+  on a clean archive of the new base. The separate quality owner handles them.
+- Limits remain Safari/Firefox, zoom/touch, and combined R05 lifecycle validation.
+  Next small step: apply only an explicitly authorized new quality prerequisite,
+  rerun full checks and exact-HEAD CI, then review the combined R03/R05 integration.
+
 ## Ideas and backlog
 
 Use `.project/IDEAS.md` for raw feature ideas and parked future work. Move only

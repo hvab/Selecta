@@ -29,14 +29,21 @@ import { generateThemeZip, getThemeZipFileName } from '../../theme/zip.js';
 import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from '../../theme/fonts.js';
 import { getSelectedGoogleFontsCss2Url } from '../../theme/googleFonts.js';
 import { googleFontsCatalog } from '../../theme/googleFontsCatalog.js';
+import { constrainControlsPaneWidth, controlsPaneMinWidth } from '../../ui/panelLayout.js';
+import { usePanelLayout } from '../../ui/usePanelLayout.js';
 
 const { locale, t } = useI18n();
 const themeState = reactive(structuredClone(initialThemeState));
 const fieldLocks = reactive(createEmptyFieldLocks());
 const folderNameEdited = ref(false);
-const appElement = ref(null);
-const defaultControlsPaneWidth = 416;
-const controlsPaneWidth = ref(defaultControlsPaneWidth);
+const workspaceElement = ref(null);
+const {
+  controlsPaneWidth,
+  effectiveControlsPaneWidth,
+  effectiveControlsPaneMaxWidth,
+  paneResizerElement,
+  getConstrainedControlsPaneWidth,
+} = usePanelLayout(workspaceElement);
 const themeMode = ref('light');
 const shellAppearance = ref(getPreferredShellAppearance());
 const isResizingControlsPane = ref(false);
@@ -103,15 +110,12 @@ const localeOptions = computed(() => [
   },
 ]);
 const appStyle = computed(() => ({
-  '--controls-pane-width': `${controlsPaneWidth.value}px`,
+  '--controls-pane-width': `${effectiveControlsPaneWidth.value}px`,
 }));
 const shareButtonElement = computed(() => shareMenuElement.value?.querySelector('button') ?? null);
 const effectiveShellAppearance = computed(() => shellAppearance.value);
 const googleFontsPreviewUrl = computed(() => getSelectedGoogleFontsCss2Url(googleFontsCatalog, themeState.typography));
 
-const controlsPaneMinWidth = 320;
-const controlsPaneMaxWidth = 672;
-const previewPaneMinWidth = 360;
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
 let shareFeedbackTimeout = null;
@@ -125,11 +129,6 @@ const fontFamilyKeyBySourceKey = {
   mainFontSource: 'mainFontFamily',
   noteFontSource: 'noteFontFamily',
 };
-const effectiveControlsPaneMaxWidth = computed(() => {
-  const appWidth = appElement.value?.getBoundingClientRect().width ?? window.innerWidth;
-
-  return Math.max(controlsPaneMinWidth, Math.min(controlsPaneMaxWidth, appWidth - previewPaneMinWidth));
-});
 
 function translateMessageMap(messagesByField, namespace) {
   return Object.fromEntries(
@@ -144,10 +143,6 @@ function translateWarningMap(warningsByField) {
       messages.map((messageKey) => t(`contrast.${messageKey}`)),
     ])
   );
-}
-
-function getConstrainedControlsPaneWidth(value) {
-  return Math.min(Math.max(value, controlsPaneMinWidth), effectiveControlsPaneMaxWidth.value);
 }
 
 function hasSameSectionValues(section, referenceSection) {
@@ -394,9 +389,9 @@ function randomizeTheme() {
 }
 
 function resizeControlsPane(event) {
-  const appLeft = appElement.value?.getBoundingClientRect().left ?? 0;
+  const workspaceLeft = workspaceElement.value?.getBoundingClientRect().left ?? 0;
 
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(event.clientX - appLeft);
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(event.clientX - workspaceLeft);
 }
 
 function startControlsPaneResize(event) {
@@ -421,7 +416,7 @@ function handleControlsPaneResize(event) {
 }
 
 function resizeControlsPaneByStep(step) {
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(controlsPaneWidth.value + step);
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(effectiveControlsPaneWidth.value + step);
 }
 
 function handleControlsPaneResizeKeydown(event) {
@@ -560,7 +555,7 @@ onMounted(() => {
   if (session) {
     applyThemeState(session.themeState);
     applyFieldLocks(session.fieldLocks);
-    controlsPaneWidth.value = getConstrainedControlsPaneWidth(session.uiState.sidebarWidth);
+    controlsPaneWidth.value = constrainControlsPaneWidth(session.uiState.sidebarWidth);
     folderNameEdited.value = session.uiState.folderNameEdited;
     themeMode.value =
       getStoredThemeMode(session.uiState) === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
@@ -603,7 +598,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
     <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
   </Teleport>
 
-  <main ref="appElement" class="app" :style="appStyle">
+  <main class="app" :style="appStyle">
     <header class="app__topbar">
       <div class="app__brand">
         <h1 class="app__header-title hb-text hb-text_typography_header-2">{{ t('app.name') }}</h1>
@@ -676,7 +671,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
       </div>
     </header>
 
-    <div class="app__workspace">
+    <div ref="workspaceElement" class="app__workspace">
       <aside class="app__controls-pane">
         <div class="app__controls-scroll">
           <div class="app__theme-actions">
@@ -735,6 +730,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
       </aside>
 
       <div
+        ref="paneResizerElement"
         class="app__pane-resizer"
         role="separator"
         tabindex="0"
@@ -742,7 +738,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
         aria-orientation="vertical"
         :aria-valuemin="controlsPaneMinWidth"
         :aria-valuemax="effectiveControlsPaneMaxWidth"
-        :aria-valuenow="Math.round(controlsPaneWidth)"
+        :aria-valuenow="effectiveControlsPaneWidth"
         @pointerdown="startControlsPaneResize"
         @pointermove="handleControlsPaneResize"
         @pointerup="stopControlsPaneResize"
