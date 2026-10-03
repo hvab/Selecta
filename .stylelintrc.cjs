@@ -12,7 +12,7 @@ module.exports = {
       customSyntax: 'postcss-html',
     },
     {
-      files: ['src/preview/**/*.css'],
+      files: ['src/components/AegeaPreview/**/*.css'],
       rules: {
         'custom-property-pattern': null,
         'no-descending-specificity': null,
