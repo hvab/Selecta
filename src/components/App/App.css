@@ -8,15 +8,6 @@
   background: var(--hb-color-base-background);
 }
 
-:global(:root) {
-  --app-layer-floating: 10;
-  --app-layer-modal: 20;
-}
-
-:global([data-reka-popper-content-wrapper]) {
-  z-index: var(--app-layer-floating) !important;
-}
-
 .app__topbar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto auto;
@@ -48,10 +39,6 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-}
-
-.app__download .download-error {
-  flex-basis: auto;
 }
 
 .app__download {
@@ -127,10 +114,11 @@
 .download-error {
   flex-basis: 100%;
   margin-top: 0.5rem;
+  color: var(--hb-color-text-danger);
 }
 
-.download-error {
-  color: var(--hb-color-text-danger);
+.app__download .download-error {
+  flex-basis: auto;
 }
 
 .app__visually-hidden {
@@ -140,9 +128,9 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+  clip-path: inset(50%);
 }
 
 .app__import-json-input {
