@@ -679,6 +679,9 @@ visual language.
       and actions without dialog header or dividers, but restores the standard
       480px panel width and 24px/32px spacing. The question and all action-track
       status messages use explicit `hb-text` typography roles.
+  - changed: interface colour scheme is applied to the document root, so Reka
+    portal content inherits the same dark/light `hvab-blocks` tokens as the
+    generator shell.
 - [x] Restore `hb-dialog` composition for Reset. Changed: the panel now uses
       the library's `hb-dialog`, `__body`, and `__footer` elements without a
       header or dividers. Reka `Dialog` replaces `AlertDialog` so clicking the

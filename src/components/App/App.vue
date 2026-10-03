@@ -226,6 +226,10 @@ function updateDocumentMetadata() {
   setDocumentMetaContent('keywords', t('app.metaKeywords'));
 }
 
+function setDocumentColorScheme(appearance) {
+  globalThis.document?.documentElement.setAttribute('data-color-scheme', appearance);
+}
+
 function applySharedThemeState(nextThemeState) {
   applyThemeState(nextThemeState);
   clearAllFieldLocks(fieldLocks);
@@ -566,6 +570,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearTimeout(shareFeedbackTimeout);
+  globalThis.document?.documentElement.removeAttribute('data-color-scheme');
 });
 
 watch(
@@ -590,6 +595,7 @@ watch(
 );
 
 watch(locale, updateDocumentMetadata, { immediate: true });
+watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
 </script>
 
 <template>
@@ -597,7 +603,7 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
   </Teleport>
 
-  <main ref="appElement" class="app" :data-color-scheme="effectiveShellAppearance" :style="appStyle">
+  <main ref="appElement" class="app" :style="appStyle">
     <header class="app__topbar">
       <div class="app__brand">
         <h1 class="app__header-title hb-text hb-text_typography_header-2">{{ t('app.name') }}</h1>
