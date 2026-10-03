@@ -1,51 +1,57 @@
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import ThemeControls from './components/ThemeControls.vue';
-import PresetSelector from './components/PresetSelector.vue';
-import AegeaPreview from './preview/AegeaPreview.vue';
-import { saveStoredLocale, setDocumentLocale, supportedLocales } from './i18n/index.js';
-import { clearSession, loadSession, saveSession } from './storage.js';
-import { normalizeFolderName, suggestFolderName } from './theme/metadata.js';
-import { initialThemeState } from './theme/model.js';
-import { themePresets } from './theme/presets.js';
+import ThemeControls from '../ThemeControls/ThemeControls.vue';
+import PresetSelector from '../PresetSelector/PresetSelector.vue';
+import AegeaPreview from '../AegeaPreview/AegeaPreview.vue';
+import Button from '../../ui/Button/Button.vue';
+import ActionMenu from '../../ui/ActionMenu/ActionMenu.vue';
+import ConfirmDialog from '../../ui/ConfirmDialog/ConfirmDialog.vue';
+import FeedbackTooltip from '../../ui/FeedbackTooltip/FeedbackTooltip.vue';
+import RadioGroup from '../../ui/RadioGroup/RadioGroup.vue';
+import { saveStoredLocale, setDocumentLocale } from '../../i18n/index.js';
+import { clearSession, loadSession, saveSession } from '../../storage.js';
+import { normalizeFolderName, suggestFolderName } from '../../theme/metadata.js';
+import { initialThemeState } from '../../theme/model.js';
+import { themePresets } from '../../theme/presets.js';
 import {
   decodeThemeFromUrlParam,
   deserializeThemeFile,
   encodeThemeToUrlParam,
   getThemeJsonFileName,
   serializeTheme,
-} from './theme/serialize.js';
-import { clearAllFieldLocks, createEmptyFieldLocks, hasAnyFieldLocked } from './theme/fieldLocks.js';
-import { getRandomThemeState } from './theme/random.js';
-import { getContrastWarningsByField } from './theme/contrast.js';
-import { validateMetadata } from './theme/validation.js';
-import { generateThemeZip, getThemeZipFileName } from './theme/zip.js';
-import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from './theme/fonts.js';
-import { getSelectedGoogleFontsCss2Url } from './theme/googleFonts.js';
-import { googleFontsCatalog } from './theme/googleFontsCatalog.js';
-import { constrainControlsPaneWidth, controlsPaneMinWidth } from './ui/panelLayout.js';
-import { usePanelLayout } from './ui/usePanelLayout.js';
+} from '../../theme/serialize.js';
+import { clearAllFieldLocks, createEmptyFieldLocks } from '../../theme/fieldLocks.js';
+import { getRandomThemeState } from '../../theme/random.js';
+import { getContrastWarningsByField } from '../../theme/contrast.js';
+import { validateMetadata } from '../../theme/validation.js';
+import { generateThemeZip, getThemeZipFileName } from '../../theme/zip.js';
+import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from '../../theme/fonts.js';
+import { getSelectedGoogleFontsCss2Url } from '../../theme/googleFonts.js';
+import { googleFontsCatalog } from '../../theme/googleFontsCatalog.js';
+import { constrainControlsPaneWidth, controlsPaneMinWidth } from '../../ui/panelLayout.js';
+import { usePanelLayout } from '../../ui/usePanelLayout.js';
 
 const { locale, t } = useI18n();
 const themeState = reactive(structuredClone(initialThemeState));
 const fieldLocks = reactive(createEmptyFieldLocks());
 const folderNameEdited = ref(false);
-const appElement = ref(null);
+const workspaceElement = ref(null);
 const {
   controlsPaneWidth,
   effectiveControlsPaneWidth,
   effectiveControlsPaneMaxWidth,
   paneResizerElement,
   getConstrainedControlsPaneWidth,
-} = usePanelLayout(appElement);
+} = usePanelLayout(workspaceElement);
 const themeMode = ref('light');
-const shellAppearance = ref('system');
-const systemPrefersDark = ref(false);
+const shellAppearance = ref(getPreferredShellAppearance());
 const isResizingControlsPane = ref(false);
-const shareMessageKey = ref('');
-const shareErrorKey = ref('');
-const importMessageKey = ref('');
+const isResetDialogOpen = ref(false);
+const shareFeedbackKey = ref('');
+const shareFeedbackOpen = ref(false);
+const shareFeedbackView = ref('');
+const shareMenuElement = ref(null);
 const importErrorKey = ref('');
 const themeJsonFileInput = ref(null);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
@@ -55,7 +61,6 @@ const activePalette = computed(() => themeState[activePaletteSection.value]);
 const activePaletteLocks = computed(() => fieldLocks[activePaletteSection.value]);
 const contrastWarningsByField = computed(() => getContrastWarningsByField(activePalette.value));
 const translatedContrastWarningsByField = computed(() => translateWarningMap(contrastWarningsByField.value));
-const hasFieldLocks = computed(() => hasAnyFieldLocked(fieldLocks));
 const canDownloadTheme = computed(() => Object.keys(metadataErrors.value).length === 0);
 const selectedPresetId = computed(
   () =>
@@ -68,18 +73,53 @@ const selectedPresetId = computed(
         hasSameSectionValues(themeState.layout, preset.layout)
     )?.id ?? ''
 );
+const lightDarkModeOptions = computed(() => [
+  {
+    value: 'light',
+    label: t('controls.lightThemeMode'),
+    icon: '☀',
+  },
+  {
+    value: 'dark',
+    label: t('controls.darkThemeMode'),
+    icon: '☾',
+  },
+]);
+const shareActions = computed(() => [
+  {
+    value: 'copy-link',
+    label: t('actions.copyLink'),
+    disabled: !canDownloadTheme.value,
+  },
+  {
+    value: 'export-json',
+    label: t('actions.exportJson'),
+    disabled: !canDownloadTheme.value,
+  },
+]);
+const localeOptions = computed(() => [
+  {
+    value: 'ru',
+    label: 'RU',
+    ariaLabel: t('language.ru'),
+  },
+  {
+    value: 'en',
+    label: 'EN',
+    ariaLabel: t('language.en'),
+  },
+]);
 const appStyle = computed(() => ({
   '--controls-pane-width': `${effectiveControlsPaneWidth.value}px`,
 }));
-const effectiveShellAppearance = computed(() =>
-  shellAppearance.value === 'system' ? (systemPrefersDark.value ? 'dark' : 'light') : shellAppearance.value
-);
+const shareButtonElement = computed(() => shareMenuElement.value?.querySelector('button') ?? null);
+const effectiveShellAppearance = computed(() => shellAppearance.value);
 const googleFontsPreviewUrl = computed(() => getSelectedGoogleFontsCss2Url(googleFontsCatalog, themeState.typography));
 
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
+let shareFeedbackTimeout = null;
 let shouldSkipNextSessionSave = false;
-let colorSchemeMediaQuery = null;
 const themeUrlParam = 'theme';
 const fontSourceKeyByFamilyKey = {
   mainFontFamily: 'mainFontSource',
@@ -135,22 +175,35 @@ function resetThemeState() {
   clearAllFieldLocks(fieldLocks);
   folderNameEdited.value = false;
   themeMode.value = 'light';
-  shellAppearance.value = 'system';
+  shellAppearance.value = getPreferredShellAppearance();
 }
 
 function inferFolderNameEdited(meta) {
   return meta.folderName !== suggestFolderName(meta.displayName);
 }
 
+function clearShareFeedback() {
+  clearTimeout(shareFeedbackTimeout);
+  shareFeedbackKey.value = '';
+  shareFeedbackOpen.value = false;
+  shareFeedbackView.value = '';
+}
+
+function showShareFeedback(key, view = '') {
+  clearShareFeedback();
+  shareFeedbackKey.value = key;
+  shareFeedbackOpen.value = true;
+  shareFeedbackView.value = view;
+  shareFeedbackTimeout = setTimeout(clearShareFeedback, 2500);
+}
+
 function clearStatusMessages() {
-  shareMessageKey.value = '';
-  shareErrorKey.value = '';
-  importMessageKey.value = '';
+  clearShareFeedback();
   importErrorKey.value = '';
 }
 
-function updateLocale(event) {
-  locale.value = event.target.value;
+function updateLocale(nextLocale) {
+  locale.value = nextLocale;
   saveStoredLocale(locale.value);
 }
 
@@ -166,6 +219,10 @@ function updateDocumentMetadata() {
   setDocumentLocale(locale.value);
   setDocumentMetaContent('description', t('app.metaDescription'));
   setDocumentMetaContent('keywords', t('app.metaKeywords'));
+}
+
+function setDocumentColorScheme(appearance) {
+  globalThis.document?.documentElement.setAttribute('data-color-scheme', appearance);
 }
 
 function applySharedThemeState(nextThemeState) {
@@ -197,9 +254,7 @@ function updatePaletteField(key, value) {
   activePalette.value[key] = value;
 }
 
-function updateThemeMode(event) {
-  const nextThemeMode = event.target.value === 'dark' ? 'dark' : 'light';
-
+function updateThemeMode(nextThemeMode) {
   if (nextThemeMode === 'dark') {
     themeState.meta.supportsDarkMode = true;
   }
@@ -207,8 +262,20 @@ function updateThemeMode(event) {
   themeMode.value = nextThemeMode === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
 }
 
-function updateShellAppearance(event) {
-  shellAppearance.value = ['system', 'dark', 'light'].includes(event.target.value) ? event.target.value : 'system';
+function updateShellAppearance(nextShellAppearance) {
+  if (nextShellAppearance === 'light' || nextShellAppearance === 'dark') {
+    shellAppearance.value = nextShellAppearance;
+  }
+}
+
+function handleShareAction(action) {
+  if (action === 'copy-link') {
+    copyThemeLink();
+  }
+
+  if (action === 'export-json') {
+    downloadThemeJson();
+  }
 }
 
 function updateTypographyField(key, value) {
@@ -251,9 +318,12 @@ function toggleFieldLock(section, key, locked) {
   fieldLocks[section][key] = locked;
 }
 
-function unlockAllFields() {
+function toggleGroupLock(section, keys, locked) {
   clearStatusMessages();
-  clearAllFieldLocks(fieldLocks);
+
+  for (const key of keys) {
+    fieldLocks[section][key] = locked;
+  }
 }
 
 function resetToDefaults() {
@@ -319,9 +389,9 @@ function randomizeTheme() {
 }
 
 function resizeControlsPane(event) {
-  const appLeft = appElement.value?.getBoundingClientRect().left ?? 0;
+  const workspaceLeft = workspaceElement.value?.getBoundingClientRect().left ?? 0;
 
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(event.clientX - appLeft);
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(event.clientX - workspaceLeft);
 }
 
 function startControlsPaneResize(event) {
@@ -389,9 +459,9 @@ async function copyThemeLink() {
 
   try {
     await navigator.clipboard.writeText(getThemeShareUrl());
-    shareMessageKey.value = 'status.themeLinkCopied';
+    showShareFeedback('status.themeLinkCopied');
   } catch {
-    shareErrorKey.value = 'status.themeLinkCopyFailed';
+    showShareFeedback('status.themeLinkCopyFailed', 'danger');
   }
 }
 
@@ -430,7 +500,6 @@ async function importThemeJson(event) {
   try {
     applySharedThemeState(await deserializeThemeFile(file));
     clearThemeUrlParam();
-    importMessageKey.value = 'status.themeJsonImported';
   } catch {
     importErrorKey.value = 'status.themeJsonInvalid';
   } finally {
@@ -455,8 +524,8 @@ function downloadThemeZip() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function handleColorSchemeChange(event) {
-  systemPrefersDark.value = event.matches;
+function getPreferredShellAppearance() {
+  return globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function getStoredThemeMode(uiState) {
@@ -464,9 +533,9 @@ function getStoredThemeMode(uiState) {
 }
 
 onMounted(() => {
-  colorSchemeMediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)') ?? null;
-  systemPrefersDark.value = colorSchemeMediaQuery?.matches ?? false;
-  colorSchemeMediaQuery?.addEventListener('change', handleColorSchemeChange);
+  const preferredShellAppearance = getPreferredShellAppearance();
+
+  shellAppearance.value = preferredShellAppearance;
 
   const themeParam = new URLSearchParams(window.location.search).get(themeUrlParam);
 
@@ -477,7 +546,7 @@ onMounted(() => {
       return;
     } catch {
       clearThemeUrlParam();
-      shareErrorKey.value = 'status.themeLinkInvalid';
+      showShareFeedback('status.themeLinkInvalid', 'danger');
     }
   }
 
@@ -490,14 +559,13 @@ onMounted(() => {
     folderNameEdited.value = session.uiState.folderNameEdited;
     themeMode.value =
       getStoredThemeMode(session.uiState) === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
-    shellAppearance.value = ['system', 'dark', 'light'].includes(session.uiState.shellAppearance)
-      ? session.uiState.shellAppearance
-      : 'system';
+    shellAppearance.value = session.uiState.shellAppearance;
   }
 });
 
 onUnmounted(() => {
-  colorSchemeMediaQuery?.removeEventListener('change', handleColorSchemeChange);
+  clearTimeout(shareFeedbackTimeout);
+  globalThis.document?.documentElement.removeAttribute('data-color-scheme');
 });
 
 watch(
@@ -522,6 +590,7 @@ watch(
 );
 
 watch(locale, updateDocumentMetadata, { immediate: true });
+watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
 </script>
 
 <template>
@@ -529,125 +598,164 @@ watch(locale, updateDocumentMetadata, { immediate: true });
     <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
   </Teleport>
 
-  <main ref="appElement" class="app" :data-shell-appearance="effectiveShellAppearance" :style="appStyle">
-    <aside class="app-controls-pane">
-      <div class="app-controls-scroll">
-        <header class="app-header">
-          <h1>{{ t('app.name') }}</h1>
-          <p>
-            {{ t('app.descriptionPrefix') }}
-            <a :href="t('app.aegeaHref')">{{ t('app.aegeaName') }}</a>
-          </p>
-          <label class="shell-appearance-control">
-            <span>{{ t('controls.shellAppearance') }}</span>
-            <select
-              class="shell-appearance-select"
-              :value="shellAppearance"
-              :aria-label="t('aria.shellAppearance')"
-              @change="updateShellAppearance"
-            >
-              <option value="system">{{ t('controls.shellSystem') }}</option>
-              <option value="light">{{ t('controls.shellLight') }}</option>
-              <option value="dark">{{ t('controls.shellDark') }}</option>
-            </select>
-          </label>
-        </header>
-
-        <section class="controls-section">
-          <PresetSelector :presets="themePresets" :selected-preset-id="selectedPresetId" @apply-preset="applyPreset" />
-          <ThemeControls
-            :meta="themeState.meta"
-            :metadata-errors="translatedMetadataErrors"
-            :contrast-warnings-by-field="translatedContrastWarningsByField"
-            :field-locks="fieldLocks"
-            :palette-locks="activePaletteLocks"
-            :palette-section="activePaletteSection"
-            :palette="activePalette"
-            :typography="themeState.typography"
-            :layout="themeState.layout"
-            @update:meta-field="updateMetaField"
-            @update:palette-field="updatePaletteField"
-            @update:typography-field="updateTypographyField"
-            @update:layout-field="updateLayoutField"
-            @toggle-field-lock="toggleFieldLock"
-          />
-        </section>
+  <main class="app" :style="appStyle">
+    <header class="app__topbar">
+      <div class="app__brand">
+        <h1 class="app__header-title hb-text hb-text_typography_header-2">{{ t('app.name') }}</h1>
+        <p class="app__header-description hb-text hb-text_typography_body-3 hb-text_color_secondary">
+          {{ t('app.descriptionPrefix') }}
+          <a :href="t('app.aegeaHref')" class="hb-link hb-link_view_secondary hb-link_underline">
+            {{ t('app.aegeaName') }}
+          </a>
+        </p>
       </div>
 
-      <section class="export-section" :aria-label="t('aria.export')">
-        <label class="language-control">
-          <span class="visually-hidden">{{ t('aria.language') }}</span>
-          <select class="language-select" :value="locale" :aria-label="t('aria.language')" @change="updateLocale">
-            <option v-for="availableLocale in supportedLocales" :key="availableLocale" :value="availableLocale">
-              {{ t(`language.${availableLocale}`) }}
-            </option>
-          </select>
-        </label>
-        <button class="random-button" type="button" @click="randomizeTheme">{{ t('actions.random') }}</button>
-        <button class="unlock-button" type="button" :disabled="!hasFieldLocks" @click="unlockAllFields">
-          {{ t('actions.unlockAll') }}
-        </button>
-        <button class="reset-button" type="button" @click="resetToDefaults">{{ t('actions.resetToDefaults') }}</button>
-        <button class="copy-link-button" type="button" :disabled="!canDownloadTheme" @click="copyThemeLink">
-          {{ t('actions.copyLink') }}
-        </button>
-        <button class="export-json-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeJson">
-          {{ t('actions.exportJson') }}
-        </button>
-        <button class="import-json-button" type="button" @click="openThemeJsonImport">
-          {{ t('actions.importJson') }}
-        </button>
-        <input
-          ref="themeJsonFileInput"
-          class="import-json-input"
-          type="file"
-          accept=".json,application/json"
-          @change="importThemeJson"
-        />
-        <button class="download-button" type="button" :disabled="!canDownloadTheme" @click="downloadThemeZip">
-          {{ t('actions.downloadThemeZip') }}
-        </button>
-        <p v-if="shareMessageKey" class="share-message">{{ t(shareMessageKey) }}</p>
-        <p v-if="shareErrorKey" class="share-error">{{ t(shareErrorKey) }}</p>
-        <p v-if="importMessageKey" class="import-message">{{ t(importMessageKey) }}</p>
-        <p v-if="importErrorKey" class="import-error">{{ t(importErrorKey) }}</p>
-        <p v-if="!canDownloadTheme" class="download-error">{{ t('status.fixMetadata') }}</p>
-      </section>
-    </aside>
-
-    <div
-      ref="paneResizerElement"
-      class="app-pane-resizer"
-      role="separator"
-      tabindex="0"
-      :aria-label="t('aria.resizeControlsPanel')"
-      aria-orientation="vertical"
-      :aria-valuemin="controlsPaneMinWidth"
-      :aria-valuemax="effectiveControlsPaneMaxWidth"
-      :aria-valuenow="effectiveControlsPaneWidth"
-      @pointerdown="startControlsPaneResize"
-      @pointermove="handleControlsPaneResize"
-      @pointerup="stopControlsPaneResize"
-      @pointercancel="stopControlsPaneResize"
-      @keydown="handleControlsPaneResizeKeydown"
-    ></div>
-
-    <section class="app-preview-pane" :aria-label="t('aria.preview')">
-      <div class="preview-toolbar">
-        <label class="theme-mode-control">
-          <span>{{ t('controls.themeMode') }}</span>
-          <select
-            class="theme-mode-select"
+      <div class="app__topbar-controls">
+        <div class="app__mode-control">
+          <span class="hb-text hb-text_typography_body-1">{{ t('controls.themeMode') }}</span>
+          <RadioGroup
+            name="theme-mode"
             :value="themeMode"
-            :aria-label="t('aria.themeMode')"
-            @change="updateThemeMode"
-          >
-            <option value="light">{{ t('controls.lightThemeMode') }}</option>
-            <option value="dark">{{ t('controls.darkThemeMode') }}</option>
-          </select>
-        </label>
+            :aria-label="t('controls.themeMode')"
+            :options="lightDarkModeOptions"
+            :show-option-labels="false"
+            @update:value="updateThemeMode"
+          />
+        </div>
+        <div class="app__mode-control">
+          <span class="hb-text hb-text_typography_body-1">{{ t('controls.shellAppearance') }}</span>
+          <RadioGroup
+            name="shell-appearance"
+            :value="shellAppearance"
+            :aria-label="t('controls.shellAppearance')"
+            :options="lightDarkModeOptions"
+            :show-option-labels="false"
+            @update:value="updateShellAppearance"
+          />
+        </div>
+        <RadioGroup
+          name="locale"
+          :value="locale"
+          :aria-label="t('aria.language')"
+          :options="localeOptions"
+          @update:value="updateLocale"
+        />
       </div>
-      <AegeaPreview :theme-state="themeState" :preview-mode="themeMode" />
-    </section>
+
+      <div class="app__share">
+        <div ref="shareMenuElement">
+          <ActionMenu :actions="shareActions" @menu-open="clearShareFeedback" @select="handleShareAction">
+            <template #trigger>
+              <Button view="outlined">{{ t('actions.share') }}</Button>
+            </template>
+          </ActionMenu>
+        </div>
+        <FeedbackTooltip
+          :message="shareFeedbackKey ? t(shareFeedbackKey) : ''"
+          :open="shareFeedbackOpen"
+          :reference="shareButtonElement"
+          :view="shareFeedbackView"
+        />
+        <p v-if="shareFeedbackKey" class="app__visually-hidden" :role="shareFeedbackView ? 'alert' : 'status'">
+          {{ t(shareFeedbackKey) }}
+        </p>
+      </div>
+
+      <div class="app__download">
+        <Button class="app__download-button" view="action" :disabled="!canDownloadTheme" @click="downloadThemeZip">
+          {{ t('actions.downloadThemeZip') }}
+        </Button>
+        <p v-if="!canDownloadTheme" class="download-error hb-text hb-text_typography_body-1">
+          {{ t('status.fixMetadata') }}
+        </p>
+      </div>
+    </header>
+
+    <div ref="workspaceElement" class="app__workspace">
+      <aside class="app__controls-pane">
+        <div class="app__controls-scroll">
+          <div class="app__theme-actions">
+            <ConfirmDialog
+              :open="isResetDialogOpen"
+              :question="t('confirm.resetTheme')"
+              @update:open="isResetDialogOpen = $event"
+              @confirm="resetToDefaults"
+            >
+              <template #trigger>
+                <Button view="outlined" size="l">{{ t('actions.resetToDefaults') }}</Button>
+              </template>
+              <template #cancel>
+                <Button view="outlined">{{ t('actions.cancel') }}</Button>
+              </template>
+              <template #action>
+                <Button view="action">{{ t('actions.confirmReset') }}</Button>
+              </template>
+            </ConfirmDialog>
+            <Button view="normal" size="l" @click="randomizeTheme">{{ t('actions.random') }}</Button>
+          </div>
+          <section class="app__controls-section">
+            <PresetSelector
+              :import-error="importErrorKey ? t(importErrorKey) : ''"
+              :presets="themePresets"
+              :selected-preset-id="selectedPresetId"
+              @apply-preset="applyPreset"
+              @import-theme="openThemeJsonImport"
+            />
+            <input
+              ref="themeJsonFileInput"
+              class="app__import-json-input"
+              type="file"
+              accept=".json,application/json"
+              @change="importThemeJson"
+            />
+            <ThemeControls
+              :meta="themeState.meta"
+              :metadata-errors="translatedMetadataErrors"
+              :contrast-warnings-by-field="translatedContrastWarningsByField"
+              :field-locks="fieldLocks"
+              :palette-locks="activePaletteLocks"
+              :palette-section="activePaletteSection"
+              :palette="activePalette"
+              :typography="themeState.typography"
+              :layout="themeState.layout"
+              @update:meta-field="updateMetaField"
+              @update:palette-field="updatePaletteField"
+              @update:typography-field="updateTypographyField"
+              @update:layout-field="updateLayoutField"
+              @toggle-group-lock="toggleGroupLock"
+              @toggle-field-lock="toggleFieldLock"
+            />
+          </section>
+        </div>
+      </aside>
+
+      <div
+        ref="paneResizerElement"
+        class="app__pane-resizer"
+        role="separator"
+        tabindex="0"
+        :aria-label="t('aria.resizeControlsPanel')"
+        aria-orientation="vertical"
+        :aria-valuemin="controlsPaneMinWidth"
+        :aria-valuemax="effectiveControlsPaneMaxWidth"
+        :aria-valuenow="effectiveControlsPaneWidth"
+        @pointerdown="startControlsPaneResize"
+        @pointermove="handleControlsPaneResize"
+        @pointerup="stopControlsPaneResize"
+        @pointercancel="stopControlsPaneResize"
+        @keydown="handleControlsPaneResizeKeydown"
+      ></div>
+
+      <section class="app__preview-pane" :aria-label="t('aria.preview')">
+        <AegeaPreview :theme-state="themeState" :preview-mode="themeMode" />
+      </section>
+    </div>
   </main>
 </template>
+
+<style>
+body {
+  margin: 0;
+}
+</style>
+<style scoped src="./App.css"></style>
