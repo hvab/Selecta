@@ -20,6 +20,19 @@
 - Aegea `11.5` body links use `text-decoration` with `text-decoration-color`; the deferred `12.0a` source keeps the same contract but refines it further. Selecta preview may approximate some link states with a scoped border-bottom subset where that is enough for theme tuning.
 - The deferred `12.0a` source adds bundled Inter and JetBrains Mono fonts. Selecta MVP still intentionally generates only system web-safe font choices.
 
+## Plain font contract
+
+- Rechecked against the clean Aegea `11.5` / `v4199` checkout at the exact
+  baseline commit above; both `system/themes/plain/src/styles/variables.scss`
+  and compiled `system/themes/plain/styles/main.css` declare the same stack.
+- Default `--mainFontFamily`: `system-ui, -apple-system, BlinkMacSystemFont, "SF UI Text", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif`.
+- `--noteMainFontFamily` and `--smallFontFamily` remain `inherit`. The preview
+  supplies this default locally; a plain-source child theme omits these font
+  overrides and inherits them from Aegea. Explicit system/Google selections
+  keep their existing generation and font-loading paths.
+- A live Aegea render and paired width/linebreak comparison are still needed
+  to verify visual parity; source equality does not establish pixel parity.
+
 ## Dark mode contract
 
 - Aegea dark-mode support is theme metadata plus runtime appearance state: themes declare `supports_dark_mode`, while Aegea applies dark variables only when the blog responds to dark mode.

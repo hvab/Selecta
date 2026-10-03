@@ -771,6 +771,46 @@ the Aegea preview.
 Use `.project/IDEAS.md` for raw feature ideas and parked future work. Move only
 the selected next slice from `IDEAS.md` into `Active track` / `Next steps`.
 
+## Technical iteration: Aegea 11.5 plain font parity (R04)
+
+Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
+Source oracle: clean Aegea `11.5` / `v4199` checkout at the exact documented
+commit `e1d058356e5426bb1878785c6f4ab4e68b6c4995`. Its plain source and
+compiled CSS use a system stack; Selecta currently defaults to InterVariable.
+
+- [x] Replace only `src/preview/style.css`'s default main font family with
+      the Aegea 11.5 stack; keep note/small inheritance and explicit sources.
+      Added baseline provenance in `PREVIEW-BASELINE.md`. Named families
+      use optional CSS quoting accepted by existing stylelint, preserving the
+      canonical family names and their order. No lint rules change.
+- [x] Add focused regression checks for the actual preview CSS default, plain
+      ZIP inheritance in light/dark, and unchanged system/Google overrides.
+      Verified: 102/102 tests pass; the new parity regression fails on the
+      unpatched baseline CSS. Chrome EN/RU and light/dark plain inheritance
+      pass; explicit Sans-serif/Georgia overrides pass; PT Sans in both slots
+      produces one Google CSS link, removed on return to plain.
+- [x] Run JS/style lint, build, formatting, and scoped diff. Tests, JS/style
+      lint and build pass locally; scoped formatting passes. Full formatting
+      still has only the independently reproduced baseline failure fixed by
+      R02 (draft PR #1). Keep its prerequisite patch in a separate commit
+      so the font implementation remains independently reviewable.
+
+Consumer limit: local PHP cannot start because a required libzip dylib is
+missing. Source/compiled-CSS and browser checks do not replace a live Aegea
+install or paired width/linebreak verification. Do not change engine target.
+
+Combined R02 + R04 verification in an isolated copy: all five commands pass,
+including full formatting and 102/102 tests. R02 CI Node 22/Linux also passes.
+
+Updated after main `8662ce5`: the font regression now reads the relocated
+AegeaPreview.css and uses corrected relative theme imports. The updated R02
+branch is merged as the quality prerequisite; its Node 22/Linux CI passes.
+Combined verification passes locally: 107/107 tests, JS/style lint, formatting
+and build. Chrome on the new UI confirms EN/RU/light/dark plain inheritance,
+explicit system overrides, one PT Sans CSS link and removal on return to plain.
+Next small step: push the updated draft PR #4 and inspect its CI. Merge R02
+first. Live Aegea visual verification remains open.
+
 ## Verification
 
 Common checks:
@@ -797,3 +837,70 @@ path in a real local Aegea instance.
 - Do not store language in theme JSON, share URLs, or ZIP output.
 - Do not stage, commit, switch branches, or push unless the user explicitly asks.
 - Keep diffs scoped; avoid reformatting unrelated files.
+
+## Technical iteration: remote quality gate (R02)
+
+Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
+At that original baseline, the remote implementation supported shell `system`;
+its valid-session fixture was correct. Tests (99/99), JavaScript/style lint, and build passed. Only
+Prettier fails on the two already tracked audit prompt documents.
+
+- [x] Format only `audit/1-astra-xhigh-prompt.md` and
+      `audit/2-sol-6-1-xhigh-verify-prompt.md`, preserving their content.
+      Verify with `npm run format:check` and a scoped diff.
+- [x] Rerun `npm test`, `npm run lint`, `npm run lint:styles`,
+      `npm run format:check`, and `npm run build`: all pass locally.
+      Keep the independent plain-font fix and local UI work out of this branch.
+
+No lint rules, thresholds, session behavior, or audit reports are changed.
+The prompt changes add exactly four blank lines; ignoring blank lines produces
+no diff. No new test is needed for Markdown formatting.
+
+Local verification uses Node 24/macOS. Next small step: create a draft PR and
+verify the existing Node 22/Linux CI without running deployment.
+
+## Technical iteration: quality gate after main update
+
+New baseline: `8662ce5a7a94fff4df4f95bab34a0f48eea9b561`. It includes the
+UI migration, concrete light/dark session policy, document-root colour scheme,
+and already published audit reports. Reproduced on an isolated worktree:
+98/99 tests, one PresetSelector formatting error, seven App.css style errors,
+and formatting failures in two prompts, two reports and PresetSelector.
+Build passes. No dependencies or quality rules are changed.
+
+- [x] Merge new main into this branch without rewriting history; retain its UI.
+- [x] Format only the PresetSelector opening tag, with unchanged attributes.
+- [x] Align the session test fixture with the current light/dark contract and
+      add explicit rejection regressions for legacy system/missing values.
+      Coordinate `storage.test.js`; leave runtime persistence unchanged.
+- [x] Move global root/popper layer declarations out of scoped App.css into
+      global shell CSS, preserving selectors/values. Consolidate the duplicate
+      download-error rule and replace deprecated clip with equivalent clip-path.
+      Coordinate App.css; keep widths, overlays and theme behavior unchanged.
+- [x] Format the already published reports in a separate commit under the
+      renewed technical-fix authorization. Their normalized Markdown and
+      embedded JavaScript ASTs match the baseline: words, data, links and
+      semantic structure are unchanged.
+- [x] Run all five checks locally: 104/104 tests, JS/style lint, formatting and
+      build pass. Unknown ordinary CSS pseudo-classes still fail stylelint.
+- [x] Confirm clean Node 22/Linux PR #1 CI after pushing the quality branch.
+
+Local clean npm ci is blocked by EALLOWGIT for the pinned hvab-blocks dependency.
+No bypass was attempted. Existing installed dependencies were copied with
+executable symlinks preserved; the shared and new-main lockfiles match exactly.
+The CI clean install remains the authoritative independent install check.
+
+Verified shell layers: Vue compilation of the former scoped :global rules and
+the new global CSS produces identical selectors/declarations/priorities.
+Chrome light/dark Share/Reset portals use floating z-index 10 and modal 20;
+Copy-link status retains role=status, a 1px box and inset(50%) clipping. Metadata
+errors still disable ZIP; download-error flex-basis remains auto in the header.
+
+Read-only npm audit: 16 flagged package records (14 high, 1 moderate, 1 low),
+including inherited dependency records, not 16 independent vulnerabilities.
+Production-only audit flags PostCSS and nanoid through Vue's compiler package;
+the built browser chunks contain no modules from either package. Tooling
+issues include brace-expansion, braces and its stylelint chain, fast-uri,
+js-yaml, colord and postcss-selector-parser. Audit proposes breaking downgrades
+for the braces/stylelint chain; do not run audit fix --force. Dependencies and
+lockfile remain unchanged. Dependency remediation requires separate scope.
