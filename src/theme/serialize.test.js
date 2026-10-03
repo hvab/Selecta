@@ -193,11 +193,11 @@ for (const key of ['titleScale', 'noteTextLineHeight']) {
   });
 }
 
-test('round-trips finite numbers outside control ranges and a custom system font', () => {
+test('round-trips supported numeric values and a custom system font', () => {
   const themeState = structuredClone(initialThemeState);
   themeState.meta.displayName = 'Тема Café';
-  themeState.typography.titleScale = 3;
-  themeState.typography.noteTextLineHeight = 2.2;
+  themeState.typography.titleScale = 2;
+  themeState.typography.noteTextLineHeight = 1.9;
   themeState.typography.mainFontSource = 'system';
   themeState.typography.mainFontFamily = 'Arial, "Helvetica Neue", sans-serif';
 

@@ -890,3 +890,60 @@ no diff. No new test is needed for Markdown formatting.
 
 Local verification uses Node 24/macOS. Next small step: create a draft PR and
 verify the existing Node 22/Linux CI without running deployment.
+
+## Technical iteration: complete R01 value contract
+
+The owner delegated the value-policy decision and authorized commits and pushes
+on separate fix branches, without merging or pushing main. Continue the existing
+R01 PR from its updated main baseline; leave develop and unrelated fixes alone.
+
+- [x] Define shared control/import constraints in `src/theme/constraints.js`:
+      six-digit HEX colors (either case); decimal px text size 14..24; decimal
+      rem content width 36..64 and margins 1..4; finite unitless title scale
+      1.2..2 and text line height 1.3..1.9. Reuse these limits in ThemeControls.
+      Verify defaults, Random and all presets fit; accept decimal precision
+      independently of the sliders' interaction steps.
+- [x] Extend the existing shared boundary validator for JSON/File/URL/storage.
+      Reject unsupported models atomically; retain editable metadata errors,
+      known-field copying, version 2 and existing font normalization/fallback.
+      Verify CSS breakout, wrong units, malformed colors and range endpoints
+      using a temporary harness; adjust existing range fixtures to the contract.
+- [x] Guard the ZIP boundary (including direct callers) and Download availability
+      with the same model invariant; retain the separate metadata validity gate.
+      Verify ZIP paths, CSS declarations and escaped PHP metadata against the
+      real Aegea variable contract without changing preview markup or engine.
+- [x] Run scoped quality checks and build; record existing R02 failures rather
+      than fixing them. Commit/push only this iteration and update draft PR #2.
+      Inspect CI; no merge, release, main push or environment repair.
+
+Policy rationale: inputs remain exactly representable by the current editor;
+presets and generated themes already use these units and bounds. Arbitrary CSS
+functions/declarations and manual values outside the editor are rejected, never
+silently clamped or partially applied. Invalid stored sessions use the existing
+fallback. CSS injection into the exported artifact is relevant; JS/PHP execution
+or XSS has not been demonstrated by this audit.
+
+Implementation: shared limits now drive the existing sliders and value validator.
+Custom system stacks retain named/quoted families and generic fallbacks, with
+balanced quotes and complete comma-separated tokens; unsupported font syntax is
+rejected at external boundaries. The existing trusted generator fallback remains.
+Download availability and direct ZIP callers also reject an invalid model;
+editable empty/invalid metadata can still be imported and repaired in the UI,
+but cannot become an archive path. No preview structure or Aegea target changed.
+
+Verification before prerequisite integration: scoped ESLint/Prettier, build and
+ZIP parsing passed. A temporary harness rejected 250 invalid models across
+JSON/File/URL/storage and direct ZIP, accepted all catalog font choices and ten
+preset archives, and checked range endpoints plus 200 Random themes applied as
+the App applies them. Existing range fixtures now use the supported endpoints;
+no new repository test or infrastructure was added.
+
+Browser file-chooser verification remains unavailable: the Chrome extension
+requires file-URL access, which was not enabled. File decoding was verified via
+Blob. PHP/live Aegea installation and paired rendering remain unverified; no
+runtime repair or V01/V03/V04 work was attempted.
+
+Full checks still encountered the known main R02 failures. The already prepared
+quality prerequisite at PR #1 head `954f71d` has successful Node 22/Linux CI and
+will be merged into this fix branch as a separate integration commit. This does
+not merge either PR into main or deploy the site.

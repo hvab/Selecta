@@ -24,7 +24,7 @@ import {
 import { clearAllFieldLocks, createEmptyFieldLocks } from '../../theme/fieldLocks.js';
 import { getRandomThemeState } from '../../theme/random.js';
 import { getContrastWarningsByField } from '../../theme/contrast.js';
-import { validateMetadata } from '../../theme/validation.js';
+import { isValidThemeState, validateMetadata } from '../../theme/validation.js';
 import { generateThemeZip, getThemeZipFileName } from '../../theme/zip.js';
 import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from '../../theme/fonts.js';
 import { getSelectedGoogleFontsCss2Url } from '../../theme/googleFonts.js';
@@ -54,7 +54,9 @@ const activePalette = computed(() => themeState[activePaletteSection.value]);
 const activePaletteLocks = computed(() => fieldLocks[activePaletteSection.value]);
 const contrastWarningsByField = computed(() => getContrastWarningsByField(activePalette.value));
 const translatedContrastWarningsByField = computed(() => translateWarningMap(contrastWarningsByField.value));
-const canDownloadTheme = computed(() => Object.keys(metadataErrors.value).length === 0);
+const canDownloadTheme = computed(
+  () => Object.keys(metadataErrors.value).length === 0 && isValidThemeState(themeState)
+);
 const selectedPresetId = computed(
   () =>
     themePresets.find(

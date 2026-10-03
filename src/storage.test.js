@@ -190,8 +190,8 @@ test('restores finite theme values with current light and dark shell state', () 
 
   for (const shellAppearance of ['light', 'dark']) {
     const themeState = structuredClone(initialThemeState);
-    themeState.typography.titleScale = 3;
-    themeState.typography.noteTextLineHeight = 2.2;
+    themeState.typography.titleScale = 2;
+    themeState.typography.noteTextLineHeight = 1.9;
     const uiState = { sidebarWidth: 416, folderNameEdited: false, shellAppearance };
     const fieldLocks = createEmptyFieldLocks();
     saveSession({ themeState, fieldLocks, uiState });

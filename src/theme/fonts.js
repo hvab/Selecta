@@ -20,7 +20,8 @@ export const namedSystemFamilies = [
   { value: '"Helvetica Neue", Helvetica, Arial, sans-serif', label: 'Helvetica Neue' },
 ];
 
-const fontFamilyValuePattern = /^[A-Za-z0-9 "'_,.-]+$/;
+const fontFamilyValuePattern =
+  /^(?:"[A-Za-z0-9 _.-]+"|'[A-Za-z0-9 _.-]+'|[A-Za-z_-][A-Za-z0-9_-]*(?: +[A-Za-z_-][A-Za-z0-9_-]*)*)$/;
 
 export const FONT_SOURCE_PLAIN = 'plain';
 export const FONT_SOURCE_SYSTEM = 'system';
@@ -69,7 +70,9 @@ export function normalizeFontFamily(value, fallbackValue) {
 
   const fontFamily = value.trim().replace(/ {2,}/g, ' ');
 
-  return fontFamily && fontFamilyValuePattern.test(fontFamily) ? fontFamily : fallbackValue;
+  return fontFamily && fontFamily.split(',').every((family) => fontFamilyValuePattern.test(family.trim()))
+    ? fontFamily
+    : fallbackValue;
 }
 
 function hasGenericFontFamily(value) {
