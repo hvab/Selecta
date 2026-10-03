@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ThemeControls from './components/ThemeControls.vue';
 import PresetSelector from './components/PresetSelector.vue';
@@ -74,7 +74,6 @@ const controlsPaneMaxWidth = 672;
 const previewPaneMinWidth = 360;
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
-let shouldSkipNextSessionSave = false;
 let colorSchemeMediaQuery = null;
 const themeUrlParam = 'theme';
 const fontSourceKeyByFamilyKey = {
@@ -133,6 +132,16 @@ function getUiState() {
     themeMode: themeMode.value,
     shellAppearance: shellAppearance.value,
   };
+}
+
+function saveCurrentSession() {
+  clearTimeout(sessionSaveTimeout);
+  sessionSaveTimeout = null;
+  saveSession({
+    themeState,
+    fieldLocks,
+    uiState: getUiState(),
+  });
 }
 
 function resetThemeState() {
@@ -262,17 +271,11 @@ function unlockAllFields() {
 }
 
 function resetToDefaults() {
-  clearTimeout(sessionSaveTimeout);
-  shouldSkipNextSessionSave = true;
   clearStatusMessages();
   clearThemeUrlParam();
   clearSession();
   resetThemeState();
-  saveSession({
-    themeState,
-    fieldLocks,
-    uiState: getUiState(),
-  });
+  saveCurrentSession();
 }
 
 function randomizePalette(section, randomPalette) {
@@ -468,10 +471,18 @@ function getStoredThemeMode(uiState) {
   return uiState.themeMode ?? uiState.previewMode ?? uiState.activePaletteMode;
 }
 
+function handleVisibilityChange() {
+  if (document.visibilityState === 'hidden') {
+    saveCurrentSession();
+  }
+}
+
 onMounted(() => {
   colorSchemeMediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)') ?? null;
   systemPrefersDark.value = colorSchemeMediaQuery?.matches ?? false;
   colorSchemeMediaQuery?.addEventListener('change', handleColorSchemeChange);
+  window.addEventListener('pagehide', saveCurrentSession);
+  document.addEventListener('visibilitychange', handleVisibilityChange);
 
   const themeParam = new URLSearchParams(window.location.search).get(themeUrlParam);
 
@@ -501,7 +512,10 @@ onMounted(() => {
   }
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
+  saveCurrentSession();
+  window.removeEventListener('pagehide', saveCurrentSession);
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
   colorSchemeMediaQuery?.removeEventListener('change', handleColorSchemeChange);
 });
 
@@ -509,19 +523,7 @@ watch(
   [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, themeMode, shellAppearance],
   () => {
     clearTimeout(sessionSaveTimeout);
-
-    if (shouldSkipNextSessionSave) {
-      shouldSkipNextSessionSave = false;
-      return;
-    }
-
-    sessionSaveTimeout = setTimeout(() => {
-      saveSession({
-        themeState,
-        fieldLocks,
-        uiState: getUiState(),
-      });
-    }, sessionSaveDelay);
+    sessionSaveTimeout = setTimeout(saveCurrentSession, sessionSaveDelay);
   },
   { deep: true }
 );
