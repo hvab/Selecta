@@ -1,5 +1,6 @@
 import { initialThemeState } from './model.js';
 import { normalizeTypographyFontSources } from './fonts.js';
+import { isValidThemeField } from './validation.js';
 
 export const THEME_SERIALIZATION_VERSION = 2;
 
@@ -16,7 +17,7 @@ function copyKnownSection(section, referenceSection, sectionName) {
   const knownSection = {};
 
   for (const [key, referenceValue] of Object.entries(referenceSection)) {
-    if (typeof compatibleSection[key] !== typeof referenceValue) {
+    if (!isValidThemeField(sectionName, key, compatibleSection[key], referenceValue)) {
       throw new Error(`Invalid theme ${sectionName}.${key}.`);
     }
 

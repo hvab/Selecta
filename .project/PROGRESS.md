@@ -57,6 +57,39 @@ the current Aegea checkout before changing preview or export behavior.
 - Code font is still controlled by Aegea `plain`; Selecta edits interface and
   note text font slots.
 
+## Active validation slice
+
+Scope: keep imported and restored themes based on `plain`, and reject non-finite
+numeric model values. The published shell still supports `system`; preserve its
+existing session behavior and optional UI fields. Do not add numeric ranges,
+CSS grammar, payload limits, migrations, or UI changes.
+
+- [x] Reproduce unsupported parent and overflowing JSON numbers on the published
+      base; add regressions in `src/theme/serialize.test.js` and
+      `src/storage.test.js`, covering JSON, File, URL, and session restore.
+      Verification: targeted Node tests reproduced seven failing regressions on
+      the unchanged base; existing tests and positive compatibility cases passed.
+      Next: implement the shared boundary check. No CSS grammar was tested.
+- [x] Share field-value checks between `src/theme/serialize.js` and
+      `src/storage.js` through `src/theme/validation.js`; preserve font normalization
+      and known-field copying. Verification: all 28 targeted tests passed, including
+      the new regressions, all ten built-in presets, finite values outside UI ranges,
+      and the existing `system` session test. No UI or persistence timing changed.
+      Next: run the complete local quality gate and inspect generated ZIP contents.
+- [x] Run `npm test`, `npm run lint`, `npm run lint:styles`,
+      `npm run format:check`, and `npm run build`; inspect the diff.
+      Verification: 108 tests, JS lint, style lint, build, changed-file Prettier,
+      and `git diff --check` passed on local Node 24 after a clean lockfile install.
+      Full `format:check` still fails on the two unchanged audit prompt files in
+      the published base; leave these outside this slice. Verified ten preset ZIPs
+      after JSON/URL round-trips and unknown Google font fallback. Chrome rejects
+      unsupported-parent and `1e999` URLs without applying their state; EN/RU
+      feedback remains available. File decoding is covered with synthetic Blob
+      tests; browser file picker, PHP/live Aegea, and Linux/Node 22 are unverified.
+      Generators still consume trusted in-memory state; no direct-generator guards
+      or CSS-string validation were added. Next: review the draft PR and CI;
+      resolve baseline formatting independently before merging.
+
 ## Completed tracks
 
 - Project scaffold and tooling.

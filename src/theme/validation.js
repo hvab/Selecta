@@ -13,3 +13,15 @@ export function validateMetadata(meta) {
 
   return errors;
 }
+
+export function isValidThemeField(sectionName, key, value, referenceValue) {
+  if (typeof value !== typeof referenceValue) {
+    return false;
+  }
+
+  if (typeof value === 'number' && !Number.isFinite(value)) {
+    return false;
+  }
+
+  return sectionName !== 'meta' || key !== 'basedOn' || value === 'plain';
+}

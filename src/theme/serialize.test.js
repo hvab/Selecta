@@ -10,6 +10,7 @@ import {
   THEME_SERIALIZATION_VERSION,
 } from './serialize.js';
 import { initialThemeState } from './model.js';
+import { themePresets } from './presets.js';
 
 test('serializes and deserializes theme state', () => {
   const themeState = structuredClone(initialThemeState);
@@ -149,4 +150,71 @@ test('encodes and decodes theme state for URL params', () => {
 
 test('rejects invalid URL theme params', () => {
   assert.throws(() => decodeThemeFromUrlParam('not valid base64'), /Invalid theme link/);
+});
+
+test('rejects unsupported parents at JSON, File, URL, and serialization boundaries', async () => {
+  for (const basedOn of ['', 'acute', 'missing-parent']) {
+    const themeState = structuredClone(initialThemeState);
+    themeState.meta.basedOn = basedOn;
+    const json = JSON.stringify({ version: THEME_SERIALIZATION_VERSION, ...themeState });
+
+    assert.throws(() => serializeTheme(themeState), /Invalid theme meta.basedOn/);
+    assert.throws(() => encodeThemeToUrlParam(themeState), /Invalid theme meta.basedOn/);
+    assert.throws(() => deserializeTheme(json), /Invalid theme meta.basedOn/);
+    await assert.rejects(deserializeThemeFile(new Blob([json])), /Invalid theme meta.basedOn/);
+    assert.throws(() => decodeThemeFromUrlParam(btoa(encodeURIComponent(json))), /Invalid theme link/);
+  }
+});
+
+for (const key of ['titleScale', 'noteTextLineHeight']) {
+  test(`rejects non-finite ${key} before JSON serialization`, () => {
+    for (const value of [NaN, Infinity, -Infinity]) {
+      const themeState = structuredClone(initialThemeState);
+      themeState.typography[key] = value;
+
+      assert.throws(() => serializeTheme(themeState), new RegExp(`Invalid theme typography.${key}`));
+      assert.throws(() => encodeThemeToUrlParam(themeState), new RegExp(`Invalid theme typography.${key}`));
+    }
+  });
+
+  test(`rejects overflowing JSON ${key} at JSON, File, and URL boundaries`, async () => {
+    for (const value of ['1e999', '-1e999']) {
+      const themeState = structuredClone(initialThemeState);
+      themeState.typography[key] = 'overflow-marker';
+      const json = JSON.stringify({ version: THEME_SERIALIZATION_VERSION, ...themeState }).replace(
+        '"overflow-marker"',
+        value
+      );
+
+      assert.throws(() => deserializeTheme(json), new RegExp(`Invalid theme typography.${key}`));
+      await assert.rejects(deserializeThemeFile(new Blob([json])), new RegExp(`Invalid theme typography.${key}`));
+      assert.throws(() => decodeThemeFromUrlParam(btoa(encodeURIComponent(json))), /Invalid theme link/);
+    }
+  });
+}
+
+test('round-trips finite numbers outside control ranges and a custom system font', () => {
+  const themeState = structuredClone(initialThemeState);
+  themeState.meta.displayName = 'Тема Café';
+  themeState.typography.titleScale = 3;
+  themeState.typography.noteTextLineHeight = 2.2;
+  themeState.typography.mainFontSource = 'system';
+  themeState.typography.mainFontFamily = 'Arial, "Helvetica Neue", sans-serif';
+
+  assert.deepEqual(deserializeTheme(serializeTheme(themeState)), themeState);
+  assert.deepEqual(decodeThemeFromUrlParam(encodeThemeToUrlParam(themeState)), themeState);
+});
+
+test('round-trips all built-in preset values', () => {
+  for (const preset of themePresets) {
+    const themeState = structuredClone(initialThemeState);
+    themeState.meta.supportsDarkMode = preset.supportsDarkMode;
+    themeState.palette = structuredClone(preset.palette);
+    themeState.darkPalette = structuredClone(preset.darkPalette ?? initialThemeState.darkPalette);
+    themeState.typography = structuredClone(preset.typography);
+    themeState.layout = structuredClone(preset.layout);
+
+    assert.deepEqual(deserializeTheme(serializeTheme(themeState)), themeState, preset.id);
+    assert.deepEqual(decodeThemeFromUrlParam(encodeThemeToUrlParam(themeState)), themeState, preset.id);
+  }
 });

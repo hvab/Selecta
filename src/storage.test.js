@@ -148,3 +148,39 @@ test('ignores unavailable localStorage', () => {
   assert.equal(loadSession(), null);
   assert.doesNotThrow(() => clearSession());
 });
+
+test('ignores sessions with unsupported theme parents', () => {
+  setLocalStorage(createMemoryStorage());
+
+  for (const basedOn of ['', 'acute', 'missing-parent']) {
+    const themeState = structuredClone(initialThemeState);
+    themeState.meta.basedOn = basedOn;
+    saveSession({
+      themeState,
+      fieldLocks: createEmptyFieldLocks(),
+      uiState: { sidebarWidth: 416, folderNameEdited: false, shellAppearance: 'system' },
+    });
+
+    assert.equal(loadSession(), null);
+  }
+});
+
+test('ignores sessions with overflowing numeric theme values', () => {
+  setLocalStorage(createMemoryStorage());
+
+  for (const key of ['titleScale', 'noteTextLineHeight']) {
+    for (const value of ['1e999', '-1e999']) {
+      const themeState = structuredClone(initialThemeState);
+      themeState.typography[key] = 'overflow-marker';
+      const json = JSON.stringify({
+        version: SESSION_STORAGE_VERSION,
+        themeState,
+        fieldLocks: createEmptyFieldLocks(),
+        uiState: { sidebarWidth: 416, folderNameEdited: false, shellAppearance: 'system' },
+      }).replace('"overflow-marker"', value);
+      localStorage.setItem(SESSION_STORAGE_KEY, json);
+
+      assert.equal(loadSession(), null);
+    }
+  }
+});
