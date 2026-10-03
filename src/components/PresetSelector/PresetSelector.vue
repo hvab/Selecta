@@ -40,11 +40,7 @@ function getPresetLabel(preset) {
           </option>
         </Select>
       </Field>
-      <Field
-        :message="importError"
-        message-id="theme-json-import-error"
-        message-view="error"
-      >
+      <Field :message="importError" message-id="theme-json-import-error" message-view="error">
         <Button
           class="preset-controls__import-button"
           view="outlined"

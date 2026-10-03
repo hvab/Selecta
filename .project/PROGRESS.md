@@ -801,8 +801,8 @@ path in a real local Aegea instance.
 ## Technical iteration: remote quality gate (R02)
 
 Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
-The remote implementation still supports shell `system`; its valid-session
-fixture is correct. Tests (99/99), JavaScript/style lint, and build pass. Only
+At that original baseline, the remote implementation supported shell `system`;
+its valid-session fixture was correct. Tests (99/99), JavaScript/style lint, and build passed. Only
 Prettier fails on the two already tracked audit prompt documents.
 
 - [x] Format only `audit/1-astra-xhigh-prompt.md` and
@@ -818,3 +818,49 @@ no diff. No new test is needed for Markdown formatting.
 
 Local verification uses Node 24/macOS. Next small step: create a draft PR and
 verify the existing Node 22/Linux CI without running deployment.
+
+## Technical iteration: quality gate after main update
+
+New baseline: `8662ce5a7a94fff4df4f95bab34a0f48eea9b561`. It includes the
+UI migration, concrete light/dark session policy, document-root colour scheme,
+and already published audit reports. Reproduced on an isolated worktree:
+98/99 tests, one PresetSelector formatting error, seven App.css style errors,
+and formatting failures in two prompts, two reports and PresetSelector.
+Build passes. No dependencies or quality rules are changed.
+
+- [x] Merge new main into this branch without rewriting history; retain its UI.
+- [x] Format only the PresetSelector opening tag, with unchanged attributes.
+- [x] Align the session test fixture with the current light/dark contract and
+      add explicit rejection regressions for legacy system/missing values.
+      Coordinate `storage.test.js`; leave runtime persistence unchanged.
+- [x] Move global root/popper layer declarations out of scoped App.css into
+      global shell CSS, preserving selectors/values. Consolidate the duplicate
+      download-error rule and replace deprecated clip with equivalent clip-path.
+      Coordinate App.css; keep widths, overlays and theme behavior unchanged.
+- [x] Format the already published reports in a separate commit under the
+      renewed technical-fix authorization. Their normalized Markdown and
+      embedded JavaScript ASTs match the baseline: words, data, links and
+      semantic structure are unchanged.
+- [x] Run all five checks locally: 104/104 tests, JS/style lint, formatting and
+      build pass. Unknown ordinary CSS pseudo-classes still fail stylelint.
+- [ ] Confirm clean Node 22/Linux PR CI after pushing this branch.
+
+Local clean npm ci is blocked by EALLOWGIT for the pinned hvab-blocks dependency.
+No bypass was attempted. Existing installed dependencies were copied with
+executable symlinks preserved; the shared and new-main lockfiles match exactly.
+The CI clean install remains the authoritative independent install check.
+
+Verified shell layers: Vue compilation of the former scoped :global rules and
+the new global CSS produces identical selectors/declarations/priorities.
+Chrome light/dark Share/Reset portals use floating z-index 10 and modal 20;
+Copy-link status retains role=status, a 1px box and inset(50%) clipping. Metadata
+errors still disable ZIP; download-error flex-basis remains auto in the header.
+
+Read-only npm audit: 16 flagged package records (14 high, 1 moderate, 1 low),
+including inherited dependency records, not 16 independent vulnerabilities.
+Production-only audit flags PostCSS and nanoid through Vue's compiler package;
+the built browser chunks contain no modules from either package. Tooling
+issues include brace-expansion, braces and its stylelint chain, fast-uri,
+js-yaml, colord and postcss-selector-parser. Audit proposes breaking downgrades
+for the braces/stylelint chain; do not run audit fix --force. Dependencies and
+lockfile remain unchanged. Dependency remediation requires separate scope.
