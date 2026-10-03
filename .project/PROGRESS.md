@@ -90,6 +90,18 @@ CSS grammar, payload limits, migrations, or UI changes.
       or CSS-string validation were added. Next: review the draft PR and CI;
       resolve baseline formatting independently before merging.
 
+### Quality-gate prerequisite follow-up
+
+- [x] Cherry-pick the verified R02 prerequisite `c29c7e3` as `d6691a5`,
+      preserving both independent progress sections. Dependency: PR #1.
+- [x] Verify all five local checks: 108 tests, JS/style lint, full formatting,
+      and build pass. Next: verify the complete Ubuntu/Node 22 CI on the updated
+      PR #2 head, then review the draft without merging.
+
+The formatting failure above describes the first R01 check before R02.
+Only the prerequisite prompt formatting and this progress update extend R01;
+its runtime code and validation scope remain unchanged.
+
 ## Completed tracks
 
 - Project scaffold and tooling.
