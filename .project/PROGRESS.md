@@ -59,6 +59,78 @@ the current Aegea checkout before changing preview or export behavior.
 - Code font is still controlled by Aegea `plain`; Selecta edits interface and
   note text font slots.
 
+## Validation slice on the previous published base
+
+Scope: keep imported and restored themes based on `plain`, and reject non-finite
+numeric model values. The published shell still supports `system`; preserve its
+existing session behavior and optional UI fields. Do not add numeric ranges,
+CSS grammar, payload limits, migrations, or UI changes.
+
+- [x] Reproduce unsupported parent and overflowing JSON numbers on the published
+      base; add regressions in `src/theme/serialize.test.js` and
+      `src/storage.test.js`, covering JSON, File, URL, and session restore.
+      Verification: targeted Node tests reproduced seven failing regressions on
+      the unchanged base; existing tests and positive compatibility cases passed.
+      Next: implement the shared boundary check. No CSS grammar was tested.
+- [x] Share field-value checks between `src/theme/serialize.js` and
+      `src/storage.js` through `src/theme/validation.js`; preserve font normalization
+      and known-field copying. Verification: all 28 targeted tests passed, including
+      the new regressions, all ten built-in presets, finite values outside UI ranges,
+      and the existing `system` session test. No UI or persistence timing changed.
+      Next: run the complete local quality gate and inspect generated ZIP contents.
+- [x] Run `npm test`, `npm run lint`, `npm run lint:styles`,
+      `npm run format:check`, and `npm run build`; inspect the diff.
+      Verification: 108 tests, JS lint, style lint, build, changed-file Prettier,
+      and `git diff --check` passed on local Node 24 after a clean lockfile install.
+      Full `format:check` still fails on the two unchanged audit prompt files in
+      the published base; leave these outside this slice. Verified ten preset ZIPs
+      after JSON/URL round-trips and unknown Google font fallback. Chrome rejects
+      unsupported-parent and `1e999` URLs without applying their state; EN/RU
+      feedback remains available. File decoding is covered with synthetic Blob
+      tests; browser file picker, PHP/live Aegea, and Linux/Node 22 are unverified.
+      Generators still consume trusted in-memory state; no direct-generator guards
+      or CSS-string validation were added. Next: review the draft PR and CI;
+      resolve baseline formatting independently before merging.
+
+### Quality-gate prerequisite follow-up
+
+- [x] Cherry-pick the verified R02 prerequisite `c29c7e3` as `d6691a5`,
+      preserving both independent progress sections. Dependency: PR #1.
+- [x] Verify all five local checks: 108 tests, JS/style lint, full formatting,
+      and build pass. Next: verify the complete Ubuntu/Node 22 CI on the updated
+      PR #2 head, then review the draft without merging.
+
+The formatting failure above describes the first R01 check before R02.
+Only the prerequisite prompt formatting and this progress update extend R01;
+its runtime code and validation scope remain unchanged.
+
+## Active R01 synchronization with the new UI base
+
+Base: `origin/main` at `8662ce5`. Its documented UI contract requires a concrete
+`light`/`dark` shell appearance and ignores old `system`/missing values. Preserve
+that policy; theme JSON/URL still excludes shell state and keeps `basedOn=plain`.
+The preceding validation notes describe verification before the UI merge.
+
+- [x] Merge current main normally, retaining the new UI and both independent
+      progress sections. Inspect `storage.js`, App restore/import handlers,
+      the theme model, and SPEC; theme-field contracts are unchanged.
+- [x] Adapt only R01 session regression fixtures to valid light/dark UI state;
+      prove invalid parent/overflow rejection and valid restored finite values.
+      Areas: `src/storage.test.js`. Verification: all 23 selected R01 tests pass.
+      The seven rejection regressions fail again against the unmodified new base;
+      positive restore checks accept both current shell modes and finite values
+      outside UI slider ranges. No session migration or runtime policy changed.
+- [x] Run the five quality commands and verify browser URL rejection in the
+      new UI: build passes; 108/109 tests pass, with only the base's stale `system`
+      fixture failing; JS/style lint and full formatting expose the known base
+      failures. Chrome still rejects unsupported-parent and overflow URLs,
+      preserves the theme, and provides EN/RU error feedback in the new shell.
+      A new local clean install is blocked by npm's Git-package restriction;
+      local checks use a copy of the already installed project dependencies.
+- [ ] Incorporate the verified new quality prerequisite, keeping both progress
+      sections and all main UI changes. Push normally and verify full CI on the
+      exact final head; the previous green run is historical evidence only.
+
 ## Completed tracks
 
 - Project scaffold and tooling.
@@ -797,3 +869,141 @@ path in a real local Aegea instance.
 - Do not store language in theme JSON, share URLs, or ZIP output.
 - Do not stage, commit, switch branches, or push unless the user explicitly asks.
 - Keep diffs scoped; avoid reformatting unrelated files.
+
+## Technical iteration: remote quality gate (R02)
+
+Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
+At that original baseline, the remote implementation supported shell `system`;
+its valid-session fixture was correct. Tests (99/99), JavaScript/style lint, and build passed. Only
+Prettier fails on the two already tracked audit prompt documents.
+
+- [x] Format only `audit/1-astra-xhigh-prompt.md` and
+      `audit/2-sol-6-1-xhigh-verify-prompt.md`, preserving their content.
+      Verify with `npm run format:check` and a scoped diff.
+- [x] Rerun `npm test`, `npm run lint`, `npm run lint:styles`,
+      `npm run format:check`, and `npm run build`: all pass locally.
+      Keep the independent plain-font fix and local UI work out of this branch.
+
+No lint rules, thresholds, session behavior, or audit reports are changed.
+The prompt changes add exactly four blank lines; ignoring blank lines produces
+no diff. No new test is needed for Markdown formatting.
+
+Local verification uses Node 24/macOS. Next small step: create a draft PR and
+verify the existing Node 22/Linux CI without running deployment.
+
+## Technical iteration: complete R01 value contract
+
+The owner delegated the value-policy decision and authorized commits and pushes
+on separate fix branches, without merging or pushing main. Continue the existing
+R01 PR from its updated main baseline; leave develop and unrelated fixes alone.
+
+- [x] Define shared control/import constraints in `src/theme/constraints.js`:
+      six-digit HEX colors (either case); decimal px text size 14..24; decimal
+      rem content width 36..64 and margins 1..4; finite unitless title scale
+      1.2..2 and text line height 1.3..1.9. Reuse these limits in ThemeControls.
+      Verify defaults, Random and all presets fit; accept decimal precision
+      independently of the sliders' interaction steps.
+- [x] Extend the existing shared boundary validator for JSON/File/URL/storage.
+      Reject unsupported models atomically; retain editable metadata errors,
+      known-field copying, version 2 and existing font normalization/fallback.
+      Verify CSS breakout, wrong units, malformed colors and range endpoints
+      using a temporary harness; adjust existing range fixtures to the contract.
+- [x] Guard the ZIP boundary (including direct callers) and Download availability
+      with the same model invariant; retain the separate metadata validity gate.
+      Verify ZIP paths, CSS declarations and escaped PHP metadata against the
+      real Aegea variable contract without changing preview markup or engine.
+- [x] Run scoped quality checks and build; record existing R02 failures rather
+      than fixing them. Commit/push only this iteration and update draft PR #2.
+      Inspect CI; no merge, release, main push or environment repair.
+
+Policy rationale: inputs remain exactly representable by the current editor;
+presets and generated themes already use these units and bounds. Arbitrary CSS
+functions/declarations and manual values outside the editor are rejected, never
+silently clamped or partially applied. Invalid stored sessions use the existing
+fallback. CSS injection into the exported artifact is relevant; JS/PHP execution
+or XSS has not been demonstrated by this audit.
+
+Implementation: shared limits now drive the existing sliders and value validator.
+Custom system stacks retain named/quoted families and generic fallbacks, with
+balanced quotes and complete comma-separated tokens; unsupported font syntax is
+rejected at external boundaries. The existing trusted generator fallback remains.
+Download availability and direct ZIP callers also reject an invalid model;
+editable empty/invalid metadata can still be imported and repaired in the UI,
+but cannot become an archive path. No preview structure or Aegea target changed.
+
+Verification before prerequisite integration: scoped ESLint/Prettier, build and
+ZIP parsing passed. A temporary harness rejected 250 invalid models across
+JSON/File/URL/storage and direct ZIP, accepted all catalog font choices and ten
+preset archives, and checked range endpoints plus 200 Random themes applied as
+the App applies them. Existing range fixtures now use the supported endpoints;
+no new repository test or infrastructure was added.
+
+Browser file-chooser verification remains unavailable: the Chrome extension
+requires file-URL access, which was not enabled. File decoding was verified via
+Blob. PHP/live Aegea installation and paired rendering remain unverified; no
+runtime repair or V01/V03/V04 work was attempted.
+
+Full checks still encountered the known main R02 failures. The already prepared
+quality prerequisite at PR #1 head `954f71d` has successful Node 22/Linux CI and
+is merged into this fix branch as a separate integration commit. This does
+not merge either PR into main or deploy the site.
+
+## Technical iteration: quality gate after main update
+
+New baseline: `8662ce5a7a94fff4df4f95bab34a0f48eea9b561`. It includes the
+UI migration, concrete light/dark session policy, document-root colour scheme,
+and already published audit reports. Reproduced on an isolated worktree:
+98/99 tests, one PresetSelector formatting error, seven App.css style errors,
+and formatting failures in two prompts, two reports and PresetSelector.
+Build passes. No dependencies or quality rules are changed.
+
+- [x] Merge new main into this branch without rewriting history; retain its UI.
+- [x] Format only the PresetSelector opening tag, with unchanged attributes.
+- [x] Align the session test fixture with the current light/dark contract and
+      add explicit rejection regressions for legacy system/missing values.
+      Coordinate `storage.test.js`; leave runtime persistence unchanged.
+- [x] Move global root/popper layer declarations out of scoped App.css into
+      global shell CSS, preserving selectors/values. Consolidate the duplicate
+      download-error rule and replace deprecated clip with equivalent clip-path.
+      Coordinate App.css; keep widths, overlays and theme behavior unchanged.
+- [x] Format the already published reports in a separate commit under the
+      renewed technical-fix authorization. Their normalized Markdown and
+      embedded JavaScript ASTs match the baseline: words, data, links and
+      semantic structure are unchanged.
+- [x] Run all five checks locally: 104/104 tests, JS/style lint, formatting and
+      build pass. Unknown ordinary CSS pseudo-classes still fail stylelint.
+- [ ] Confirm clean Node 22/Linux PR CI after pushing this branch.
+
+Local clean npm ci is blocked by EALLOWGIT for the pinned hvab-blocks dependency.
+No bypass was attempted. Existing installed dependencies were copied with
+executable symlinks preserved; the shared and new-main lockfiles match exactly.
+The CI clean install remains the authoritative independent install check.
+
+Verified shell layers: Vue compilation of the former scoped :global rules and
+the new global CSS produces identical selectors/declarations/priorities.
+Chrome light/dark Share/Reset portals use floating z-index 10 and modal 20;
+Copy-link status retains role=status, a 1px box and inset(50%) clipping. Metadata
+errors still disable ZIP; download-error flex-basis remains auto in the header.
+
+Read-only npm audit: 16 flagged package records (14 high, 1 moderate, 1 low),
+including inherited dependency records, not 16 independent vulnerabilities.
+Production-only audit flags PostCSS and nanoid through Vue's compiler package;
+the built browser chunks contain no modules from either package. Tooling
+issues include brace-expansion, braces and its stylelint chain, fast-uri,
+js-yaml, colord and postcss-selector-parser. Audit proposes breaking downgrades
+for the braces/stylelint chain; do not run audit fix --force. Dependencies and
+lockfile remain unchanged. Dependency remediation requires separate scope.
+
+Final R01 combination after integrating the verified R02 prerequisite:
+all five existing quality commands pass locally (114/114 existing tests,
+ESLint, stylelint, Prettier and build). The temporary contract harness also
+passes again. Chrome URL import rejects CSS breakout and out-of-range scale,
+preserves the saved theme, and announces the error in EN/RU. A valid endpoint
+payload applies all values and enables ZIP; the download bridge timed out, so
+browser-downloaded archive inspection remains unverified. The ten archives
+created through the real ZIP API were parsed and inspected independently.
+
+Implementation is complete; next small step is owner review of draft PR #2 and
+its final CI, followed by the separately requested PR integration. Live Aegea
+installation, Chrome file permissions, R05 integration and other verification
+experiments are outside this iteration.

@@ -33,35 +33,50 @@ afterEach(() => {
   setLocalStorage(originalLocalStorage);
 });
 
-test('saves and loads a valid session', () => {
-  setLocalStorage(createMemoryStorage());
-  const themeState = structuredClone(initialThemeState);
-  const fieldLocks = createEmptyFieldLocks();
+for (const shellAppearance of ['light', 'dark']) {
+  test(`saves and loads a valid ${shellAppearance} session`, () => {
+    setLocalStorage(createMemoryStorage());
+    const themeState = structuredClone(initialThemeState);
+    const fieldLocks = createEmptyFieldLocks();
 
-  themeState.meta.displayName = 'Saved Theme';
-  fieldLocks.palette.link = true;
-  saveSession({
-    themeState,
-    fieldLocks,
-    uiState: {
-      sidebarWidth: 512,
-      folderNameEdited: true,
-      themeMode: 'dark',
-      shellAppearance: 'system',
-    },
-  });
+    themeState.meta.displayName = 'Saved Theme';
+    fieldLocks.palette.link = true;
+    const session = {
+      themeState,
+      fieldLocks,
+      uiState: {
+        sidebarWidth: 512,
+        folderNameEdited: true,
+        themeMode: 'dark',
+        shellAppearance,
+      },
+    };
+    saveSession(session);
 
-  assert.deepEqual(loadSession(), {
-    themeState,
-    fieldLocks,
-    uiState: {
-      sidebarWidth: 512,
-      folderNameEdited: true,
-      themeMode: 'dark',
-      shellAppearance: 'system',
-    },
+    assert.deepEqual(loadSession(), session);
   });
-});
+}
+
+for (const shellAppearance of ['system', undefined]) {
+  test(`ignores a legacy session with ${shellAppearance ?? 'missing'} shell appearance`, () => {
+    setLocalStorage(createMemoryStorage());
+    localStorage.setItem(
+      SESSION_STORAGE_KEY,
+      JSON.stringify({
+        version: SESSION_STORAGE_VERSION,
+        themeState: structuredClone(initialThemeState),
+        fieldLocks: createEmptyFieldLocks(),
+        uiState: {
+          sidebarWidth: 416,
+          folderNameEdited: false,
+          shellAppearance,
+        },
+      })
+    );
+
+    assert.equal(loadSession(), null);
+  });
+}
 
 test('clears a saved session', () => {
   setLocalStorage(createMemoryStorage());
@@ -71,9 +86,11 @@ test('clears a saved session', () => {
     uiState: {
       sidebarWidth: 416,
       folderNameEdited: false,
+      shellAppearance: 'light',
     },
   });
 
+  assert.notEqual(loadSession(), null);
   clearSession();
 
   assert.equal(loadSession(), null);
@@ -90,6 +107,7 @@ test('returns null for unsupported session version', () => {
       uiState: {
         sidebarWidth: 416,
         folderNameEdited: false,
+        shellAppearance: 'light',
       },
     })
   );
@@ -108,6 +126,7 @@ test('returns null for invalid session shape', () => {
       uiState: {
         sidebarWidth: '416px',
         folderNameEdited: false,
+        shellAppearance: 'light',
       },
     })
   );
@@ -147,4 +166,55 @@ test('ignores unavailable localStorage', () => {
   );
   assert.equal(loadSession(), null);
   assert.doesNotThrow(() => clearSession());
+});
+
+test('ignores sessions with unsupported theme parents', () => {
+  setLocalStorage(createMemoryStorage());
+
+  for (const basedOn of ['', 'acute', 'missing-parent']) {
+    const themeState = structuredClone(initialThemeState);
+    themeState.meta.basedOn = basedOn;
+    saveSession({
+      themeState,
+      fieldLocks: createEmptyFieldLocks(),
+      uiState: { sidebarWidth: 416, folderNameEdited: false, shellAppearance: 'light' },
+    });
+
+    assert.equal(loadSession(), null);
+  }
+});
+
+test('ignores sessions with overflowing numeric theme values', () => {
+  setLocalStorage(createMemoryStorage());
+
+  for (const key of ['titleScale', 'noteTextLineHeight']) {
+    for (const value of ['1e999', '-1e999']) {
+      const themeState = structuredClone(initialThemeState);
+      themeState.typography[key] = 'overflow-marker';
+      const json = JSON.stringify({
+        version: SESSION_STORAGE_VERSION,
+        themeState,
+        fieldLocks: createEmptyFieldLocks(),
+        uiState: { sidebarWidth: 416, folderNameEdited: false, shellAppearance: 'light' },
+      }).replace('"overflow-marker"', value);
+      localStorage.setItem(SESSION_STORAGE_KEY, json);
+
+      assert.equal(loadSession(), null);
+    }
+  }
+});
+
+test('restores finite theme values with current light and dark shell state', () => {
+  setLocalStorage(createMemoryStorage());
+
+  for (const shellAppearance of ['light', 'dark']) {
+    const themeState = structuredClone(initialThemeState);
+    themeState.typography.titleScale = 2;
+    themeState.typography.noteTextLineHeight = 1.9;
+    const uiState = { sidebarWidth: 416, folderNameEdited: false, shellAppearance };
+    const fieldLocks = createEmptyFieldLocks();
+    saveSession({ themeState, fieldLocks, uiState });
+
+    assert.deepEqual(loadSession(), { themeState, fieldLocks, uiState });
+  }
 });

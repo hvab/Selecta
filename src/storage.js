@@ -1,6 +1,7 @@
 import { META_LOCK_KEYS, PALETTE_LOCK_KEYS, TYPOGRAPHY_LOCK_KEYS, LAYOUT_LOCK_KEYS } from './theme/fieldLocks.js';
 import { normalizeTypographyFontSources } from './theme/fonts.js';
 import { initialThemeState } from './theme/model.js';
+import { isValidThemeField } from './theme/validation.js';
 
 export const SESSION_STORAGE_KEY = 'selecta_session';
 export const SESSION_STORAGE_VERSION = 2;
@@ -24,7 +25,9 @@ function getCompatibleSection(value, reference, sectionName) {
 
   const section = sectionName === 'typography' ? normalizeTypographyFontSources(value) : value;
 
-  return Object.entries(reference).every(([key, referenceValue]) => typeof section[key] === typeof referenceValue)
+  return Object.entries(reference).every(([key, referenceValue]) =>
+    isValidThemeField(sectionName, key, section[key], referenceValue)
+  )
     ? Object.fromEntries(Object.keys(reference).map((key) => [key, section[key]]))
     : null;
 }

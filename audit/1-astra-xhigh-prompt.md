@@ -17,6 +17,7 @@
 ## Карта проекта и обязательное чтение
 
 Selecta — браузерный генератор визуальных тем для Aegea, а не генератор текстовых тем/идей. Текущая основа: Vite, Vue 3, plain JavaScript, vue-i18n, fflate; статический сайт, без backend. Сначала прочитай:
+
 - `README.md`, `AGENTS.md`, `SPEC.md`;
 - `UI-ARCHITECTURE.md`, `PREVIEW-BASELINE.md`;
 - `.project/PROGRESS.md`, `.project/IDEAS.md`, `CHANGELOG.md`, `RELEASE.md`;
@@ -38,6 +39,7 @@ Selecta — браузерный генератор визуальных тем 
 ## Требования к выводам
 
 Каждому finding дай устойчивый ID `F01`, `F02` и далее. Укажи:
+
 - severity: Critical / High / Medium / Low и уверенность отдельно;
 - точный файл, строки и symbol/selector на зафиксированном SHA;
 - нарушенный контракт и источник ожидаемого поведения;
