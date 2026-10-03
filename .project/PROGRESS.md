@@ -993,3 +993,17 @@ issues include brace-expansion, braces and its stylelint chain, fast-uri,
 js-yaml, colord and postcss-selector-parser. Audit proposes breaking downgrades
 for the braces/stylelint chain; do not run audit fix --force. Dependencies and
 lockfile remain unchanged. Dependency remediation requires separate scope.
+
+Final R01 combination after integrating the verified R02 prerequisite:
+all five existing quality commands pass locally (114/114 existing tests,
+ESLint, stylelint, Prettier and build). The temporary contract harness also
+passes again. Chrome URL import rejects CSS breakout and out-of-range scale,
+preserves the saved theme, and announces the error in EN/RU. A valid endpoint
+payload applies all values and enables ZIP; the download bridge timed out, so
+browser-downloaded archive inspection remains unverified. The ten archives
+created through the real ZIP API were parsed and inspected independently.
+
+Implementation is complete; next small step is owner review of draft PR #2 and
+its final CI, followed by the separately requested PR integration. Live Aegea
+installation, Chrome file permissions, R05 integration and other verification
+experiments are outside this iteration.
