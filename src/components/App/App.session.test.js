@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { compileScript, parse } from '@vue/compiler-sfc';
 import { createRenderer, nextTick } from 'vue';
-import { i18n } from './i18n/index.js';
-import { loadSession } from './storage.js';
-import { initialThemeState } from './theme/model.js';
-import { createEmptyFieldLocks } from './theme/fieldLocks.js';
+import { i18n } from '../../i18n/index.js';
+import { loadSession } from '../../storage.js';
+import { initialThemeState } from '../../theme/model.js';
+import { createEmptyFieldLocks } from '../../theme/fieldLocks.js';
 
 // Mount the real App script with a null render: these regressions concern state and lifecycle, not child UI.
 const { descriptor } = parse(readFileSync(new URL('./App.vue', import.meta.url), 'utf8'));
@@ -40,7 +40,7 @@ beforeEach(() => {
   });
   const document = Object.assign(new EventTarget(), {
     visibilityState: 'visible',
-    documentElement: {},
+    documentElement: { setAttribute() {}, removeAttribute() {} },
     querySelector: () => null,
   });
   const localStorage = {
@@ -124,8 +124,8 @@ test('Reset cancels a pending edit and saves defaults before accepting the next 
   const app = mountApp();
   app.state.updateMetaField('displayName', 'Before Reset');
   app.state.fieldLocks.palette.link = true;
-  app.state.updateThemeMode({ target: { value: 'dark' } });
-  app.state.updateShellAppearance({ target: { value: 'dark' } });
+  app.state.updateThemeMode('dark');
+  app.state.updateShellAppearance('dark');
   await nextTick();
   t.mock.timers.tick(100);
   app.state.resetToDefaults();
@@ -133,7 +133,7 @@ test('Reset cancels a pending edit and saves defaults before accepting the next 
   assert.deepEqual(loadSession().themeState, initialThemeState);
   assert.deepEqual(loadSession().fieldLocks, createEmptyFieldLocks());
   assert.equal(loadSession().uiState.themeMode, 'light');
-  assert.equal(loadSession().uiState.shellAppearance, 'system');
+  assert.equal(loadSession().uiState.shellAppearance, 'light');
   await nextTick();
   t.mock.timers.tick(500);
   assert.deepEqual(loadSession().themeState, initialThemeState);
@@ -193,8 +193,8 @@ test('ordinary editing still debounces and saves theme, locks and UI together', 
   app.state.updateMetaField('displayName', 'Debounced');
   app.state.fieldLocks.palette.link = true;
   app.state.controlsPaneWidth = 480;
-  app.state.updateThemeMode({ target: { value: 'dark' } });
-  app.state.updateShellAppearance({ target: { value: 'dark' } });
+  app.state.updateThemeMode('dark');
+  app.state.updateShellAppearance('dark');
   await nextTick();
   t.mock.timers.tick(499);
   assert.equal(loadSession(), null);
