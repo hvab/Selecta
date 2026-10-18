@@ -1000,4 +1000,3 @@ issues include brace-expansion, braces and its stylelint chain, fast-uri,
 js-yaml, colord and postcss-selector-parser. Audit proposes breaking downgrades
 for the braces/stylelint chain; do not run audit fix --force. Dependencies and
 lockfile remain unchanged. Dependency remediation requires separate scope.
-
