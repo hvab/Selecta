@@ -337,3 +337,16 @@ path in a real local Aegea instance.
 - Do not store language in theme JSON, share URLs, or ZIP output.
 - Do not stage, commit, switch branches, or push unless the user explicitly asks.
 - Keep diffs scoped; avoid reformatting unrelated files.
+
+## Integration iteration: R05 merge readiness (2026-10-19)
+
+- [ ] Merge the verified current R02 branch, incorporating its main baseline;
+      port the existing R05 persistence changes into the current App component.
+      Preserve current shell controls, overlays, language and light/dark policy.
+- [ ] Adapt the existing App persistence regression harness to its relocated
+      component and current UI state; keep debounce, no-op Reset and lifecycle
+      save semantics, and preserve timer/listener cleanup.
+- [ ] Run existing quality commands and build; verify a disposable combination
+      with R03 and local hvab-blocks 0.3 without publishing develop changes.
+- [ ] Push only the R05 branch and inspect exact-head CI and mergeability;
+      update the existing draft PR. Do not merge PRs or push main.
