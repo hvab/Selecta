@@ -34,6 +34,7 @@
 ## Verification matrix
 
 Дай каждой исходной записи ровно одну строку со следующими полями:
+
 - исходный F-ID и краткое утверждение;
 - исходный severity;
 - статус: Confirmed / Partially confirmed / Rejected / Cannot verify;
@@ -75,6 +76,7 @@ Partially confirmed должен содержать точную подтвер�
 ## Формат результата и self-check
 
 Сохрани в `audit/2-sol-6-1-xhigh.md`:
+
 1. Executive summary и baseline drift.
 2. Полную verification matrix.
 3. Rejected / downgraded / already-fixed findings с объяснениями.
