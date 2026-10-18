@@ -764,6 +764,15 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
 </template>
 
 <style>
+:root {
+  --app-layer-floating: 10;
+  --app-layer-modal: 20;
+}
+
+[data-reka-popper-content-wrapper] {
+  z-index: var(--app-layer-floating) !important;
+}
+
 body {
   margin: 0;
   font-family: system-ui, sans-serif;

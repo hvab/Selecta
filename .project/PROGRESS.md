@@ -789,6 +789,52 @@ used paths; separately fix the baseline check failures. Earlier browser-review
 checkboxes are covered where listed above; unrelated cleanup tracks stay parked.
 No staging, commit, branch switch or publication performed.
 
+## Active track: baseline check cleanup (separate follow-up)
+
+Scope: fix the remaining check failures without changing application behavior,
+the Aegea contract or the completed hvab integration. Checked against `SPEC.md`:
+this is maintenance only. Preserve all earlier uncommitted changes.
+
+- [x] Correct the successful session test fixture to use a supported explicit
+      shell appearance (`src/storage.test.js`); run the focused storage suite.
+- [x] Resolve shell Stylelint errors without changing rendered declarations:
+      move Vue global rules into the existing unscoped style block, merge and
+      reorder download-error rules, and retain the current visually-hidden
+      clipping with a documented declaration-level deprecation exception
+      (`App.css`, `App.vue`). Compare compiled CSS declarations before/after.
+- [x] Format only the five reported files: `PresetSelector.vue` and the four
+      audit Markdown files. Check the diff for content changes.
+- [x] Repeat `npm test`, `npm run lint`, `npm run lint:styles`,
+      `npm run format:check`, `npm run build` and `git diff --check`; record
+      results, limitations and the next small step here.
+
+### Result (2026-10-19)
+
+- The successful session fixture now uses supported `shellAppearance: 'dark'`
+  instead of removed `system`, in both saved and expected data. Storage runtime
+  logic is unchanged. Focused storage checks pass 6/6; the full suite passes
+  99/99.
+- Overlay layer rules now live in the existing unscoped `App.vue` style block
+  as ordinary global selectors. Download-error declarations are merged and
+  ordered by specificity; the visually-hidden rule follows property order.
+  Existing `clip` behavior is retained with one documented declaration-level
+  Stylelint exception; no lint rules are disabled globally.
+- The five reported formatting files are fixed. The four audit documents
+  retain identical content apart from whitespace and table separator padding.
+- Compared with the start of this follow-up, Vue-compiled shell CSS has the
+  same selector/property/value/importance mapping; App and PresetSelector
+  scripts and compiled template render code are unchanged. Prior hvab changes
+  remain intact.
+- Final checks pass: `npm test` (99/99), `npm run lint`,
+  `npm run lint:styles`, `npm run format:check`, `npm run build`, and
+  `git diff --check`. The build still prints the two existing VueUse PURE
+  annotation warnings; it exits successfully.
+- No new browser acceptance was needed for these behavior-preserving changes.
+  Earlier Safari/Windows/screen-reader verification gaps remain unchanged.
+
+Next small step: the previously deferred manual platform acceptance. The check
+cleanup is complete; nothing staged, committed, switched or published.
+
 ## Next steps
 
 - [ ] Browser-review the three header radio groups: independent Theme and

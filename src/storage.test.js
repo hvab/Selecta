@@ -47,7 +47,7 @@ test('saves and loads a valid session', () => {
       sidebarWidth: 512,
       folderNameEdited: true,
       themeMode: 'dark',
-      shellAppearance: 'system',
+      shellAppearance: 'dark',
     },
   });
 
@@ -58,7 +58,7 @@ test('saves and loads a valid session', () => {
       sidebarWidth: 512,
       folderNameEdited: true,
       themeMode: 'dark',
-      shellAppearance: 'system',
+      shellAppearance: 'dark',
     },
   });
 });
