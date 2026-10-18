@@ -873,7 +873,7 @@ lockfile remain unchanged. Dependency remediation requires separate scope.
 - [x] Adapt the existing App persistence regression harness to its relocated
       component and current UI state; keep debounce, no-op Reset and lifecycle
       save semantics, and preserve timer/listener cleanup.
-- [ ] Run existing quality commands and build; verify a disposable combination
+- [x] Run existing quality commands and build; verify a disposable combination
       with R03 and local hvab-blocks 0.3 without publishing develop changes.
 - [ ] Push only the R05 branch and inspect exact-head CI and mergeability;
       update the existing draft PR. Do not merge PRs or push main.
@@ -890,3 +890,21 @@ Share feedback and concrete light/dark state policy. R05 only adds the shared
 session flush and page lifecycle listeners, removes the Reset skip flag and
 preserves existing shell cleanup. Its existing eight regressions were moved
 with App and adapted to current state handlers; no old UI or system mode returns.
+
+Compatibility result: a disposable combination of R02 + R03 + R05 and the
+owner's local develop commits `71d4e64` / `29fb10c` passes all five quality
+commands and builds with hvab-blocks 0.3.0. The actual fix branches keep their
+pinned 0.2.0 dependency and do not publish those develop commits.
+
+For eventual integration with that develop state, keep R03's usePanelLayout and
+preferred/effective width separation. Remove develop's superseded viewportWidth,
+handleWindowResize and resize-listener wiring; retain its controls-pane container
+query, Field adaptation and body system font. Keep R02's AppLayers stylesheet,
+clip-path and current session fixtures rather than restoring duplicate globals
+or the deprecated clipping declaration. Keep R05's lifecycle save and cleanup.
+
+No theme/ZIP/preview contract or session schema changed in this integration.
+Browser/platform coverage remains as previously documented; no new Safari,
+Windows/forced-colors or screen-reader verification is claimed.
+Next step: push this branch, confirm exact-head Ubuntu/Node 22 CI and report
+mergeability in the PR. No main/develop push, PR merge or deployment is requested.
