@@ -895,3 +895,16 @@ path in a real local Aegea instance.
 - Do not store language in theme JSON, share URLs, or ZIP output.
 - Do not stage, commit, switch branches, or push unless the user explicitly asks.
 - Keep diffs scoped; avoid reformatting unrelated files.
+
+## Integration iteration: R03 merge readiness (2026-10-19)
+
+- [ ] Merge the verified R02 branch into R03, preserving panel sizing and both
+      progress histories. Expected area: `.project/PROGRESS.md`; resolve any
+      source conflict against the existing sizing contract, not legacy UI.
+- [ ] Run existing quality commands and build; preserve measured divider budgets,
+      preferred/effective width and the current theme/export/session contracts.
+- [ ] Verify compatibility in a disposable combination with R05 and the owner's
+      local hvab-blocks 0.3 integration, retaining R03 as the sizing authority.
+      Do not publish the unrelated develop commits in this PR.
+- [ ] Push only the R03 branch, inspect exact-head CI and mergeability, rewrite
+      the PR description around the final state. Do not merge PRs or push main.
