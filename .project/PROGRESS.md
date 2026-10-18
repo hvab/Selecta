@@ -896,6 +896,44 @@ path in a real local Aegea instance.
 - Do not stage, commit, switch branches, or push unless the user explicitly asks.
 - Keep diffs scoped; avoid reformatting unrelated files.
 
+## Integration iteration: R03 merge readiness (2026-10-19)
+
+- [x] Merge the verified R02 branch into R03, preserving panel sizing and both
+      progress histories. Expected area: `.project/PROGRESS.md`; resolve any
+      source conflict against the existing sizing contract, not legacy UI.
+- [x] Run existing quality commands and build; preserve measured divider budgets,
+      preferred/effective width and the current theme/export/session contracts.
+- [x] Verify compatibility in a disposable combination with R05 and the owner's
+      local hvab-blocks 0.3 integration, retaining R03 as the sizing authority.
+      Do not publish the unrelated develop commits in this PR.
+- [ ] Push only the R03 branch, inspect exact-head CI and mergeability, rewrite
+      the PR description around the final state. Do not merge PRs or push main.
+
+R02 prerequisite `954f71d` is integrated without rewriting either branch.
+Existing quality commands and production build all pass locally. Local npm ci
+is blocked by the existing Git-package restriction; npm settings were not changed.
+The local fixture uses installed dependencies with matching lockfile entries and
+hvab-blocks files from exact local pinned commit `b9c78a6`. Fresh lockfile install
+on Ubuntu/Node 22 remains required in the final PR CI.
+
+Compatibility result: a disposable combination of R02 + R03 + R05 and the
+owner's local develop commits `71d4e64` / `29fb10c` passes all five quality
+commands and builds with hvab-blocks 0.3.0. The actual fix branches keep their
+pinned 0.2.0 dependency and do not publish those develop commits.
+
+For eventual integration with that develop state, keep R03's usePanelLayout and
+preferred/effective width separation. Remove develop's superseded viewportWidth,
+handleWindowResize and resize-listener wiring; retain its controls-pane container
+query, Field adaptation and body system font. Keep R02's AppLayers stylesheet,
+clip-path and current session fixtures rather than restoring duplicate globals
+or the deprecated clipping declaration. Keep R05's lifecycle save and cleanup.
+
+No theme/ZIP/preview contract or session schema changed in this integration.
+Browser/platform coverage remains as previously documented; no new Safari,
+Windows/forced-colors or screen-reader verification is claimed.
+Next step: push this branch, confirm exact-head Ubuntu/Node 22 CI and report
+mergeability in the PR. No main/develop push, PR merge or deployment is requested.
+
 ## Technical iteration: remote quality gate (R02)
 
 Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
@@ -963,22 +1001,3 @@ js-yaml, colord and postcss-selector-parser. Audit proposes breaking downgrades
 for the braces/stylelint chain; do not run audit fix --force. Dependencies and
 lockfile remain unchanged. Dependency remediation requires separate scope.
 
-## Integration iteration: R03 merge readiness (2026-10-19)
-
-- [x] Merge the verified R02 branch into R03, preserving panel sizing and both
-      progress histories. Expected area: `.project/PROGRESS.md`; resolve any
-      source conflict against the existing sizing contract, not legacy UI.
-- [x] Run existing quality commands and build; preserve measured divider budgets,
-      preferred/effective width and the current theme/export/session contracts.
-- [ ] Verify compatibility in a disposable combination with R05 and the owner's
-      local hvab-blocks 0.3 integration, retaining R03 as the sizing authority.
-      Do not publish the unrelated develop commits in this PR.
-- [ ] Push only the R03 branch, inspect exact-head CI and mergeability, rewrite
-      the PR description around the final state. Do not merge PRs or push main.
-
-R02 prerequisite `954f71d` is integrated without rewriting either branch.
-Existing quality commands and production build all pass locally. Local npm ci
-is blocked by the existing Git-package restriction; npm settings were not changed.
-The local fixture uses installed dependencies with matching lockfile entries and
-hvab-blocks files from exact local pinned commit `b9c78a6`. Fresh lockfile install
-on Ubuntu/Node 22 remains required in the final PR CI.
