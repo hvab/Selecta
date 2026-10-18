@@ -37,6 +37,7 @@ const folderNameEdited = ref(false);
 const appElement = ref(null);
 const defaultControlsPaneWidth = 416;
 const controlsPaneWidth = ref(defaultControlsPaneWidth);
+const viewportWidth = ref(window.innerWidth);
 const themeMode = ref('light');
 const shellAppearance = ref(getPreferredShellAppearance());
 const isResizingControlsPane = ref(false);
@@ -126,9 +127,7 @@ const fontFamilyKeyBySourceKey = {
   noteFontSource: 'noteFontFamily',
 };
 const effectiveControlsPaneMaxWidth = computed(() => {
-  const appWidth = appElement.value?.getBoundingClientRect().width ?? window.innerWidth;
-
-  return Math.max(controlsPaneMinWidth, Math.min(controlsPaneMaxWidth, appWidth - previewPaneMinWidth));
+  return Math.max(controlsPaneMinWidth, Math.min(controlsPaneMaxWidth, viewportWidth.value - previewPaneMinWidth));
 });
 
 function translateMessageMap(messagesByField, namespace) {
@@ -424,6 +423,11 @@ function resizeControlsPaneByStep(step) {
   controlsPaneWidth.value = getConstrainedControlsPaneWidth(controlsPaneWidth.value + step);
 }
 
+function handleWindowResize() {
+  viewportWidth.value = window.innerWidth;
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(controlsPaneWidth.value);
+}
+
 function handleControlsPaneResizeKeydown(event) {
   if (event.key === 'ArrowLeft') {
     event.preventDefault();
@@ -538,6 +542,7 @@ function getStoredThemeMode(uiState) {
 }
 
 onMounted(() => {
+  window.addEventListener('resize', handleWindowResize);
   const preferredShellAppearance = getPreferredShellAppearance();
 
   shellAppearance.value = preferredShellAppearance;
@@ -569,6 +574,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  window.removeEventListener('resize', handleWindowResize);
   clearTimeout(shareFeedbackTimeout);
   globalThis.document?.documentElement.removeAttribute('data-color-scheme');
 });
@@ -760,6 +766,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
 <style>
 body {
   margin: 0;
+  font-family: system-ui, sans-serif;
 }
 </style>
 <style scoped src="./App.css"></style>

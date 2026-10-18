@@ -692,6 +692,103 @@ visual language.
   - code-review changed: Share success uses a polite live region and its error
     uses an alert role.
 
+## Active track: `hvab-blocks` 0.3.0 integration acceptance
+
+Scope: preserve selective npm CSS imports and local Vue/Reka adapters. Keep
+the Aegea preview/export contract and unrelated planned tracks unchanged.
+
+- [x] Pin `github:hvab/hvab-blocks#v0.3.0` in `package.json` and refresh
+      `package-lock.json`; verify resolution to
+      `4dfa1c71dc169172c7e6f1de720b6b47044261fc` and installed LICENSE/notices.
+      Check existing public token overrides against the new contrast roles.
+- [x] Review the combined shell integration in Chromium: light/dark, narrow/wide
+      sidebar, narrow viewport, Reset with long actions, field/color-input,
+      used control states, keyboard navigation and overlay focus return.
+      Fix only integration defects found in these areas; record library defects
+      separately. Do not add unused table/toast blocks for acceptance.
+- [x] Run the applicable existing project checks (unit suite, lint, style lint,
+      formatting, production build). Record concrete results, remaining manual
+      Safari/Windows/screen-reader limits, and the next small step here.
+
+Initial audit: clean `develop`; dependency-based integration at `v0.2.0`, no
+vendored CSS. `src/ui/hvab.css` imports eight token files and sixteen blocks.
+The shell uses library light/dark colors, with only local card padding,
+color-input width and error-tooltip component-token overrides. No custom status
+palette needs migration: new contrast roles must inherit from the library in
+both schemes. Edited Aegea themes do not consume `--hb-*` tokens.
+
+Integration fixes selected after browser inspection (within the shell boundary
+in `SPEC.md` / `UI-ARCHITECTURE.md`):
+
+- [x] Make inline fields respond to the sidebar container, not just the viewport
+      (`App.css`, `Field.vue`). At 320px, fixed label/addon columns currently
+      leave range inputs at 0px. Check 320px, default 416px, 672px and mobile.
+- [x] Set the shell's system font at document-body level (`App.vue`) so portal
+      dialog/menu/tooltip content inherits it. Aegea preview already sets its
+      own font. Check computed portal and preview fonts in both schemes.
+- [x] Re-clamp the sidebar on window resize (`App.vue`). Resizing a 672px
+      sidebar down to a 768px viewport currently leaves only 88px for preview;
+      the maximum-width computed value also caches a nonreactive DOM read.
+      Track viewport width and verify 1280 → 768 → mobile and keyboard resize.
+
+### Result (2026-10-19)
+
+- Source: [hvab-blocks v0.3.0](https://github.com/hvab/hvab-blocks/releases/tag/v0.3.0),
+  commit `4dfa1c71dc169172c7e6f1de720b6b47044261fc`. The GitHub-tag dependency
+  and exact lockfile SHA preserve the existing integration model. All 24
+  imported token/block CSS files and installed `LICENSE` /
+  `THIRD_PARTY_NOTICES.md` match the tag byte for byte. No vendor patch or resync.
+- Existing card, full-width color-input and error-tooltip public-token
+  overrides are preserved. All three new functional contrast tokens resolve
+  to the release's light/dark values; field warnings use `warning-contrast`
+  (`rgb(145 74 17)` / `rgb(255 197 108)`). User-generated Aegea themes remain
+  isolated from shell tokens; there is no custom hvab status palette to migrate.
+- Fixed consumer layout at sidebar widths up to 23rem using a named container
+  query; range inputs at 320px now have 278px instead of 0px. At 416/672px,
+  the existing inline layout remains. Across both schemes and all three widths,
+  no field overflows; color inputs fill their slots (278/144/400px).
+- Fixed system-font inheritance for portal surfaces at body level; Reset,
+  Share and feedback tooltip use the shell font, while the preview still uses
+  its own selected font. Sidebar maximum width now reacts to window resize;
+  1280 → 768 clamps the 672px pane to 408px, and mobile remains stacked.
+- Browser acceptance: Chromium in-app browser, development app and a smoke
+  check of the final production build. Checked both shell schemes, independent
+  preview theme mode, sidebar 320/416/672px, viewports 320/375/768/1280px,
+  metadata validation/disabled ZIP and Share commands, native color value
+  propagation to preview, select/range/switch changes, checked/unchecked/mixed
+  locks, radio arrow keys/Space and locale switching. Focus-visible is shown;
+  Reset traps Tab/Shift+Tab and returns focus after Cancel, Escape, outside
+  click and confirm. Confirm resets values/locks. Share supports ArrowDown /
+  Enter / Escape, Copy link feedback and trigger focus return.
+- Long-action stress check: temporarily lengthened both English Reset actions
+  to roughly 60 characters in the real app, then restored the original copy.
+  At 480px dialog width the actions wrap in a row; at 327/272px they stack and
+  remain fully visible, including a 320×320 viewport. No horizontal overflow.
+- `hb-table`, `hb-toast` and dialog dividers are not used/imported by Selecta;
+  no synthetic catalogue coverage is claimed. The preview's existing table
+  belongs to Aegea, not the hvab table contract. No library defects found in
+  the exercised integration paths.
+- `npm run build` passes. The final production smoke check has no captured
+  browser console warnings/errors. Rollup reports two existing VueUse PURE
+  annotation warnings during build.
+- Existing checks are not all green: `npm test` is 98/99 (the session fixture
+  uses removed `shellAppearance: 'system'`); `npm run lint` has one pre-existing
+  Prettier error in `PresetSelector.vue`; `npm run lint:styles` has seven
+  pre-existing errors in `App.css` (`:global`, duplicate/order of
+  `.download-error`, deprecated `clip` and property order);
+  `npm run format:check` flags four audit Markdown files and `PresetSelector`.
+  The same failures were reproduced from an untouched archive of HEAD
+  `8662ce5`; this integration adds no check failures. Unrelated fixes deferred.
+- Not verified: real Safari/iOS, Windows High Contrast / forced colors, a real
+  screen reader, OS color-picker dialog internals, or disabled/mixed control
+  combinations not reachable in Selecta. Chromium keyboard/DOM inspection is
+  not a substitute for those checks.
+
+Next small step: manual Safari/Windows/screen-reader acceptance of these same
+used paths; separately fix the baseline check failures. Earlier browser-review
+checkboxes are covered where listed above; unrelated cleanup tracks stay parked.
+No staging, commit, branch switch or publication performed.
+
 ## Next steps
 
 - [ ] Browser-review the three header radio groups: independent Theme and
