@@ -87,3 +87,14 @@ When preview-related code changes:
 5. Recheck link underline behavior for the selected Aegea target version.
 6. Recheck whether the preview still covers all required states from `SPEC.md`.
 7. Update this baseline when the checked Aegea release target or the preview contract changes.
+
+## R04 refresh source check (2026-10-19)
+
+- The available release checkout still matches the pinned `11.5` / `v4199`
+  commit. Source and compiled plain CSS retain the system font stack above.
+- The available development checkout at
+  `fada36ef1e5fba78d8d9f66dcc1b0d646e2df2fb` still uses InterVariable;
+  it remains outside this release target. Its plain CSS-variable names and
+  English/Russian preview content match the pinned release. Its layout adds
+  a drafts block outside Selecta's supported preview states.
+- This refresh changes no preview markup or represented states.
