@@ -570,6 +570,7 @@ onMounted(() => {
     try {
       applySharedThemeState(decodeThemeFromUrlParam(themeParam));
       clearThemeUrlParam();
+      saveCurrentSession();
       return;
     } catch {
       clearThemeUrlParam();

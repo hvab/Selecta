@@ -946,3 +946,39 @@ explicit default-state URL import. All existing local quality commands and the
 production build pass. No repository test or infrastructure was added. Local
 checks use copied matching dependencies and exact pinned hvab-blocks b9c78a6;
 clean installation remains the responsibility of the exact-head PR CI.
+
+## Follow-up iteration: URL-import persistence baseline (2026-10-19)
+
+- [x] Add an immediate session save after successful URL import and URL cleanup
+      in App.vue, before its early return. Preserve the session schema and debounce.
+- [x] Repeat the existing default/non-default URL two-tab reproduction and
+      existing lifecycle/Reset/retry checks; run existing quality commands/build.
+- [ ] Record results and PR #5 status; await coordinator review before commit/push.
+
+The idle default URL-import case was reproduced after the previous iteration:
+its values match initial state, so the watcher does not establish the saved
+snapshot. The early mount return also bypasses the restored-session baseline.
+A later idle lifecycle flush can overwrite a newer session from another tab.
+This follow-up corrects the earlier claim of complete default-import coverage.
+
+Implementation and local acceptance: App now saves immediately after a valid
+URL import, before the mount early return. This establishes the baseline even
+when imported values equal initial state and the watcher does not run.
+
+The existing temporary reproduction now retains Latest B after idle A pagehide
+for both default and non-default imports. The existing independent lifecycle
+check passes idle/restored tabs, synchronous pre-watcher edits, write-failure
+retry and repeated Reset. The repository suite passes 112/112; lint, lint:styles,
+format:check and production build pass. No test sources were added or changed.
+The build retains two existing VueUse PURE-annotation warnings.
+
+PR #5 remote head remains e785be05faa0a6ed923c2769ea67f5622d81b18d
+(base 8662ce5). Local checks accepted; coordinator review, publication and
+exact-head CI for this follow-up are pending. No commit or push was made here.
+The coordinator will publish after review and record the final CI result.
+
+Limits: snapshot comparison prevents unchanged-tab lifecycle overwrites; it
+does not arbitrate concurrent edits. Failed storage writes remain retryable.
+This change does not alter theme, preview or ZIP contracts. Browser/platform
+coverage is unchanged. Next small step: coordinator review and publish PR #5,
+then inspect its exact-head CI.
