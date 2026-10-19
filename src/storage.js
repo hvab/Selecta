@@ -109,8 +109,10 @@ export function saveSession({ themeState, fieldLocks, uiState }) {
         uiState,
       })
     );
+    return true;
   } catch {
     // localStorage can be unavailable or full; the app should keep working without persistence.
+    return false;
   }
 }
 

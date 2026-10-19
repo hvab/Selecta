@@ -1000,3 +1000,85 @@ issues include brace-expansion, braces and its stylelint chain, fast-uri,
 js-yaml, colord and postcss-selector-parser. Audit proposes breaking downgrades
 for the braces/stylelint chain; do not run audit fix --force. Dependencies and
 lockfile remain unchanged. Dependency remediation requires separate scope.
+
+## Integration iteration: R05 merge readiness (2026-10-19)
+
+- [x] Merge the verified current R02 branch, incorporating its main baseline;
+      port the existing R05 persistence changes into the current App component.
+      Preserve current shell controls, overlays, language and light/dark policy.
+- [x] Adapt the existing App persistence regression harness to its relocated
+      component and current UI state; keep debounce, no-op Reset and lifecycle
+      save semantics, and preserve timer/listener cleanup.
+- [x] Run existing quality commands and build; verify a disposable combination
+      with R03 and local hvab-blocks 0.3 without publishing develop changes.
+- [ ] Push only the R05 branch and inspect exact-head CI and mergeability;
+      update the existing draft PR. Do not merge PRs or push main.
+
+R02 prerequisite `954f71d` is integrated without rewriting either branch.
+Existing quality commands and production build all pass locally. Local npm ci
+is blocked by the existing Git-package restriction; npm settings were not changed.
+The local fixture uses installed dependencies with matching lockfile entries and
+hvab-blocks files from exact local pinned commit `b9c78a6`. Fresh lockfile install
+on Ubuntu/Node 22 remains required in the final PR CI.
+
+Conflict resolution keeps the current relocated App, radio groups, Reka overlays,
+Share feedback and concrete light/dark state policy. R05 only adds the shared
+session flush and page lifecycle listeners, removes the Reset skip flag and
+preserves existing shell cleanup. Its existing eight regressions were moved
+with App and adapted to current state handlers; no old UI or system mode returns.
+
+Compatibility result: a disposable combination of R02 + R03 + R05 and the
+owner's local develop commits `71d4e64` / `29fb10c` passes all five quality
+commands and builds with hvab-blocks 0.3.0. The actual fix branches keep their
+pinned 0.2.0 dependency and do not publish those develop commits.
+
+For eventual integration with that develop state, keep R03's usePanelLayout and
+preferred/effective width separation. Remove develop's superseded viewportWidth,
+handleWindowResize and resize-listener wiring; retain its controls-pane container
+query, Field adaptation and body system font. Keep R02's AppLayers stylesheet,
+clip-path and current session fixtures rather than restoring duplicate globals
+or the deprecated clipping declaration. Keep R05's lifecycle save and cleanup.
+
+No theme/ZIP/preview contract or session schema changed in this integration.
+Browser/platform coverage remains as previously documented; no new Safari,
+Windows/forced-colors or screen-reader verification is claimed.
+Next step: push this branch, confirm exact-head Ubuntu/Node 22 CI and report
+mergeability in the PR. No main/develop push, PR merge or deployment is requested.
+
+## Active iteration: idle-tab persistence and combined hvab 0.3 delivery
+
+The owner authorized fixes, commits and pushes on fix branches, including a
+joint R03/R05/hvab-blocks 0.3 integration. Do not modify or publish main/develop,
+merge GitHub PRs, change theme generation, or expand unrelated audit work.
+
+- [x] R05 persistence: compare a complete current-session snapshot with this
+      instance's last persisted/restored snapshot before lifecycle writes.
+      Capture the restore baseline after mount; keep explicit Reset/URL import
+      save intent, the 500 ms debounce and synchronous pre-watcher exit handling.
+      Advance the snapshot only after a successful storage write; retry failures.
+      Expected areas: App session helpers, mount/Reset and storage write result.
+- [x] Verify the idle-tab overwrite scenario before/after, ordinary save,
+      immediate pre-watcher pagehide, visibility/unmount, Reset and storage retry
+      in a temporary harness; run existing quality commands. Update/push PR #5.
+- [ ] Create a separate fix integration branch with R03, corrected R05 and the
+      existing hvab 0.3 develop commits 71d4e64 / 29fb10c. Keep R03 measured sizing,
+      R05 lifecycle persistence, 0.3 Field/container/body-font adaptations and R02
+      AppLayers/clipping/session policy. Resolve conflicts without dropping work.
+- [ ] Verify the integrated snapshot and existing quality commands, publish its
+      fix branch and draft PR for exact-head clean Node 22/Linux CI. Inspect CI
+      for corrected R05 and the integrated head; no main push or PR merge.
+
+R05 implementation result: restored/last-successful session snapshots are local
+to each App instance. Idle lifecycle calls cancel redundant timers without
+writing. A synchronous snapshot comparison still catches edits before the async
+watcher. Reset explicitly invalidates the snapshot before saving defaults; valid
+URL imports retain save intent. saveSession returns success/failure so failed
+writes do not mark edits as saved. No schema or storage key changes.
+
+The temporary two-tab reproduction failed on the previous head and passes with
+the fix. It also covers restored idle tabs, hidden/pagehide/unmount, immediate
+exit, duplicate flush suppression, repeated default Reset, quota retry and an
+explicit default-state URL import. All existing local quality commands and the
+production build pass. No repository test or infrastructure was added. Local
+checks use copied matching dependencies and exact pinned hvab-blocks b9c78a6;
+clean installation remains the responsibility of the exact-head PR CI.

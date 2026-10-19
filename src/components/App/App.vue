@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ThemeControls from '../ThemeControls/ThemeControls.vue';
 import PresetSelector from '../PresetSelector/PresetSelector.vue';
@@ -118,8 +118,8 @@ const googleFontsPreviewUrl = computed(() => getSelectedGoogleFontsCss2Url(googl
 
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
+let lastSavedSessionSnapshot = null;
 let shareFeedbackTimeout = null;
-let shouldSkipNextSessionSave = false;
 const themeUrlParam = 'theme';
 const fontSourceKeyByFamilyKey = {
   mainFontFamily: 'mainFontSource',
@@ -168,6 +168,25 @@ function getUiState() {
     themeMode: themeMode.value,
     shellAppearance: shellAppearance.value,
   };
+}
+
+function getCurrentSession() {
+  return {
+    themeState,
+    fieldLocks,
+    uiState: getUiState(),
+  };
+}
+
+function saveCurrentSession() {
+  clearTimeout(sessionSaveTimeout);
+  sessionSaveTimeout = null;
+  const session = getCurrentSession();
+  const snapshot = JSON.stringify(session);
+
+  if (snapshot !== lastSavedSessionSnapshot && saveSession(session)) {
+    lastSavedSessionSnapshot = snapshot;
+  }
 }
 
 function resetThemeState() {
@@ -327,17 +346,12 @@ function toggleGroupLock(section, keys, locked) {
 }
 
 function resetToDefaults() {
-  clearTimeout(sessionSaveTimeout);
-  shouldSkipNextSessionSave = true;
   clearStatusMessages();
   clearThemeUrlParam();
   clearSession();
   resetThemeState();
-  saveSession({
-    themeState,
-    fieldLocks,
-    uiState: getUiState(),
-  });
+  lastSavedSessionSnapshot = null;
+  saveCurrentSession();
 }
 
 function randomizePalette(section, randomPalette) {
@@ -532,10 +546,18 @@ function getStoredThemeMode(uiState) {
   return uiState.themeMode ?? uiState.previewMode ?? uiState.activePaletteMode;
 }
 
+function handleVisibilityChange() {
+  if (document.visibilityState === 'hidden') {
+    saveCurrentSession();
+  }
+}
+
 onMounted(() => {
   const preferredShellAppearance = getPreferredShellAppearance();
 
   shellAppearance.value = preferredShellAppearance;
+  window.addEventListener('pagehide', saveCurrentSession);
+  document.addEventListener('visibilitychange', handleVisibilityChange);
 
   const themeParam = new URLSearchParams(window.location.search).get(themeUrlParam);
 
@@ -561,6 +583,14 @@ onMounted(() => {
       getStoredThemeMode(session.uiState) === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
     shellAppearance.value = session.uiState.shellAppearance;
   }
+
+  lastSavedSessionSnapshot = JSON.stringify(getCurrentSession());
+});
+
+onBeforeUnmount(() => {
+  saveCurrentSession();
+  window.removeEventListener('pagehide', saveCurrentSession);
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
 });
 
 onUnmounted(() => {
@@ -572,19 +602,7 @@ watch(
   [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, themeMode, shellAppearance],
   () => {
     clearTimeout(sessionSaveTimeout);
-
-    if (shouldSkipNextSessionSave) {
-      shouldSkipNextSessionSave = false;
-      return;
-    }
-
-    sessionSaveTimeout = setTimeout(() => {
-      saveSession({
-        themeState,
-        fieldLocks,
-        uiState: getUiState(),
-      });
-    }, sessionSaveDelay);
+    sessionSaveTimeout = setTimeout(saveCurrentSession, sessionSaveDelay);
   },
   { deep: true }
 );
