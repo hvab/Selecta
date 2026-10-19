@@ -1244,9 +1244,9 @@ The combined fix is published separately from the focused R05 PR as ready PR #6.
 Its exact-head Ubuntu/Node 22 CI passed for 7dff3ac.
 Remaining platform limits are the prior Safari/Windows/forced-colors/screen-reader
 coverage; no new manual browser coverage or crash-durability guarantee is claimed.
-Next step: correct the mounted default URL-import baseline identified below,
-then review the combined PR with CI for the correction. Keep main and develop at
-their existing heads; do not merge or deploy.
+The mounted default URL-import baseline correction is complete; see the follow-up
+below for its published commit and successful CI. Next step: owner review and
+merge decision for the combined PR, with the remaining platform limits recorded.
 
 ## Follow-up: URL-import persistence baseline (2026-10-19)
 
@@ -1257,8 +1257,8 @@ URL validation and session schema stay unchanged.
       (`src/components/App/App.vue`) so default imports also establish a baseline.
 - [x] Reproduce default/non-default imports and idle-window pagehide using a
       temporary harness; run existing quality commands and production build.
-- [x] Correct current publication/CI status here and record limits. Existing PR #6
-      is ready and CI passed for 7dff3ac; the new revision is not published yet.
+- [x] Publish the correction and confirm exact-head CI. PR #6 is ready and
+      mergeable; code commit 2576a954911ba166c9015095aed152d5c789325f passed CI.
 
 Result: the successful mounted URL-import path now calls saveCurrentSession
 before returning. Before the fix, a default import left the old stored theme
@@ -1270,12 +1270,16 @@ no repository tests or infrastructure were added.
 
 Existing checks pass: npm test (118/118), npm run lint, npm run lint:styles,
 npm run format:check, npm run build and git diff --check. Build retains the two
-existing VueUse PURE annotation warnings. The current correction is local and
-uncommitted; new exact-head CI is pending publication, while the published
-7dff3ac CI remains successful. Safari/BFCache, Windows/forced-colors and real
-screen-reader coverage remain unverified. URL decoding/validation is unchanged;
-this correction adds no rendering or URL trust boundary.
+existing VueUse PURE annotation warnings. The coordinator accepted and repeated
+the temporary reproduction. Published code commit
+2576a954911ba166c9015095aed152d5c789325f passed
+[Ubuntu/Node 22 CI](https://github.com/hvab/Selecta/actions/runs/39227319857),
+including npm ci and all quality/build steps. This CI result belongs to that code
+commit; it does not cover a later documentation revision. Safari/BFCache,
+Windows/forced-colors and real screen-reader coverage remain unverified. URL
+decoding/validation is unchanged; this correction adds no rendering or URL trust
+boundary.
 
-Next small step: review this minimal correction, publish the authorized fix
-branch and inspect CI on its new exact head. No main/develop modification, merge
-or deployment is part of this iteration.
+Next small step: owner review and merge decision for PR #6, accounting for the
+remaining manual platform checks. No main/develop modification, merge or
+deployment is part of this iteration.
