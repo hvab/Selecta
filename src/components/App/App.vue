@@ -774,6 +774,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
 <style>
 body {
   margin: 0;
+  font-family: system-ui, sans-serif;
 }
 </style>
 <style scoped src="./App.css"></style>
