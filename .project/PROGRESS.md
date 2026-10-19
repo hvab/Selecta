@@ -764,6 +764,149 @@ visual language.
   - code-review changed: Share success uses a polite live region and its error
     uses an alert role.
 
+## Active track: `hvab-blocks` 0.3.0 integration acceptance
+
+Scope: preserve selective npm CSS imports and local Vue/Reka adapters. Keep
+the Aegea preview/export contract and unrelated planned tracks unchanged.
+
+- [x] Pin `github:hvab/hvab-blocks#v0.3.0` in `package.json` and refresh
+      `package-lock.json`; verify resolution to
+      `4dfa1c71dc169172c7e6f1de720b6b47044261fc` and installed LICENSE/notices.
+      Check existing public token overrides against the new contrast roles.
+- [x] Review the combined shell integration in Chromium: light/dark, narrow/wide
+      sidebar, narrow viewport, Reset with long actions, field/color-input,
+      used control states, keyboard navigation and overlay focus return.
+      Fix only integration defects found in these areas; record library defects
+      separately. Do not add unused table/toast blocks for acceptance.
+- [x] Run the applicable existing project checks (unit suite, lint, style lint,
+      formatting, production build). Record concrete results, remaining manual
+      Safari/Windows/screen-reader limits, and the next small step here.
+
+Initial audit: clean `develop`; dependency-based integration at `v0.2.0`, no
+vendored CSS. `src/ui/hvab.css` imports eight token files and sixteen blocks.
+The shell uses library light/dark colors, with only local card padding,
+color-input width and error-tooltip component-token overrides. No custom status
+palette needs migration: new contrast roles must inherit from the library in
+both schemes. Edited Aegea themes do not consume `--hb-*` tokens.
+
+Integration fixes selected after browser inspection (within the shell boundary
+in `SPEC.md` / `UI-ARCHITECTURE.md`):
+
+- [x] Make inline fields respond to the sidebar container, not just the viewport
+      (`App.css`, `Field.vue`). At 320px, fixed label/addon columns currently
+      leave range inputs at 0px. Check 320px, default 416px, 672px and mobile.
+- [x] Set the shell's system font at document-body level (`App.vue`) so portal
+      dialog/menu/tooltip content inherits it. Aegea preview already sets its
+      own font. Check computed portal and preview fonts in both schemes.
+- [x] Re-clamp the sidebar on window resize (`App.vue`). Resizing a 672px
+      sidebar down to a 768px viewport currently leaves only 88px for preview;
+      the maximum-width computed value also caches a nonreactive DOM read.
+      Track viewport width and verify 1280 → 768 → mobile and keyboard resize.
+
+### Result (2026-10-19)
+
+- Source: [hvab-blocks v0.3.0](https://github.com/hvab/hvab-blocks/releases/tag/v0.3.0),
+  commit `4dfa1c71dc169172c7e6f1de720b6b47044261fc`. The GitHub-tag dependency
+  and exact lockfile SHA preserve the existing integration model. All 24
+  imported token/block CSS files and installed `LICENSE` /
+  `THIRD_PARTY_NOTICES.md` match the tag byte for byte. No vendor patch or resync.
+- Existing card, full-width color-input and error-tooltip public-token
+  overrides are preserved. All three new functional contrast tokens resolve
+  to the release's light/dark values; field warnings use `warning-contrast`
+  (`rgb(145 74 17)` / `rgb(255 197 108)`). User-generated Aegea themes remain
+  isolated from shell tokens; there is no custom hvab status palette to migrate.
+- Fixed consumer layout at sidebar widths up to 23rem using a named container
+  query; range inputs at 320px now have 278px instead of 0px. At 416/672px,
+  the existing inline layout remains. Across both schemes and all three widths,
+  no field overflows; color inputs fill their slots (278/144/400px).
+- Fixed system-font inheritance for portal surfaces at body level; Reset,
+  Share and feedback tooltip use the shell font, while the preview still uses
+  its own selected font. Sidebar maximum width now reacts to window resize;
+  1280 → 768 clamps the 672px pane to 408px, and mobile remains stacked.
+- Browser acceptance: Chromium in-app browser, development app and a smoke
+  check of the final production build. Checked both shell schemes, independent
+  preview theme mode, sidebar 320/416/672px, viewports 320/375/768/1280px,
+  metadata validation/disabled ZIP and Share commands, native color value
+  propagation to preview, select/range/switch changes, checked/unchecked/mixed
+  locks, radio arrow keys/Space and locale switching. Focus-visible is shown;
+  Reset traps Tab/Shift+Tab and returns focus after Cancel, Escape, outside
+  click and confirm. Confirm resets values/locks. Share supports ArrowDown /
+  Enter / Escape, Copy link feedback and trigger focus return.
+- Long-action stress check: temporarily lengthened both English Reset actions
+  to roughly 60 characters in the real app, then restored the original copy.
+  At 480px dialog width the actions wrap in a row; at 327/272px they stack and
+  remain fully visible, including a 320×320 viewport. No horizontal overflow.
+- `hb-table`, `hb-toast` and dialog dividers are not used/imported by Selecta;
+  no synthetic catalogue coverage is claimed. The preview's existing table
+  belongs to Aegea, not the hvab table contract. No library defects found in
+  the exercised integration paths.
+- `npm run build` passes. The final production smoke check has no captured
+  browser console warnings/errors. Rollup reports two existing VueUse PURE
+  annotation warnings during build.
+- Existing checks are not all green: `npm test` is 98/99 (the session fixture
+  uses removed `shellAppearance: 'system'`); `npm run lint` has one pre-existing
+  Prettier error in `PresetSelector.vue`; `npm run lint:styles` has seven
+  pre-existing errors in `App.css` (`:global`, duplicate/order of
+  `.download-error`, deprecated `clip` and property order);
+  `npm run format:check` flags four audit Markdown files and `PresetSelector`.
+  The same failures were reproduced from an untouched archive of HEAD
+  `8662ce5`; this integration adds no check failures. Unrelated fixes deferred.
+- Not verified: real Safari/iOS, Windows High Contrast / forced colors, a real
+  screen reader, OS color-picker dialog internals, or disabled/mixed control
+  combinations not reachable in Selecta. Chromium keyboard/DOM inspection is
+  not a substitute for those checks.
+
+Next small step: manual Safari/Windows/screen-reader acceptance of these same
+used paths; separately fix the baseline check failures. Earlier browser-review
+checkboxes are covered where listed above; unrelated cleanup tracks stay parked.
+No staging, commit, branch switch or publication performed.
+
+## Active track: baseline check cleanup (separate follow-up)
+
+Scope: fix the remaining check failures without changing application behavior,
+the Aegea contract or the completed hvab integration. Checked against `SPEC.md`:
+this is maintenance only. Preserve all earlier uncommitted changes.
+
+- [x] Correct the successful session test fixture to use a supported explicit
+      shell appearance (`src/storage.test.js`); run the focused storage suite.
+- [x] Resolve shell Stylelint errors without changing rendered declarations:
+      move Vue global rules into the existing unscoped style block, merge and
+      reorder download-error rules, and retain the current visually-hidden
+      clipping with a documented declaration-level deprecation exception
+      (`App.css`, `App.vue`). Compare compiled CSS declarations before/after.
+- [x] Format only the five reported files: `PresetSelector.vue` and the four
+      audit Markdown files. Check the diff for content changes.
+- [x] Repeat `npm test`, `npm run lint`, `npm run lint:styles`,
+      `npm run format:check`, `npm run build` and `git diff --check`; record
+      results, limitations and the next small step here.
+
+### Result (2026-10-19)
+
+- The successful session fixture now uses supported `shellAppearance: 'dark'`
+  instead of removed `system`, in both saved and expected data. Storage runtime
+  logic is unchanged. Focused storage checks pass 6/6; the full suite passes
+  99/99.
+- Overlay layer rules now live in the existing unscoped `App.vue` style block
+  as ordinary global selectors. Download-error declarations are merged and
+  ordered by specificity; the visually-hidden rule follows property order.
+  Existing `clip` behavior is retained with one documented declaration-level
+  Stylelint exception; no lint rules are disabled globally.
+- The five reported formatting files are fixed. The four audit documents
+  retain identical content apart from whitespace and table separator padding.
+- Compared with the start of this follow-up, Vue-compiled shell CSS has the
+  same selector/property/value/importance mapping; App and PresetSelector
+  scripts and compiled template render code are unchanged. Prior hvab changes
+  remain intact.
+- Final checks pass: `npm test` (99/99), `npm run lint`,
+  `npm run lint:styles`, `npm run format:check`, `npm run build`, and
+  `git diff --check`. The build still prints the two existing VueUse PURE
+  annotation warnings; it exits successfully.
+- No new browser acceptance was needed for these behavior-preserving changes.
+  Earlier Safari/Windows/screen-reader verification gaps remain unchanged.
+
+Next small step: the previously deferred manual platform acceptance. The check
+cleanup is complete; nothing staged, committed, switched or published.
+
 ## Next steps
 
 - [ ] Browser-review the three header radio groups: independent Theme and
@@ -838,6 +981,104 @@ the Aegea preview.
       `hb-alert` for a future persistent global notification, not transient
       action confirmation.
 
+## Technical fix: panel sizing (R03)
+
+Scope: reactive sizing of the generator shell only, preserving the current
+320 px controls minimum, 672 px maximum, 360 px preview budget, and 40rem
+stacked-layout breakpoint. Preview markup and theme/export contracts do not change.
+The selected sidebar width stays separate from the constrained rendered width;
+resize must not overwrite the saved preference. Below the combined minima, keep
+the existing controls-minimum fallback rather than introduce a new layout policy.
+
+- [x] Verify current remote base and reproduce stale sizing before edits.
+  - Base: `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`, isolated branch.
+  - Chrome: 1280 to 768 after ArrowRight x16 gives controls 672 px,
+    divider 8 px, preview 88 px, ARIA max 672.
+- [x] Extract width constraints and reactive container/divider measurement.
+  - Areas: new `src/ui/` modules and narrow `src/App.vue` integration.
+  - Observe container and divider, measure before restore, disconnect on unmount.
+  - Use effective width for rendering/ARIA and keyboard stepping; preserve
+    preferred width in existing session UI state. Keep persistence slice separate.
+  - Checks: focused Node tests for resize, divider, min/max clamp, startup,
+    resize without window resize, and observer cleanup.
+- [x] Verify browser transitions and project checks; prepare draft fix PR.
+  - Chrome: 1280/768/375 transitions, restore, keyboard, pointer if available,
+    language changes; check actual DOM widths and ARIA together.
+  - Commands: `npm test`, `npm run lint`, `npm run lint:styles`,
+    `npm run format:check`, `npm run build`.
+  - Record pre-existing failures and browser/environment limits explicitly.
+
+Original iteration result on the pre-UI base (historical):
+
+- Added pure constraints plus a Vue composable that observes the actual container
+  and divider border boxes, measures at mount, and disconnects at unmount.
+  Rendering and separator ARIA use the effective width; pointer and keyboard
+  share its clamp. Session state keeps the preferred width, so shrinking and
+  expanding the window restores the preference without a resize-only save.
+- Added six regression tests covering container/divider changes, fractional
+  budgets, minimum fallback, default/restored widths, preferred/effective width
+  separation, keyboard stepping from the effective width, and observer/fallback
+  listener cleanup.
+- Verified: `npm test` 105/105, `npm run lint`, `npm run lint:styles`,
+  `npm run build`, changed-file Prettier check, and `git diff --check` pass.
+  `npm run format:check` fails only on two unchanged audit prompt files;
+  the exact same failure was reproduced on a clean archive of the base commit.
+- Chrome: before the fix, 1280 -> 768 retained 672/8/88 px and ARIA max 672.
+  After the fix, 768 gives 400/8/360 px after resize and narrow reload; expanding
+  restores preferred 672. Keyboard and real pointer drag clamp to 320..400.
+  375 -> 768, EN/RU, and clean production-build startup pass. At 375, stacked
+  layout has document width 375 and visible ZIP control. At 688, pane widths
+  are 320/8/360; at 641, the existing minimum fallback gives 320/8/313.
+- Limits: Safari/Firefox, zoom and touch were not available/tested. Checks ran
+  on macOS with Node 24.20.0 and the existing installed dependencies, not a clean
+  Node 22/Linux install. Theme output and Aegea markup were not modified.
+- Next small step: review the draft fix PR and coordinate its `src/App.vue`
+  import/restore and this progress section with the separate session-save fix.
+  Merge the session-save slice first, then resolve this narrow sizing integration
+  against it; rerun the combined browser/session checks before merging.
+
+### Revalidation against the current UI
+
+New base: `8662ce5a7a94fff4df4f95bab34a0f48eea9b561`. The separate
+UI merge moved App and introduced `.app__workspace`; the original resize bug
+is still reproduced in Chrome (1280 -> 768 yields 672/8/88, ARIA max 672).
+
+- [x] Read the new base and PR conflicts; reproduce before adapting code.
+- [x] Preserve the new UI and move the narrow sizing integration into
+      `src/components/App/App.vue`, measuring the actual `.app__workspace` and
+      keeping the pointer origin aligned with it. Keep all persistence/reset
+      lifecycle changes owned by the separate session-save fix.
+  - Checks: scoped diff vs new main, six focused panel regressions, build/lint.
+- [x] Repeat Chrome resize/restore/keyboard/pointer/mobile/EN/RU against the new
+      UI. Push the own branch without force and inspect exact-HEAD CI next.
+  - Check both feasible and insufficient budgets without changing the 40rem
+    breakpoint or minimum fallback. Coordinate inherited quality failures with
+    the separate quality worker; do not repeat the rejected R02 cherry-pick.
+
+Revalidation result:
+
+- The new App keeps its topbar, controls, theme actions and persistence lifecycle.
+  Only sizing imports/state, effective rendering/ARIA, pointer origin, keyboard
+  stepping, width restore and workspace/divider refs are adapted.
+- Chrome production build: clean 768 px startup gives 400/8/360, resize from
+  preferred 672 gives 400/8/360, and narrow reload after the existing debounce
+  retains preferred 672 on expansion. An immediate pre-debounce reload remains
+  the separate session-save issue; this iteration does not change that policy.
+  Keyboard starts at the effective width (400 -> 384), clamps to 320..400;
+  real pointer drag uses the same bounds. EN/RU and 375 -> 768 pass; at 375 the
+  document width is 375 and ZIP is visible/enabled within the viewport. At 688,
+  widths are 320/8/360. Below the combined minima, preserve the current controls
+  minimum and use the remaining preview space; do not introduce a new breakpoint.
+- Focused regressions 6/6 and build pass. All tests: 104/105; the stale `system`
+  session fixture also fails on the clean new base (98/99). Changed-file ESLint,
+  Prettier and scoped diff pass. Full JS lint fails only on PresetSelector:43;
+  stylelint has seven existing App.css errors; formatting has five existing
+  audit/prompt/PresetSelector failures. Each failure was reproduced unchanged
+  on a clean archive of the new base. The separate quality owner handles them.
+- Limits remain Safari/Firefox, zoom/touch, and combined R05 lifecycle validation.
+  Next small step: apply only an explicitly authorized new quality prerequisite,
+  rerun full checks and exact-HEAD CI, then review the combined R03/R05 integration.
+
 ## Ideas and backlog
 
 Use `.project/IDEAS.md` for raw feature ideas and parked future work. Move only
@@ -869,6 +1110,44 @@ path in a real local Aegea instance.
 - Do not store language in theme JSON, share URLs, or ZIP output.
 - Do not stage, commit, switch branches, or push unless the user explicitly asks.
 - Keep diffs scoped; avoid reformatting unrelated files.
+
+## Integration iteration: R03 merge readiness (2026-10-19)
+
+- [x] Merge the verified R02 branch into R03, preserving panel sizing and both
+      progress histories. Expected area: `.project/PROGRESS.md`; resolve any
+      source conflict against the existing sizing contract, not legacy UI.
+- [x] Run existing quality commands and build; preserve measured divider budgets,
+      preferred/effective width and the current theme/export/session contracts.
+- [x] Verify compatibility in a disposable combination with R05 and the owner's
+      local hvab-blocks 0.3 integration, retaining R03 as the sizing authority.
+      Do not publish the unrelated develop commits in this PR.
+- [ ] Push only the R03 branch, inspect exact-head CI and mergeability, rewrite
+      the PR description around the final state. Do not merge PRs or push main.
+
+R02 prerequisite `954f71d` is integrated without rewriting either branch.
+Existing quality commands and production build all pass locally. Local npm ci
+is blocked by the existing Git-package restriction; npm settings were not changed.
+The local fixture uses installed dependencies with matching lockfile entries and
+hvab-blocks files from exact local pinned commit `b9c78a6`. Fresh lockfile install
+on Ubuntu/Node 22 remains required in the final PR CI.
+
+Compatibility result: a disposable combination of R02 + R03 + R05 and the
+owner's local develop commits `71d4e64` / `29fb10c` passes all five quality
+commands and builds with hvab-blocks 0.3.0. The actual fix branches keep their
+pinned 0.2.0 dependency and do not publish those develop commits.
+
+For eventual integration with that develop state, keep R03's usePanelLayout and
+preferred/effective width separation. Remove develop's superseded viewportWidth,
+handleWindowResize and resize-listener wiring; retain its controls-pane container
+query, Field adaptation and body system font. Keep R02's AppLayers stylesheet,
+clip-path and current session fixtures rather than restoring duplicate globals
+or the deprecated clipping declaration. Keep R05's lifecycle save and cleanup.
+
+No theme/ZIP/preview contract or session schema changed in this integration.
+Browser/platform coverage remains as previously documented; no new Safari,
+Windows/forced-colors or screen-reader verification is claimed.
+Next step: push this branch, confirm exact-head Ubuntu/Node 22 CI and report
+mergeability in the PR. No main/develop push, PR merge or deployment is requested.
 
 ## Technical iteration: remote quality gate (R02)
 
@@ -1007,3 +1286,188 @@ Implementation is complete; next small step is owner review of draft PR #2 and
 its final CI, followed by the separately requested PR integration. Live Aegea
 installation, Chrome file permissions, R05 integration and other verification
 experiments are outside this iteration.
+
+## Integration iteration: R05 merge readiness (2026-10-19)
+
+- [x] Merge the verified current R02 branch, incorporating its main baseline;
+      port the existing R05 persistence changes into the current App component.
+      Preserve current shell controls, overlays, language and light/dark policy.
+- [x] Adapt the existing App persistence regression harness to its relocated
+      component and current UI state; keep debounce, no-op Reset and lifecycle
+      save semantics, and preserve timer/listener cleanup.
+- [x] Run existing quality commands and build; verify a disposable combination
+      with R03 and local hvab-blocks 0.3 without publishing develop changes.
+- [ ] Push only the R05 branch and inspect exact-head CI and mergeability;
+      update the existing draft PR. Do not merge PRs or push main.
+
+R02 prerequisite `954f71d` is integrated without rewriting either branch.
+Existing quality commands and production build all pass locally. Local npm ci
+is blocked by the existing Git-package restriction; npm settings were not changed.
+The local fixture uses installed dependencies with matching lockfile entries and
+hvab-blocks files from exact local pinned commit `b9c78a6`. Fresh lockfile install
+on Ubuntu/Node 22 remains required in the final PR CI.
+
+Conflict resolution keeps the current relocated App, radio groups, Reka overlays,
+Share feedback and concrete light/dark state policy. R05 only adds the shared
+session flush and page lifecycle listeners, removes the Reset skip flag and
+preserves existing shell cleanup. Its existing eight regressions were moved
+with App and adapted to current state handlers; no old UI or system mode returns.
+
+Compatibility result: a disposable combination of R02 + R03 + R05 and the
+owner's local develop commits `71d4e64` / `29fb10c` passes all five quality
+commands and builds with hvab-blocks 0.3.0. The actual fix branches keep their
+pinned 0.2.0 dependency and do not publish those develop commits.
+
+For eventual integration with that develop state, keep R03's usePanelLayout and
+preferred/effective width separation. Remove develop's superseded viewportWidth,
+handleWindowResize and resize-listener wiring; retain its controls-pane container
+query, Field adaptation and body system font. Keep R02's AppLayers stylesheet,
+clip-path and current session fixtures rather than restoring duplicate globals
+or the deprecated clipping declaration. Keep R05's lifecycle save and cleanup.
+
+No theme/ZIP/preview contract or session schema changed in this integration.
+Browser/platform coverage remains as previously documented; no new Safari,
+Windows/forced-colors or screen-reader verification is claimed.
+Next step: push this branch, confirm exact-head Ubuntu/Node 22 CI and report
+mergeability in the PR. No main/develop push, PR merge or deployment is requested.
+
+## Active iteration: idle-tab persistence and combined hvab 0.3 delivery
+
+The owner authorized fixes, commits and pushes on fix branches, including a
+joint R03/R05/hvab-blocks 0.3 integration. Do not modify or publish main/develop,
+merge GitHub PRs, change theme generation, or expand unrelated audit work.
+
+- [x] R05 persistence: compare a complete current-session snapshot with this
+      instance's last persisted/restored snapshot before lifecycle writes.
+      Capture the restore baseline after mount; keep explicit Reset/URL import
+      save intent, the 500 ms debounce and synchronous pre-watcher exit handling.
+      Advance the snapshot only after a successful storage write; retry failures.
+      Expected areas: App session helpers, mount/Reset and storage write result.
+- [x] Verify the idle-tab overwrite scenario before/after, ordinary save,
+      immediate pre-watcher pagehide, visibility/unmount, Reset and storage retry
+      in a temporary harness; run existing quality commands. Update/push PR #5.
+- [x] Create a separate fix integration branch with R03, corrected R05 and the
+      existing hvab 0.3 develop commits 71d4e64 / 29fb10c. Keep R03 measured sizing,
+      R05 lifecycle persistence, 0.3 Field/container/body-font adaptations and R02
+      AppLayers/clipping/session policy. Resolve conflicts without dropping work.
+- [x] Verify the integrated snapshot and existing quality commands, publish its
+      fix branch and PR for exact-head clean Node 22/Linux CI. CI passed for
+      corrected R05 e785be0 and integrated 7dff3ac; no main push or PR merge.
+
+R05 implementation result: restored/last-successful session snapshots are local
+to each App instance. Idle lifecycle calls cancel redundant timers without
+writing. A synchronous snapshot comparison still catches edits before the async
+watcher. Reset explicitly invalidates the snapshot before saving defaults; valid
+URL imports retain save intent. saveSession returns success/failure so failed
+writes do not mark edits as saved. No schema or storage key changes.
+
+The temporary two-tab reproduction failed on the previous head and passes with
+the fix. It also covers restored idle tabs, hidden/pagehide/unmount, immediate
+exit, duplicate flush suppression, repeated default Reset, quota retry and an
+explicit default-state URL import. All existing local quality commands and the
+production build pass. No repository test or infrastructure was added. Local
+checks use copied matching dependencies and exact pinned hvab-blocks b9c78a6;
+clean installation remains the responsibility of the exact-head PR CI.
+
+Combined integration now contains the corrected R05, R03 and the actual existing
+hvab-blocks 0.3 develop commits. App conflicts keep measured workspace/divider
+sizing and preferred width; the superseded viewport resize handler is removed.
+The controls-pane container, Field adaptation and body system font are retained.
+R02 AppLayers remains the single overlay-layer definition, with clip-path and
+current session fixtures. All related component/session changes are preserved;
+there is no R01/R04 scope, engine contract change or application deployment.
+
+Final local combined verification: all existing quality commands and production
+build pass with the unchanged 0.3 lockfile. Imported library CSS matches exact
+pinned commit 4dfa1c7 byte for byte. The same temporary two-tab/exit/Reset/quota/
+URL-import harness passes against the integrated App; R03 sizing cases remain
+covered by the existing checks. No new repository test infrastructure was added.
+
+The combined fix is published separately from the focused R05 PR as ready PR #6.
+Its exact-head Ubuntu/Node 22 CI passed for 7dff3ac.
+Remaining platform limits are the prior Safari/Windows/forced-colors/screen-reader
+coverage; no new manual browser coverage or crash-durability guarantee is claimed.
+The mounted default URL-import baseline correction is complete; see the follow-up
+below for its published commit and successful CI. Next step: owner review and
+merge decision for the combined PR, with the remaining platform limits recorded.
+
+## Follow-up: URL-import persistence baseline (2026-10-19)
+
+Scope checked against SPEC.md: session persistence only; generated theme, preview,
+URL validation and session schema stay unchanged.
+
+- [x] Save the successful mounted URL import synchronously before its early return
+      (`src/components/App/App.vue`) so default imports also establish a baseline.
+- [x] Reproduce default/non-default imports and idle-window pagehide using a
+      temporary harness; run existing quality commands and production build.
+- [x] Publish the correction and confirm exact-head CI. PR #6 is ready and
+      mergeable; code commit 2576a954911ba166c9015095aed152d5c789325f passed CI.
+
+Result: the successful mounted URL-import path now calls saveCurrentSession
+before returning. Before the fix, a default import left the old stored theme
+unchanged and its later idle pagehide overwrote the second window's newer theme.
+The temporary harness now confirms that default and non-default imports persist
+the imported theme, and idle pagehide preserves the second window's newer theme
+without an extra storage write. The harness compiles the current App.vue setup;
+no repository tests or infrastructure were added.
+
+Existing checks pass: npm test (118/118), npm run lint, npm run lint:styles,
+npm run format:check, npm run build and git diff --check. Build retains the two
+existing VueUse PURE annotation warnings. The coordinator accepted and repeated
+the temporary reproduction. Published code commit
+2576a954911ba166c9015095aed152d5c789325f passed
+[Ubuntu/Node 22 CI](https://github.com/hvab/Selecta/actions/runs/39227319857),
+including npm ci and all quality/build steps. This CI result belongs to that code
+commit; it does not cover a later documentation revision. Safari/BFCache,
+Windows/forced-colors and real screen-reader coverage remain unverified. URL
+decoding/validation is unchanged; this correction adds no rendering or URL trust
+boundary.
+
+Next small step: owner review and merge decision for PR #6, accounting for the
+remaining manual platform checks. No main/develop modification, merge or
+deployment is part of this iteration.
+
+## Technical iteration: R01 integration with current main
+
+Scope: refresh draft PR #2 on main `b9452c172071ac0b85d48ce5aaf24f4dc8c351f4`,
+retaining the existing R01 semantic value contract and the integrated R03
+preferred/effective sizing, R05 session lifecycle, and hvab-blocks 0.3 migration.
+V01–V04 remain outside this iteration. This result supersedes the earlier R01
+integration limitation recorded above.
+
+- [x] Merge current main into the existing R01 fix branch; resolve only overlapping
+      progress text, preserving atomic rejection and direct ZIP guards.
+      The only conflict was in this document; both histories are retained.
+      Production source merged without a textual conflict. R03 sizing, R05
+      snapshot comparison/lifecycle cleanup and synchronous URL save before the
+      mount return match current main.
+- [x] Check the merged boundaries and R05 URL save ordering with a temporary
+      integration harness: 26/26 cases pass. It mounts the actual App setup and
+      covers invalid File imports without partial state changes, invalid mounted
+      URL fallback preserving the saved theme, invalid stored sessions, direct
+      ZIP rejection, editable metadata followed by repair, decimal endpoints,
+      ordinary debounce, Reset, immediate exit, idle tabs, failed-write retry and
+      default/non-default URL imports. No new repository tests were added.
+- [x] Run existing quality commands: npm test (128/128), npm run lint,
+      npm run lint:styles, npm run format:check, npm run build and git diff --check.
+      Production build retains the two inherited VueUse PURE annotation warnings.
+- [x] Independent review and coordinator acceptance: reviewer r01_review reported
+      no findings; the coordinator inspected the production diff and repeated
+      all 26 temporary integration cases successfully.
+- [ ] Commit/push of this fix branch, updated PR #2 and exact-head Node 22/Linux
+      CI. Do not merge PR #2 or push main/develop.
+
+Clean dependency installation succeeded on Node 24.22.0 / npm 11.19.1 using a
+writable temporary npm cache (`npm ci --cache <temporary-cache>`), without
+configuration changes or copied dependencies. The first plain npm ci could not
+write the sandbox-protected default cache. The lockfile is unchanged from main.
+Exact-head Node 22/Linux CI is still pending publication.
+
+The semantic contract and metadata repair policy are unchanged from R01. CSS
+injection into generated CSS is the relevant boundary risk; this integration
+adds no new rendering, URL or authentication capability. Live Aegea installation,
+real browser file-picker/download flow, Safari/BFCache, Windows/forced-colors and
+screen-reader verification remain unverified; no V01–V04 expansion is claimed.
+
+Next small step: publish only the accepted existing fix branch and verify CI for
+that exact commit.

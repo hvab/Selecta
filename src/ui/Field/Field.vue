@@ -49,6 +49,13 @@ defineProps({
 </template>
 
 <style scoped>
+@container controls-pane (max-width: 23rem) {
+  .hb-field.hb-field_layout_inline {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+}
+
 @media (max-width: 40rem) {
   .hb-field.hb-field_layout_inline {
     grid-template-columns: minmax(0, 1fr);
