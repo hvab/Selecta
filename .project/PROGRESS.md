@@ -953,7 +953,8 @@ clean installation remains the responsibility of the exact-head PR CI.
       in App.vue, before its early return. Preserve the session schema and debounce.
 - [x] Repeat the existing default/non-default URL two-tab reproduction and
       existing lifecycle/Reset/retry checks; run existing quality commands/build.
-- [ ] Record results and PR #5 status; await coordinator review before commit/push.
+- [x] Record results and PR #5 status; coordinator accepted and published the fix,
+      then confirmed exact-head clean-install CI.
 
 The idle default URL-import case was reproduced after the previous iteration:
 its values match initial state, so the watcher does not establish the saved
@@ -972,13 +973,15 @@ retry and repeated Reset. The repository suite passes 112/112; lint, lint:styles
 format:check and production build pass. No test sources were added or changed.
 The build retains two existing VueUse PURE-annotation warnings.
 
-PR #5 remote head remains e785be05faa0a6ed923c2769ea67f5622d81b18d
-(base 8662ce5). Local checks accepted; coordinator review, publication and
-exact-head CI for this follow-up are pending. No commit or push was made here.
-The coordinator will publish after review and record the final CI result.
+The coordinator accepted the fix and repeated both temporary reproductions.
+PR #5 code commit 74230370f44a7d30b1286fc2fd7388dfbb920ded is published.
+Its [CI run](https://github.com/hvab/Selecta/actions/runs/39227311146) succeeded,
+including npm ci and all quality/build steps. This confirms the code commit;
+it does not claim CI coverage for later documentation-only commits.
 
 Limits: snapshot comparison prevents unchanged-tab lifecycle overwrites; it
 does not arbitrate concurrent edits. Failed storage writes remain retryable.
 This change does not alter theme, preview or ZIP contracts. Browser/platform
-coverage is unchanged. Next small step: coordinator review and publish PR #5,
-then inspect its exact-head CI.
+coverage is unchanged; Safari, Windows/forced-colors and screen-reader checks
+remain manual limitations. Next small step: the owner decides whether to merge
+PR #5. No PR merge or main/develop publication was performed in this iteration.
