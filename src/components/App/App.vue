@@ -114,6 +114,7 @@ const controlsPaneMaxWidth = 672;
 const previewPaneMinWidth = 360;
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
+let lastSavedSessionSnapshot = null;
 let shareFeedbackTimeout = null;
 const themeUrlParam = 'theme';
 const fontSourceKeyByFamilyKey = {
@@ -174,14 +175,23 @@ function getUiState() {
   };
 }
 
-function saveCurrentSession() {
-  clearTimeout(sessionSaveTimeout);
-  sessionSaveTimeout = null;
-  saveSession({
+function getCurrentSession() {
+  return {
     themeState,
     fieldLocks,
     uiState: getUiState(),
-  });
+  };
+}
+
+function saveCurrentSession() {
+  clearTimeout(sessionSaveTimeout);
+  sessionSaveTimeout = null;
+  const session = getCurrentSession();
+  const snapshot = JSON.stringify(session);
+
+  if (snapshot !== lastSavedSessionSnapshot && saveSession(session)) {
+    lastSavedSessionSnapshot = snapshot;
+  }
 }
 
 function resetThemeState() {
@@ -345,6 +355,7 @@ function resetToDefaults() {
   clearThemeUrlParam();
   clearSession();
   resetThemeState();
+  lastSavedSessionSnapshot = null;
   saveCurrentSession();
 }
 
@@ -577,6 +588,8 @@ onMounted(() => {
       getStoredThemeMode(session.uiState) === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
     shellAppearance.value = session.uiState.shellAppearance;
   }
+
+  lastSavedSessionSnapshot = JSON.stringify(getCurrentSession());
 });
 
 onBeforeUnmount(() => {

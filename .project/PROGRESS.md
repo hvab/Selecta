@@ -908,3 +908,41 @@ Browser/platform coverage remains as previously documented; no new Safari,
 Windows/forced-colors or screen-reader verification is claimed.
 Next step: push this branch, confirm exact-head Ubuntu/Node 22 CI and report
 mergeability in the PR. No main/develop push, PR merge or deployment is requested.
+
+## Active iteration: idle-tab persistence and combined hvab 0.3 delivery
+
+The owner authorized fixes, commits and pushes on fix branches, including a
+joint R03/R05/hvab-blocks 0.3 integration. Do not modify or publish main/develop,
+merge GitHub PRs, change theme generation, or expand unrelated audit work.
+
+- [x] R05 persistence: compare a complete current-session snapshot with this
+      instance's last persisted/restored snapshot before lifecycle writes.
+      Capture the restore baseline after mount; keep explicit Reset/URL import
+      save intent, the 500 ms debounce and synchronous pre-watcher exit handling.
+      Advance the snapshot only after a successful storage write; retry failures.
+      Expected areas: App session helpers, mount/Reset and storage write result.
+- [x] Verify the idle-tab overwrite scenario before/after, ordinary save,
+      immediate pre-watcher pagehide, visibility/unmount, Reset and storage retry
+      in a temporary harness; run existing quality commands. Update/push PR #5.
+- [ ] Create a separate fix integration branch with R03, corrected R05 and the
+      existing hvab 0.3 develop commits 71d4e64 / 29fb10c. Keep R03 measured sizing,
+      R05 lifecycle persistence, 0.3 Field/container/body-font adaptations and R02
+      AppLayers/clipping/session policy. Resolve conflicts without dropping work.
+- [ ] Verify the integrated snapshot and existing quality commands, publish its
+      fix branch and draft PR for exact-head clean Node 22/Linux CI. Inspect CI
+      for corrected R05 and the integrated head; no main push or PR merge.
+
+R05 implementation result: restored/last-successful session snapshots are local
+to each App instance. Idle lifecycle calls cancel redundant timers without
+writing. A synchronous snapshot comparison still catches edits before the async
+watcher. Reset explicitly invalidates the snapshot before saving defaults; valid
+URL imports retain save intent. saveSession returns success/failure so failed
+writes do not mark edits as saved. No schema or storage key changes.
+
+The temporary two-tab reproduction failed on the previous head and passes with
+the fix. It also covers restored idle tabs, hidden/pagehide/unmount, immediate
+exit, duplicate flush suppression, repeated default Reset, quota retry and an
+explicit default-state URL import. All existing local quality commands and the
+production build pass. No repository test or infrastructure was added. Local
+checks use copied matching dependencies and exact pinned hvab-blocks b9c78a6;
+clean installation remains the responsibility of the exact-head PR CI.
