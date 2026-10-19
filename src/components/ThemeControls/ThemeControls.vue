@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { PALETTE_COLOR_CONTROLS } from '../../theme/fieldLocks.js';
+import { THEME_VALUE_CONSTRAINTS } from '../../theme/constraints.js';
 import {
   FONT_SOURCE_GOOGLE,
   FONT_SOURCE_PLAIN,
@@ -127,23 +128,19 @@ const typographyControls = [
   {
     key: 'noteTextSize',
     labelKey: 'controls.noteTextSize',
-    min: 14,
-    max: 24,
+    ...THEME_VALUE_CONSTRAINTS.typography.noteTextSize,
     step: 1,
-    unit: 'px',
   },
   {
     key: 'titleScale',
     labelKey: 'controls.titleScale',
-    min: 1.2,
-    max: 2,
+    ...THEME_VALUE_CONSTRAINTS.typography.titleScale,
     step: 0.05,
   },
   {
     key: 'noteTextLineHeight',
     labelKey: 'controls.lineHeight',
-    min: 1.3,
-    max: 1.9,
+    ...THEME_VALUE_CONSTRAINTS.typography.noteTextLineHeight,
     step: 0.05,
   },
 ];
@@ -152,18 +149,14 @@ const layoutControls = [
   {
     key: 'maxWidth',
     labelKey: 'controls.contentWidth',
-    min: 36,
-    max: 64,
+    ...THEME_VALUE_CONSTRAINTS.layout.maxWidth,
     step: 1,
-    unit: 'rem',
   },
   {
     key: 'margins',
     labelKey: 'controls.sideMargins',
-    min: 1,
-    max: 4,
+    ...THEME_VALUE_CONSTRAINTS.layout.margins,
     step: 0.25,
-    unit: 'rem',
   },
 ];
 
