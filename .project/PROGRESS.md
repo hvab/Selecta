@@ -1207,9 +1207,9 @@ merge GitHub PRs, change theme generation, or expand unrelated audit work.
       existing hvab 0.3 develop commits 71d4e64 / 29fb10c. Keep R03 measured sizing,
       R05 lifecycle persistence, 0.3 Field/container/body-font adaptations and R02
       AppLayers/clipping/session policy. Resolve conflicts without dropping work.
-- [ ] Verify the integrated snapshot and existing quality commands, publish its
-      fix branch and draft PR for exact-head clean Node 22/Linux CI. Inspect CI
-      for corrected R05 and the integrated head; no main push or PR merge.
+- [x] Verify the integrated snapshot and existing quality commands, publish its
+      fix branch and PR for exact-head clean Node 22/Linux CI. CI passed for
+      corrected R05 e785be0 and integrated 7dff3ac; no main push or PR merge.
 
 R05 implementation result: restored/last-successful session snapshots are local
 to each App instance. Idle lifecycle calls cancel redundant timers without
@@ -1240,9 +1240,42 @@ pinned commit 4dfa1c7 byte for byte. The same temporary two-tab/exit/Reset/quota
 URL-import harness passes against the integrated App; R03 sizing cases remain
 covered by the existing checks. No new repository test infrastructure was added.
 
-The combined fix is published separately from the focused R05 PR. Its draft PR
-provides a concrete resolved integration for review and clean Ubuntu/Node 22 CI.
+The combined fix is published separately from the focused R05 PR as ready PR #6.
+Its exact-head Ubuntu/Node 22 CI passed for 7dff3ac.
 Remaining platform limits are the prior Safari/Windows/forced-colors/screen-reader
 coverage; no new manual browser coverage or crash-durability guarantee is claimed.
-Next step: inspect exact-head CI for both published fixes and review the combined
-PR. Keep main and develop at their existing heads; do not merge or deploy.
+Next step: correct the mounted default URL-import baseline identified below,
+then review the combined PR with CI for the correction. Keep main and develop at
+their existing heads; do not merge or deploy.
+
+## Follow-up: URL-import persistence baseline (2026-10-19)
+
+Scope checked against SPEC.md: session persistence only; generated theme, preview,
+URL validation and session schema stay unchanged.
+
+- [x] Save the successful mounted URL import synchronously before its early return
+      (`src/components/App/App.vue`) so default imports also establish a baseline.
+- [x] Reproduce default/non-default imports and idle-window pagehide using a
+      temporary harness; run existing quality commands and production build.
+- [x] Correct current publication/CI status here and record limits. Existing PR #6
+      is ready and CI passed for 7dff3ac; the new revision is not published yet.
+
+Result: the successful mounted URL-import path now calls saveCurrentSession
+before returning. Before the fix, a default import left the old stored theme
+unchanged and its later idle pagehide overwrote the second window's newer theme.
+The temporary harness now confirms that default and non-default imports persist
+the imported theme, and idle pagehide preserves the second window's newer theme
+without an extra storage write. The harness compiles the current App.vue setup;
+no repository tests or infrastructure were added.
+
+Existing checks pass: npm test (118/118), npm run lint, npm run lint:styles,
+npm run format:check, npm run build and git diff --check. Build retains the two
+existing VueUse PURE annotation warnings. The current correction is local and
+uncommitted; new exact-head CI is pending publication, while the published
+7dff3ac CI remains successful. Safari/BFCache, Windows/forced-colors and real
+screen-reader coverage remain unverified. URL decoding/validation is unchanged;
+this correction adds no rendering or URL trust boundary.
+
+Next small step: review this minimal correction, publish the authorized fix
+branch and inspect CI on its new exact head. No main/develop modification, merge
+or deployment is part of this iteration.
