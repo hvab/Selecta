@@ -212,12 +212,17 @@ device certification. The P3 overlap is resolved in this fix branch. Next audit
 work can focus on desktop V02 acceptance or
 the bounded V04 experiments rather than zoom/mobile coverage.
 
-Publication: the owner authorized `codex/fix-narrow-header` based on main
+Publication: [PR #8](https://github.com/hvab/Selecta/pull/8) uses the authorized
+`codex/fix-narrow-header` branch based on main
 `830607c`, including only the header CSS, `SPEC.md` and this progress update.
 The complete local gate passed: lint, stylelint, format check, 166/166 tests,
 build and diff whitespace check. Build retains the existing dependency
-PURE-annotation warnings. PR CI is pending; merging remains explicitly
-unauthorized.
+PURE-annotation warnings. Independent Sol 6.1 review of `8d4b2c9` found no
+actionable problems, and the coordinator accepted the result.
+[PR CI passed](https://github.com/hvab/Selecta/actions/runs/39264559698) on that
+code commit, including clean dependency installation on Node 22/Linux. This
+records the code run; the subsequent documentation commit triggers its own CI.
+The PR remains open, and merging remains explicitly unauthorized.
 
 ### V01 verification result (2026-10-19; no fixes)
 
