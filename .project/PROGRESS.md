@@ -1524,7 +1524,7 @@ first. Live Aegea visual verification remains open.
 - [x] Verify the existing font regression, generation/validation compatibility
       and quality commands after a clean dependency install.
 - [x] Record factual results and prepare the updated PR description; independent
-      review and browser smoke accepted. Publication and remote CI remain pending.
+      review and browser smoke accepted. Publication and remote CI completed.
 
 Refresh results: merged main `6b69a417cc50473d15d0e9e69abc1a222d7655c7`
 without rewriting history; the only conflict was this progress document. Main's
@@ -1557,5 +1557,11 @@ font identity or paired live Aegea widths/linebreaks. A fresh `php -v` check
 still fails because `libzip.5.dylib` is missing, so live Aegea verification
 remains blocked; no environment repair was attempted.
 
-Next small step: commit and publish the accepted fix branch, update PR #4,
-and verify remote CI. Do not merge the PR as part of this refresh.
+Published code commit: `8e1685e5efe8228fdb1704e28eaf9cd971fdb92d`.
+[Remote CI succeeded](https://github.com/hvab/Selecta/actions/runs/39243742098)
+for that code commit; PR #4 is mergeable against main `6b69a41`. This result
+does not claim CI coverage for the subsequent documentation-only update.
+
+Next small step: the owner decides whether to merge PR #4. The unresolved live
+Aegea width/linebreak comparison remains a separate verification limit because
+PHP cannot start without `libzip.5.dylib`. No PR merge is part of this refresh.
