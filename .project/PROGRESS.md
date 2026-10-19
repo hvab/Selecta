@@ -1474,3 +1474,94 @@ screen-reader verification remain unverified; no V01–V04 expansion is claimed.
 PR #1 was closed as a duplicate because R02 is already included in main.
 Next small step: owner decision whether to merge PR #2. No merge or deployment
 was performed.
+
+## Technical iteration: Aegea 11.5 plain font parity (R04)
+
+Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
+Source oracle: clean Aegea `11.5` / `v4199` checkout at the exact documented
+commit `e1d058356e5426bb1878785c6f4ab4e68b6c4995`. Its plain source and
+compiled CSS use a system stack; Selecta currently defaults to InterVariable.
+
+- [x] Replace only `src/preview/style.css`'s default main font family with
+      the Aegea 11.5 stack; keep note/small inheritance and explicit sources.
+      Added baseline provenance in `PREVIEW-BASELINE.md`. Named families
+      use optional CSS quoting accepted by existing stylelint, preserving the
+      canonical family names and their order. No lint rules change.
+- [x] Add focused regression checks for the actual preview CSS default, plain
+      ZIP inheritance in light/dark, and unchanged system/Google overrides.
+      Verified: 102/102 tests pass; the new parity regression fails on the
+      unpatched baseline CSS. Chrome EN/RU and light/dark plain inheritance
+      pass; explicit Sans-serif/Georgia overrides pass; PT Sans in both slots
+      produces one Google CSS link, removed on return to plain.
+- [x] Run JS/style lint, build, formatting, and scoped diff. Tests, JS/style
+      lint and build pass locally; scoped formatting passes. Full formatting
+      still has only the independently reproduced baseline failure fixed by
+      R02 (draft PR #1). Keep its prerequisite patch in a separate commit
+      so the font implementation remains independently reviewable.
+
+Consumer limit: local PHP cannot start because a required libzip dylib is
+missing. Source/compiled-CSS and browser checks do not replace a live Aegea
+install or paired width/linebreak verification. Do not change engine target.
+
+Combined R02 + R04 verification in an isolated copy: all five commands pass,
+including full formatting and 102/102 tests. R02 CI Node 22/Linux also passes.
+
+Updated after main `8662ce5`: the font regression now reads the relocated
+AegeaPreview.css and uses corrected relative theme imports. The updated R02
+branch is merged as the quality prerequisite; its Node 22/Linux CI passes.
+Combined verification passes locally: 107/107 tests, JS/style lint, formatting
+and build. Chrome on the new UI confirms EN/RU/light/dark plain inheritance,
+explicit system overrides, one PT Sans CSS link and removal on return to plain.
+Next small step: push the updated draft PR #4 and inspect its CI. Merge R02
+first. Live Aegea visual verification remains open.
+
+## R04 refresh against current main (2026-10-19)
+
+- [x] Merge current `origin/main` into the existing R04 fix branch without
+      rewriting history; resolve only integration conflicts.
+- [x] Recheck the pinned Aegea 11.5/v4199 font contract, relevant markup,
+      variables and preview states against the available source checkout.
+- [x] Verify the existing font regression, generation/validation compatibility
+      and quality commands after a clean dependency install.
+- [x] Record factual results and prepare the updated PR description; independent
+      review and browser smoke accepted. Publication and remote CI completed.
+
+Refresh results: merged main `6b69a417cc50473d15d0e9e69abc1a222d7655c7`
+without rewriting history; the only conflict was this progress document. Main's
+R01 validation, session fixes and hvab-blocks v0.3.0 are retained. The R04 diff
+against main remains the font default, existing font regression and provenance.
+
+Clean `npm ci --cache` succeeded after the sandbox DNS failure was isolated;
+the completed network-enabled clean install was repeated after the first
+process exited. No dependency files or install-script policy were changed.
+All five quality commands pass: 131/131 checks, JS/style lint, full formatting
+and production build. The targeted font regression passes 3/3; evaluating it
+against unpatched main CSS fails only the intended plain-stack assertion (2/3).
+Existing R01 boundary coverage passes together with the plain ZIP and explicit
+system/Google override checks. Install reports 19 inherited audit package
+records (2 moderate, 17 high); dependency remediation is outside R04.
+
+The pinned engine source/compiled CSS and current development source were
+rechecked; details are in PREVIEW-BASELINE.md. This is source-contract evidence,
+not a live Aegea width/linebreak comparison. The earlier clean-install blocker
+is resolved. Independent review found no issues, and the root accepted the
+source diff and current browser smoke before publication.
+
+Browser smoke in the in-app browser on macOS confirms canonical computed stacks
+for EN/light plain preview, note and metadata; the shell keeps its own
+`system-ui, sans-serif` stack. Explicit Sans-serif interface and Georgia note
+choices apply correctly. PT Sans in both slots creates one Google CSS link;
+returning to plain removes it. RU/dark preview with a dark shell retains plain
+font inheritance. These are UI/computed-style checks, not proof of rasterized
+font identity or paired live Aegea widths/linebreaks. A fresh `php -v` check
+still fails because `libzip.5.dylib` is missing, so live Aegea verification
+remains blocked; no environment repair was attempted.
+
+Published code commit: `8e1685e5efe8228fdb1704e28eaf9cd971fdb92d`.
+[Remote CI succeeded](https://github.com/hvab/Selecta/actions/runs/39243742098)
+for that code commit; PR #4 is mergeable against main `6b69a41`. This result
+does not claim CI coverage for the subsequent documentation-only update.
+
+Next small step: the owner decides whether to merge PR #4. The unresolved live
+Aegea width/linebreak comparison remains a separate verification limit because
+PHP cannot start without `libzip.5.dylib`. No PR merge is part of this refresh.
