@@ -30,11 +30,12 @@ The app currently has:
 
 Current prepared release: `0.8.0`.
 
-## Audit status after PR #2 and #4 merges (2026-10-19)
+## Audit status after PR #7 merge (2026-10-19)
 
 This snapshot describes remote `main` at
-`7d0f4751615ed8fd9decdf16ff8f36d1ecc50882` before the V01 correction below.
-It supersedes earlier pending-merge and audit next-step notes. The original reports in `audit/` remain historical evidence; the
+`830607c083141fe9c623e5c9793ca3d756058f37`, including the V01 correction.
+It supersedes earlier pending-merge and audit next-step notes.
+The original reports in `audit/` remain historical evidence; the
 remediation and verification IDs below follow `audit/2-sol-6-1-xhigh.md`.
 
 ### Implemented and merged
@@ -64,51 +65,164 @@ remediation and verification IDs below follow `audit/2-sol-6-1-xhigh.md`.
       no-op Reset no longer suppresses the next edit; pending local changes
       flush on page lifecycle events; untouched tabs do not overwrite newer
       saved state; mounted URL imports establish a saved baseline immediately.
+- [x] **V01 — stale File import and error handling.**
+      [PR #7](https://github.com/hvab/Selecta/pull/7), merged as `830607c`, closes
+      the additional P2 confirmed by the V01 experiment. A later selected File,
+      theme/lock edit, Reset or unmount invalidates older results and errors.
+      Input cleanup cannot clear a newer selection. R01 validation and R05
+      persistence remain intact. Independent final review and coordinator
+      acceptance completed; browser-specific timing/BFCache coverage is still
+      a verification limit, not an outstanding implementation in a fix branch.
 
 All five remediation implementations, covering six canonical findings, are in
-main. This does not close every consumer/platform acceptance item in the audit.
-[Main CI](https://github.com/hvab/Selecta/actions/runs/39245294680) and
-[GitHub Pages deployment](https://github.com/hvab/Selecta/actions/runs/39245294949)
-both succeeded on `7d0f475`; no new release is claimed.
+main, together with the additional V01 correction. This does not close every
+consumer/platform acceptance item in the audit.
+[Main CI](https://github.com/hvab/Selecta/actions/runs/39257123562) and
+[GitHub Pages deployment](https://github.com/hvab/Selecta/actions/runs/39257123500)
+both succeeded on `830607c`; no new versioned release is claimed.
 
-GitHub reconciliation: PR #2, #4 and #6 are merged. PR #1, #3 and #5 are closed
-duplicates with no separate merge. There are no open PRs and the repository's
+GitHub reconciliation: PR #2, #4, #6 and #7 are merged. PR #1, #3 and #5 are closed
+duplicates with no separate merge. Before the header PR, there were no open PRs and the repository's
 GitHub Issues list is empty, including closed issues. R/V IDs are audit plan
 items, not GitHub issue numbers. No new Issues were created in this update.
 
 ### Remaining verification and decisions
 
-- [x] **V01 — asynchronous File import ordering experiment completed.** A stale
-      successful import overwrites a later import, Reset or manual edit and
-      persists the overwritten state. A stale failure sets obsolete error
-      feedback. Confirmed P2; see the reproduction record below. The experiment
-      is complete. The correction is implemented in the current fix branch,
-      independently reviewed and published as draft PR #7 with passing code CI. R01/R05 alone do not address
-      this asynchronous File ordering case.
 - [ ] **V02 — live Aegea acceptance.** Baseline provenance is now established at
       `e1d058356e5426bb1878785c6f4ab4e68b6c4995` (11.5/v4199), and source font
-      parity is verified. PHP startup remains blocked by missing
-      `libzip.5.dylib`. Isolated install, PHP lint and paired EN/RU render
-      widths/linebreaks remain unverified. Keep the target unchanged; a different
-      engine target or acceptance of remaining visual differences requires an
-      explicit decision.
+      parity is verified. The last recorded PHP startup failed because
+      `libzip.5.dylib` was missing; no environment repair or new runtime check
+      was performed in this summary update. Isolated install, PHP lint and
+      paired EN/RU render widths/linebreaks remain unverified. This is an
+      environment/acceptance gap, not a pending choice of baseline. Keep the
+      target unchanged; a different engine target or acceptance of remaining
+      visual differences requires an explicit decision.
 - [ ] **V03 — preview/consumer responsive parity and narrow header.** Paired
-      geometry at equal content widths, RU/EN header at 641 px and real 200%
-      zoom remain open. The shell-only checks can proceed independently;
-      consumer comparison depends on a working isolated Aegea runtime.
+      desktop geometry at equal content widths remains open.
+      The 641 px RU/EN shell check below confirmed subtitle/Theme-label overlap
+      without demonstrated control inaccessibility; the local CSS correction
+      below resolves that overlap. Consumer comparison still
+      depends on a working isolated Aegea runtime. The user dropped real 200%
+      zoom and extensive mobile acceptance from scope; narrow screens only
+      need a visually intact basic layout.
 - [ ] **V04 — bounded edge-case experiments.** Large import payloads, Google
       font slow/offline delivery and marked-title contrast remain hypotheses,
-      not established defects. Measure before proposing limits, catalog or
-      contrast-policy changes; such product changes may need an owner decision.
+      not established defects. Check 1/5/20 MB inputs and responsiveness,
+      one known font family under slow/offline conditions, and marked-title
+      contrast on a valid palette separately. Font-network work needs current
+      primary API documentation. Measure before proposing size limits, catalog
+      or contrast-policy changes; these product changes may need a decision.
 - [ ] Complete remaining manual acceptance where the environment is available:
       browser file-picker/download flow, Safari/BFCache, Windows/forced-colors,
       and screen-reader behavior. A green CI run does not establish this coverage.
 
 The existing header/overlay and feedback-surface follow-ups below remain separate
-UI work; merging the audit fixes does not mark them complete. V01 now has an
-implemented and reviewed correction in the current fix branch; publication and
-remote CI are pending. Release acceptance and changes to the existing
-product/engine contract remain separate decisions.
+UI work; merging the audit fixes does not mark them complete. No merge decision
+remains for the completed audit PRs. Release acceptance and changes to the
+existing product/engine contract remain separate decisions.
+
+### V03 shell/header verification result (2026-10-19; no fixes)
+
+This part needs no product decision or working Aegea/PHP environment. It is a
+verification task; do not redesign the header or implement hypothetical fixes.
+The paired preview/consumer geometry part of V03 stays open until a working
+isolated consumer is available.
+
+- [x] Run the current merged main revision in an isolated workspace; record
+      the exact revision, browser, viewport and actual browser zoom.
+- [x] At 641 px, inspect RU and EN header controls: bounds, overlap, clipping,
+      reachability and hit targets. Include Theme, Interface, language, Share
+      and ZIP controls; verify keyboard access and opening/closing Share.
+- Dropped by the subsequent user decision: repeat at real 200% browser zoom.
+  The original attempt remains unverified; no simulated zoom was substituted.
+- [x] Save geometry/screenshots and distinguish functional inaccessibility from
+      cosmetic crowding. Record PASS/FAIL; propose a narrow correction only for
+      a reproduced problem. Do not claim preview/consumer parity from this run.
+
+Freshly fetched main remained `830607c083141fe9c623e5c9793ca3d756058f37`.
+An independent Sol 6.1 agent and the coordinator used separate browser tabs
+and origins serving an unchanged isolated archive of that revision. Existing
+dependencies were reused. The baseline was 641 × 900 CSS px, DPR 1 and visual
+viewport scale 1 in the in-app browser; Chrome reproduced the same EN geometry.
+
+**Visual FAIL / P3 optional polish:** in both RU and EN the brand subtitle
+overlaps the Theme label. The brand grid track shrinks to 32.234 px in EN and
+0 px in RU, while its text paints outside it. `App.css` keeps four columns with
+`minmax(0, 1fr)` for the brand above the `40rem` breakpoint; the narrow-header
+layout therefore does not apply at 641 px. Both reviewers independently
+reproduced the overlap. A future narrow correction can move header controls to
+another row before the brand loses usable width; no redesign is warranted by
+this result and no correction was made.
+
+**Control reachability PASS at the baseline:** Theme, Interface, RU/EN, Share
+and ZIP remain visible with unobstructed center hit targets. Header controls
+are 28 px high; no control clipping or horizontal page scroll was observed
+(`scrollWidth` 641; RU header has a subpixel width of 641.469). Mouse activation
+of theme, interface, language and Share worked. Keyboard Tab reaches the radio
+groups, Share and ZIP; arrows change radio selections, Enter opens Share,
+Down moves through its items, and Escape returns focus to Share. Keyboard ZIP
+activation produced an actual download in both runs. This checks header
+reachability, not every export/clipboard path or assistive technology.
+
+**Real 200% zoom UNVERIFIED:** exposed browser capabilities provide viewport
+dimensions but no zoom control. Native zoom shortcuts were accepted without
+changing viewport, DPR, visual scale or visible layout in the in-app browser
+and Chrome, including Chrome without a viewport override. No CSS zoom, device
+scale factor or narrower viewport was substituted. This tooling limitation is
+not an application failure or a successful 200% acceptance result.
+
+Evidence: temporary screenshots `selecta-v03-root-en641.png`,
+`selecta-v03-root-ru641.png`, `selecta-v03-root-ru-header.png` and geometry
+`selecta-v03-root-geometry.json`; independent captures corroborate the finding.
+No source files, dependency files or historical audit reports were changed;
+no commit, push or PR was created. V03 remains partially verified.
+
+The zoom follow-up above was superseded by the user's scope decision below.
+Preview/consumer parity remains gated by V02's runtime.
+
+### Desktop priority and minimal narrow-header correction (2026-10-19)
+
+The user prioritizes desktop use. Real 200% zoom and an extensive mobile
+acceptance matrix are no longer required; mobile only needs to look intact.
+Keep basic responsiveness required by `SPEC.md`, without a separate mobile UX
+project. The previous V03 experiment remains historical evidence, not a reason
+to spend further time on zoom tooling.
+
+- [x] Adjust only shell header layout in `src/components/App/App.css` so brand
+      text and controls do not collide at narrow widths. Preserve normal desktop
+      layout and the existing workspace breakpoint.
+- [x] Coordinator review: visually check RU/EN at a representative phone width,
+      641 px and desktop, then run scoped style/format checks. No zoom campaign.
+- [x] Record the accepted result and limits here. The initial implementation
+      stayed local; the owner subsequently authorized a fix branch and PR.
+
+Sol 6.1 moved the existing compact header rules to `64rem` and allowed the
+control groups to wrap instead of requiring horizontal scrolling. The workspace
+breakpoint stays at `40rem`. The coordinator reviewed the minimal CSS diff and
+applied it to the isolated main `830607c` archive for browser acceptance.
+
+RU/EN checks at 375, 641 and 1280 CSS px found no header text collisions or
+horizontal page overflow; all header control centers remain reachable. At
+1280 px the measured RU header/control geometry is identical before and after
+the patch, and the desktop header remains 73 px high in both languages.
+Scoped Stylelint and Prettier checks passed. `SPEC.md` now records desktop
+priority and the reduced mobile/zoom scope. No preview, generation or state
+logic changed. This is basic visual acceptance, not a comprehensive mobile
+device certification. The P3 overlap is resolved in this fix branch. Next audit
+work can focus on desktop V02 acceptance or
+the bounded V04 experiments rather than zoom/mobile coverage.
+
+Publication: [PR #8](https://github.com/hvab/Selecta/pull/8) uses the authorized
+`codex/fix-narrow-header` branch based on main
+`830607c`, including only the header CSS, `SPEC.md` and this progress update.
+The complete local gate passed: lint, stylelint, format check, 166/166 tests,
+build and diff whitespace check. Build retains the existing dependency
+PURE-annotation warnings. Independent Sol 6.1 review of `8d4b2c9` found no
+actionable problems, and the coordinator accepted the result.
+[PR CI passed](https://github.com/hvab/Selecta/actions/runs/39264559698) on that
+code commit, including clean dependency installation on Node 22/Linux. This
+records the code run; the subsequent documentation commit triggers its own CI.
+The PR remains open, and merging remains explicitly unauthorized.
 
 ### V01 verification result (2026-10-19; no fixes)
 
@@ -232,16 +346,19 @@ unmeasured. File reads are logically invalidated rather than physically aborted.
 No preview, ZIP contract or new HTML/URL rendering is introduced; the existing
 R01 input boundary remains in force, with no new XSS/CSRF surface identified.
 
-Published as [draft PR #7](https://github.com/hvab/Selecta/pull/7) on
+Initially published as [PR #7](https://github.com/hvab/Selecta/pull/7) on
 `codex/fix-v01-import-ordering`, code commit `31b1654`.
 [Node 22/Linux CI passed](https://github.com/hvab/Selecta/actions/runs/39256403821)
 for that code commit, including clean installation and all quality/build steps.
 This records the code run, not CI coverage for this subsequent documentation
 update. The coordinator accepted the reviewed implementation before publication.
-Main remains at `7d0f475`; V01 is fixed in the PR, not merged or deployed.
+Final independent review of `25d5f4b` found no actionable problems; the
+coordinator checked its conclusions. PR #7 was then merged with owner approval
+as `830607c` on 2026-10-19. Main CI and Pages both succeeded; see the current
+audit snapshot above. V01 is now merged and deployed.
 
-Next small step: owner review and merge decision for PR #7. No merge is authorized.
-V02–V04 remain separate and unchanged.
+The subsequent V03 header verification and correction are recorded above.
+V02 and V04 remain separate.
 
 ## Source of truth
 
