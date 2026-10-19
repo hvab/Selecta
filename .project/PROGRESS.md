@@ -30,6 +30,219 @@ The app currently has:
 
 Current prepared release: `0.8.0`.
 
+## Audit status after PR #2 and #4 merges (2026-10-19)
+
+This snapshot describes remote `main` at
+`7d0f4751615ed8fd9decdf16ff8f36d1ecc50882` before the V01 correction below.
+It supersedes earlier pending-merge and audit next-step notes. The original reports in `audit/` remain historical evidence; the
+remediation and verification IDs below follow `audit/2-sol-6-1-xhigh.md`.
+
+### Implemented and merged
+
+- [x] **R01 / C01 / F01 — semantic validation at import and export boundaries.**
+      [PR #2](https://github.com/hvab/Selecta/pull/2), merged as `6b69a41`, rejects
+      unsupported colors, lengths, numeric values and parents across JSON/File,
+      URL and storage, with an invariant before direct ZIP generation. Invalid
+      external models are rejected atomically; editable metadata remains
+      repairable. This addresses the demonstrated generated-CSS injection and
+      invalid model cases, not an established PHP/JS execution vulnerability.
+      Integration with R05 was reviewed and accepted before merging.
+- [x] **R02 / C04 / F04 — working quality gate.** Included in
+      [PR #6](https://github.com/hvab/Selecta/pull/6), merged as `b9452c1`.
+      The stale session fixture, formatting and style integration failures are
+      resolved without restoring the rejected legacy `system` session policy.
+- [x] **R03 / C03 / F03 — responsive panel sizing.** Included in PR #6:
+      reactive workspace sizing, separator budget and effective-width clamping
+      are integrated with hvab-blocks 0.3.
+- [x] **R04 / C02 / F02 — plain preview font default.**
+      [PR #4](https://github.com/hvab/Selecta/pull/4), merged as `7d0f475`, matches
+      the pinned Aegea 11.5/v4199 source and compiled CSS stack. Plain ZIPs still
+      inherit the engine font; explicit system/Google choices are preserved.
+      Independent final review and coordinator acceptance completed. Live
+      width/linebreak parity remains the separate V02 acceptance gap below.
+- [x] **R05 / C05–C06 / F05–N01 — session persistence.** Included in PR #6:
+      no-op Reset no longer suppresses the next edit; pending local changes
+      flush on page lifecycle events; untouched tabs do not overwrite newer
+      saved state; mounted URL imports establish a saved baseline immediately.
+
+All five remediation implementations, covering six canonical findings, are in
+main. This does not close every consumer/platform acceptance item in the audit.
+[Main CI](https://github.com/hvab/Selecta/actions/runs/39245294680) and
+[GitHub Pages deployment](https://github.com/hvab/Selecta/actions/runs/39245294949)
+both succeeded on `7d0f475`; no new release is claimed.
+
+GitHub reconciliation: PR #2, #4 and #6 are merged. PR #1, #3 and #5 are closed
+duplicates with no separate merge. There are no open PRs and the repository's
+GitHub Issues list is empty, including closed issues. R/V IDs are audit plan
+items, not GitHub issue numbers. No new Issues were created in this update.
+
+### Remaining verification and decisions
+
+- [x] **V01 — asynchronous File import ordering experiment completed.** A stale
+      successful import overwrites a later import, Reset or manual edit and
+      persists the overwritten state. A stale failure sets obsolete error
+      feedback. Confirmed P2; see the reproduction record below. The experiment
+      is complete. The correction is implemented in the current fix branch,
+      independently reviewed and published as draft PR #7 with passing code CI. R01/R05 alone do not address
+      this asynchronous File ordering case.
+- [ ] **V02 — live Aegea acceptance.** Baseline provenance is now established at
+      `e1d058356e5426bb1878785c6f4ab4e68b6c4995` (11.5/v4199), and source font
+      parity is verified. PHP startup remains blocked by missing
+      `libzip.5.dylib`. Isolated install, PHP lint and paired EN/RU render
+      widths/linebreaks remain unverified. Keep the target unchanged; a different
+      engine target or acceptance of remaining visual differences requires an
+      explicit decision.
+- [ ] **V03 — preview/consumer responsive parity and narrow header.** Paired
+      geometry at equal content widths, RU/EN header at 641 px and real 200%
+      zoom remain open. The shell-only checks can proceed independently;
+      consumer comparison depends on a working isolated Aegea runtime.
+- [ ] **V04 — bounded edge-case experiments.** Large import payloads, Google
+      font slow/offline delivery and marked-title contrast remain hypotheses,
+      not established defects. Measure before proposing limits, catalog or
+      contrast-policy changes; such product changes may need an owner decision.
+- [ ] Complete remaining manual acceptance where the environment is available:
+      browser file-picker/download flow, Safari/BFCache, Windows/forced-colors,
+      and screen-reader behavior. A green CI run does not establish this coverage.
+
+The existing header/overlay and feedback-surface follow-ups below remain separate
+UI work; merging the audit fixes does not mark them complete. V01 now has an
+implemented and reviewed correction in the current fix branch; publication and
+remote CI are pending. Release acceptance and changes to the existing
+product/engine contract remain separate decisions.
+
+### V01 verification result (2026-10-19; no fixes)
+
+- [x] Use the current merged main revision in an isolated workspace. Inspect
+      `App.vue` import/reset orchestration and the File deserializer first.
+- [x] In a temporary component harness, delay import A; complete a later import
+      B, Reset or manual edit; then settle A successfully or with an error.
+      Record final state, application order and error-feedback ownership.
+- [x] Check the ordinary real File input path in the in-app browser. Selecting a
+      valid local JSON file updates Display name and Folder name as expected.
+      This is a control for the import path, not a browser race reproduction.
+- [x] Record the confirmed failure and independently repeat the reproduction.
+      No application correction or permanent test infrastructure was added.
+
+Baseline: freshly fetched main
+`7d0f4751615ed8fd9decdf16ff8f36d1ecc50882`, exported to an isolated directory.
+An independent Sol 6.1 agent compiled the unchanged actual App script using the
+existing component-harness approach. Child UI rendering was stubbed; actual
+import, deserialization, Reset, edit, watcher and persistence logic ran. File
+reads used controlled promises and storage was in memory. Node was `24.22.0`;
+existing dependencies were reused, not freshly installed for this experiment.
+
+**Confirmed P2: a pending File import can overwrite newer user intent.** Start
+import A with its read pending; complete import B, confirm Reset, or edit the
+name/color; then resolve A with a valid older theme. Each case applies A over the
+newer state. Both ordinary debounce and pagehide save that stale final theme.
+The defect needs overlapping asynchronous operations; its frequency with real
+files is not measured. This is state loss, not evidence of CSS/JS execution or
+a bypass of the R01 semantic validator.
+
+The independent run covered 15 scenarios: single-import control; B/Reset/edit
+crossed with stale A success/read failure and debounce/pagehide; malformed JSON
+from stale A after B; and two overlapping imports completed in start order.
+All six stale-success variants overwrote the newer state. Stale read failures
+and malformed JSON preserved the current theme but set `status.themeJsonInvalid`
+after the newer action. Single import and A-then-B completion controls behaved
+normally. The coordinator inspected the harness and repeated all 15 scenarios.
+
+The coordinator also ran three stronger cases: allow B, Reset or manual edit to
+finish its 500 ms save, verify the saved newer state, then resolve A. After A and
+its debounce, both current and stored names became `Import A` instead of
+`Import B`, `My Theme` or `Manual Edit`. Thus the result is not merely an initial
+autosave timing artifact.
+
+Source locations on this exact main revision: `src/components/App/App.vue`
+lines 508–523 (`importThemeJson`) unconditionally apply the awaited result at
+517 and set its error at 520. `src/theme/serialize.js` lines 54–55 await
+`file.text()`. Reset at App lines 350–356 and edit handlers at 256–275 do not
+invalidate that pending work. These are main-revision locations, not line
+references into the older local develop checkout.
+
+Temporary evidence: `v01-agent-repro.mjs` / `v01-agent-results.json`, repeated
+run output `selecta-v01-root-recheck.txt`, and
+`v01-root-persisted-repro.mjs` / `v01-root-persisted-results.json`. Each harness
+can be rerun with `node <harness-name>` from its isolated main snapshot. These
+are local reproduction artifacts, not committed product files. The browser
+control used the unmodified main app; no delayed File read was injected into
+the browser, so browser race timing and cross-browser coverage remain open.
+
+At the end of verification, the next step was to authorize stale-import invalidation for
+success and error paths, preserving later import/Reset/edit state and R05
+persistence. No correction was made in that verification-only iteration.
+V02–V04 remain as listed above.
+Only this progress document changed in the working repository; no source fixes,
+commits, pushes, PR changes or merges were made during V01 verification.
+
+### V01 correction plan (2026-10-19)
+
+The owner authorized the correction after the verification above. Preserve R01
+atomic validation and R05 session persistence; do not change preview, export,
+storage policy or UI behavior outside File import ordering.
+
+- [x] In `src/components/App/App.vue`, track the latest selected File operation.
+      Invalidate pending reads on later theme/lock changes, theme replacement
+      and unmount; ignore stale success and error results. Clear the captured
+      input selection before awaiting, so older cleanup cannot erase a newer
+      choice. UI-only actions and a canceled chooser keep the pending import.
+- [x] Extend the existing `App.session.test.js` harness with controlled File
+      reads for import ordering, Reset/edit/lock invalidation, current/stale
+      failures, unmount and R05 persistence compatibility. Keep deserialization
+      and application atomic; no new infrastructure.
+- [x] Run focused regressions and the existing complete quality gate:
+      `npm test`, `npm run lint`, `npm run lint:styles`,
+      `npm run format:check`, `npm run build`, and `git diff --check`.
+      Record actual results, remaining limits and the next small step here.
+
+### V01 correction result (2026-10-19; local verification)
+
+- `App.vue` now accepts File success/error results only for the latest import
+  revision. A selected newer File supersedes older work even if it later fails.
+  Theme replacement, metadata/palette/typography/layout edits, valid presets,
+  Random, field/group locks, enabling dark support and unmount invalidate
+  pending reads synchronously. Existing UI-only mode switching, shell/locale/
+  sidebar changes and a canceled chooser preserve the pending operation.
+- Input selection is cleared immediately after capturing the File. No older
+  completion can clear a newer selection, change the URL, show an obsolete
+  error or trigger a stale theme save. R01 deserialization remains atomic;
+  neither serialization nor the storage implementation changed.
+- Added 35 focused cases to the existing real-App script harness: 43 App cases
+  pass. They cover both import completion orders, stale success/read/malformed
+  failures, latest failure ownership, all superseding handlers, input/URL and
+  storage-write isolation, UI-only actions, atomic invalid-model rejection,
+  unmount, mounted URL saving and untouched-tab snapshot behavior. Existing
+  Reset, debounce, pagehide/visibility and unavailable-storage cases also pass.
+- On Node 24.22.0 after a clean lockfile install, `npm test` passes 166/166;
+  `npm run lint`, `npm run lint:styles`, `npm run format:check`,
+  `npm run build` and `git diff --check` pass. Build emits only dependency
+  `@vueuse/core` PURE-annotation warnings. Dependencies and lockfile are unchanged.
+- The coordinator independently repeated the original 15 temporary scenarios
+  with corrected expectations and three stronger scenarios where B/Reset/edit
+  had already been saved before A settled. All 18 preserve the newer current
+  and stored state; stale errors are ignored.
+- Independent review found no actionable problems and reran all 43 App cases
+  successfully. The coordinator accepted the source diff after its own review
+  and the 18 temporary checks above.
+
+Limits: the controlled File reads exercise actual App/deserializer/lifecycle
+logic with child rendering stubbed and in-memory storage. Real-browser race
+frequency, browser-specific File timing and cross-browser coverage remain
+unmeasured. File reads are logically invalidated rather than physically aborted.
+No preview, ZIP contract or new HTML/URL rendering is introduced; the existing
+R01 input boundary remains in force, with no new XSS/CSRF surface identified.
+
+Published as [draft PR #7](https://github.com/hvab/Selecta/pull/7) on
+`codex/fix-v01-import-ordering`, code commit `31b1654`.
+[Node 22/Linux CI passed](https://github.com/hvab/Selecta/actions/runs/39256403821)
+for that code commit, including clean installation and all quality/build steps.
+This records the code run, not CI coverage for this subsequent documentation
+update. The coordinator accepted the reviewed implementation before publication.
+Main remains at `7d0f475`; V01 is fixed in the PR, not merged or deployed.
+
+Next small step: owner review and merge decision for PR #7. No merge is authorized.
+V02–V04 remain separate and unchanged.
+
 ## Source of truth
 
 - `SPEC.md` — product specification and future-feature backlog.

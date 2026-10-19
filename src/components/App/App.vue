@@ -122,6 +122,7 @@ const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
 let lastSavedSessionSnapshot = null;
 let shareFeedbackTimeout = null;
+let themeImportRevision = 0;
 const themeUrlParam = 'theme';
 const fontSourceKeyByFamilyKey = {
   mainFontFamily: 'mainFontSource',
@@ -152,6 +153,8 @@ function hasSameSectionValues(section, referenceSection) {
 }
 
 function applyThemeState(nextThemeState) {
+  invalidateThemeImport();
+
   for (const section of Object.keys(initialThemeState)) {
     Object.assign(themeState[section], nextThemeState[section]);
   }
@@ -223,6 +226,10 @@ function clearStatusMessages() {
   importErrorKey.value = '';
 }
 
+function invalidateThemeImport() {
+  themeImportRevision += 1;
+}
+
 function updateLocale(nextLocale) {
   locale.value = nextLocale;
   saveStoredLocale(locale.value);
@@ -254,6 +261,7 @@ function applySharedThemeState(nextThemeState) {
 }
 
 function updateMetaField(key, value) {
+  invalidateThemeImport();
   clearStatusMessages();
   themeState.meta[key] = key === 'folderName' ? normalizeFolderName(value) : value;
 
@@ -271,12 +279,17 @@ function updateMetaField(key, value) {
 }
 
 function updatePaletteField(key, value) {
+  invalidateThemeImport();
   clearStatusMessages();
   activePalette.value[key] = value;
 }
 
 function updateThemeMode(nextThemeMode) {
   if (nextThemeMode === 'dark') {
+    if (!themeState.meta.supportsDarkMode) {
+      invalidateThemeImport();
+    }
+
     themeState.meta.supportsDarkMode = true;
   }
 
@@ -300,6 +313,7 @@ function handleShareAction(action) {
 }
 
 function updateTypographyField(key, value) {
+  invalidateThemeImport();
   clearStatusMessages();
   themeState.typography[key] = value;
 
@@ -313,6 +327,7 @@ function updateTypographyField(key, value) {
 }
 
 function updateLayoutField(key, value) {
+  invalidateThemeImport();
   clearStatusMessages();
   themeState.layout[key] = value;
 }
@@ -325,6 +340,7 @@ function applyPreset(presetId) {
     return;
   }
 
+  invalidateThemeImport();
   themeState.meta.supportsDarkMode = preset.supportsDarkMode;
   Object.assign(themeState.palette, preset.palette);
   Object.assign(themeState.darkPalette, preset.darkPalette ?? initialThemeState.darkPalette);
@@ -335,11 +351,13 @@ function applyPreset(presetId) {
 }
 
 function toggleFieldLock(section, key, locked) {
+  invalidateThemeImport();
   clearStatusMessages();
   fieldLocks[section][key] = locked;
 }
 
 function toggleGroupLock(section, keys, locked) {
+  invalidateThemeImport();
   clearStatusMessages();
 
   for (const key of keys) {
@@ -365,6 +383,7 @@ function randomizePalette(section, randomPalette) {
 }
 
 function randomizeTheme() {
+  invalidateThemeImport();
   clearStatusMessages();
   const randomThemeState = getRandomThemeState(themeState, fieldLocks);
 
@@ -513,13 +532,22 @@ async function importThemeJson(event) {
     return;
   }
 
+  const importRevision = ++themeImportRevision;
+  event.target.value = '';
+
   try {
-    applySharedThemeState(await deserializeThemeFile(file));
+    const nextThemeState = await deserializeThemeFile(file);
+
+    if (importRevision !== themeImportRevision) {
+      return;
+    }
+
+    applySharedThemeState(nextThemeState);
     clearThemeUrlParam();
   } catch {
-    importErrorKey.value = 'status.themeJsonInvalid';
-  } finally {
-    event.target.value = '';
+    if (importRevision === themeImportRevision) {
+      importErrorKey.value = 'status.themeJsonInvalid';
+    }
   }
 }
 
@@ -591,6 +619,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  invalidateThemeImport();
   saveCurrentSession();
   window.removeEventListener('pagehide', saveCurrentSession);
   document.removeEventListener('visibilitychange', handleVisibilityChange);
