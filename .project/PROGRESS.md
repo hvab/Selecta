@@ -1203,7 +1203,7 @@ merge GitHub PRs, change theme generation, or expand unrelated audit work.
 - [x] Verify the idle-tab overwrite scenario before/after, ordinary save,
       immediate pre-watcher pagehide, visibility/unmount, Reset and storage retry
       in a temporary harness; run existing quality commands. Update/push PR #5.
-- [ ] Create a separate fix integration branch with R03, corrected R05 and the
+- [x] Create a separate fix integration branch with R03, corrected R05 and the
       existing hvab 0.3 develop commits 71d4e64 / 29fb10c. Keep R03 measured sizing,
       R05 lifecycle persistence, 0.3 Field/container/body-font adaptations and R02
       AppLayers/clipping/session policy. Resolve conflicts without dropping work.
@@ -1233,3 +1233,16 @@ The controls-pane container, Field adaptation and body system font are retained.
 R02 AppLayers remains the single overlay-layer definition, with clip-path and
 current session fixtures. All related component/session changes are preserved;
 there is no R01/R04 scope, engine contract change or application deployment.
+
+Final local combined verification: all existing quality commands and production
+build pass with the unchanged 0.3 lockfile. Imported library CSS matches exact
+pinned commit 4dfa1c7 byte for byte. The same temporary two-tab/exit/Reset/quota/
+URL-import harness passes against the integrated App; R03 sizing cases remain
+covered by the existing checks. No new repository test infrastructure was added.
+
+The combined fix is published separately from the focused R05 PR. Its draft PR
+provides a concrete resolved integration for review and clean Ubuntu/Node 22 CI.
+Remaining platform limits are the prior Safari/Windows/forced-colors/screen-reader
+coverage; no new manual browser coverage or crash-durability guarantee is claimed.
+Next step: inspect exact-head CI for both published fixes and review the combined
+PR. Keep main and develop at their existing heads; do not merge or deploy.
