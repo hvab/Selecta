@@ -1454,14 +1454,16 @@ integration limitation recorded above.
 - [x] Independent review and coordinator acceptance: reviewer r01_review reported
       no findings; the coordinator inspected the production diff and repeated
       all 26 temporary integration cases successfully.
-- [ ] Commit/push of this fix branch, updated PR #2 and exact-head Node 22/Linux
-      CI. Do not merge PR #2 or push main/develop.
+- [x] Publish code commit `76850e212cec12640c6717ddf6a6c02b7f2e164c` and update
+      PR #2. Its exact-head [Node 22/Linux CI](https://github.com/hvab/Selecta/actions/runs/39236141426)
+      passed; GitHub reports it mergeable against main `b9452c1`. This CI result
+      covers that code commit, not this later documentation update.
 
 Clean dependency installation succeeded on Node 24.22.0 / npm 11.19.1 using a
 writable temporary npm cache (`npm ci --cache <temporary-cache>`), without
 configuration changes or copied dependencies. The first plain npm ci could not
 write the sandbox-protected default cache. The lockfile is unchanged from main.
-Exact-head Node 22/Linux CI is still pending publication.
+Exact-head Node 22/Linux CI passed for the published code commit listed above.
 
 The semantic contract and metadata repair policy are unchanged from R01. CSS
 injection into generated CSS is the relevant boundary risk; this integration
@@ -1469,5 +1471,6 @@ adds no new rendering, URL or authentication capability. Live Aegea installation
 real browser file-picker/download flow, Safari/BFCache, Windows/forced-colors and
 screen-reader verification remain unverified; no V01–V04 expansion is claimed.
 
-Next small step: publish only the accepted existing fix branch and verify CI for
-that exact commit.
+PR #1 was closed as a duplicate because R02 is already included in main.
+Next small step: owner decision whether to merge PR #2. No merge or deployment
+was performed.
