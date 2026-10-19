@@ -83,7 +83,7 @@ items, not GitHub issue numbers. No new Issues were created in this update.
       persists the overwritten state. A stale failure sets obsolete error
       feedback. Confirmed P2; see the reproduction record below. The experiment
       is complete. The correction is implemented in the current fix branch,
-      independently reviewed and awaiting remote CI. R01/R05 alone do not address
+      independently reviewed and published as draft PR #7 with passing code CI. R01/R05 alone do not address
       this asynchronous File ordering case.
 - [ ] **V02 — live Aegea acceptance.** Baseline provenance is now established at
       `e1d058356e5426bb1878785c6f4ab4e68b6c4995` (11.5/v4199), and source font
@@ -232,8 +232,15 @@ unmeasured. File reads are logically invalidated rather than physically aborted.
 No preview, ZIP contract or new HTML/URL rendering is introduced; the existing
 R01 input boundary remains in force, with no new XSS/CSRF surface identified.
 
-Next small step: commit and publish the reviewed branch, then check remote CI.
-GitHub publication/merge and release are not claimed by these local results.
+Published as [draft PR #7](https://github.com/hvab/Selecta/pull/7) on
+`codex/fix-v01-import-ordering`, code commit `31b1654`.
+[Node 22/Linux CI passed](https://github.com/hvab/Selecta/actions/runs/39256403821)
+for that code commit, including clean installation and all quality/build steps.
+This records the code run, not CI coverage for this subsequent documentation
+update. The coordinator accepted the reviewed implementation before publication.
+Main remains at `7d0f475`; V01 is fixed in the PR, not merged or deployed.
+
+Next small step: owner review and merge decision for PR #7. No merge is authorized.
 V02–V04 remain separate and unchanged.
 
 ## Source of truth
