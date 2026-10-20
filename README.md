@@ -12,7 +12,7 @@ Selecta is a work-in-progress tool for creating and testing visual themes for Ae
 
 ## Status
 
-Version `0.9.0` is prepared locally for release. It includes the theme import, editor redesign and audit fixes documented in [`CHANGELOG.md`](./CHANGELOG.md). The latest published release remains `0.8.0`.
+The latest release is [Selecta 0.9.0 — Import themes and explore a redesigned editor](https://github.com/hvab/Selecta/releases/tag/v0.9.0). It includes theme import, a redesigned editor and reliability fixes. See [`CHANGELOG.md`](./CHANGELOG.md#090---2026-10-20) for the full list of changes.
 
 The tool currently supports:
 

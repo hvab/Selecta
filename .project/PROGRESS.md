@@ -13,8 +13,9 @@ PR [#9](https://github.com/hvab/Selecta/pull/9) merged the dependency refresh,
 theme import and editor-interface iterations into main as `9222e8a` on 2026-10-20.
 [CI](https://github.com/hvab/Selecta/actions/runs/39430724768) and
 [Pages](https://github.com/hvab/Selecta/actions/runs/39430724821) succeeded on
-that revision. Version `0.9.0` is prepared locally below; the latest published
-version remains `0.8.0`.
+that revision. Release commit `56dc0df` and annotated tag `v0.9.0` are on main.
+[Selecta 0.9.0](https://github.com/hvab/Selecta/releases/tag/v0.9.0) was published
+on 2026-10-20; publication was confirmed through GitHub release metadata.
 
 Local `develop` was synchronized with main `8f5c722` on 2026-10-20 before
 the dependency refresh. Audit documentation closeout is preserved separately
@@ -44,10 +45,19 @@ revision. Release preparation changes only documentation and version metadata.
 The Aegea 11.5 baseline and recorded platform/import limits remain unchanged.
 
 The owner authorized a release commit and annotated `v0.9.0` tag after reviewing
-this preparation. This changeset records that local release closeout.
-Next small step: push main/tag, then verify CI/Pages and publish GitHub release
-notes from CHANGELOG. Remote publication has not been performed. Earlier
-iteration entries below describe their completion-time state.
+this preparation. Commit `56dc0df` records that release closeout; the tag and
+GitHub release are now published. Earlier iteration entries below describe
+their completion-time state.
+
+## README release follow-up (2026-10-20)
+
+- [x] Replace the local-preparation/0.8.0 status with the published 0.9.0 release
+      link and its changelog section. Existing feature and import descriptions
+      already match the release and remain unchanged.
+- [x] Confirm publication through GitHub, check Markdown formatting and diff
+      whitespace. Documentation only; no application behavior changes.
+
+Next small step: commit and publish this documentation correction when requested.
 
 ## Commit closeout (2026-10-20)
 
