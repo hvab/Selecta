@@ -51,15 +51,23 @@ defineProps({
 <style scoped>
 @container controls-pane (max-width: 23rem) {
   .hb-field.hb-field_layout_inline {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.35rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--hb-gap-1) var(--hb-gap-2);
+  }
+
+  .hb-field_layout_inline > .hb-field__label {
+    grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 40rem) {
   .hb-field.hb-field_layout_inline {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.35rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--hb-gap-1) var(--hb-gap-2);
+  }
+
+  .hb-field_layout_inline > .hb-field__label {
+    grid-column: 1 / -1;
   }
 }
 </style>

@@ -76,6 +76,7 @@
 
 .app__controls-scroll,
 .app__preview-scroll {
+  min-width: 0;
   min-height: 0;
   overflow-y: auto;
 }
@@ -210,21 +211,36 @@
   }
 }
 
-@media (max-width: 40rem) {
+@media (max-width: 43rem) {
   .app {
     display: block;
     height: auto;
     min-height: 100vh;
+    padding-bottom: calc(var(--hb-size-control-height-l) + var(--hb-gap-2) * 2 + env(safe-area-inset-bottom, 0px));
     overflow: visible;
   }
 
+  .app:has(.download-error) {
+    /* Leave room for the fixed actions and a two-line validation message. */
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+  }
+
   .app__workspace {
-    display: block;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .app__controls-pane {
     display: block;
-    border-right: 0;
+    width: 100%;
+    container-type: normal;
+  }
+
+  .app__sidebar-footer {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 1;
+    padding-bottom: calc(var(--hb-gap-2) + env(safe-area-inset-bottom, 0px));
+    background: var(--hb-color-base-background);
   }
 
   .app__pane-resizer {
@@ -232,11 +248,15 @@
   }
 
   .app__controls-scroll {
-    padding: 1rem;
+    padding: var(--hb-gap-2);
     overflow-y: visible;
   }
 
+  .app__preview-pane {
+    border-top: 1px solid var(--hb-color-line-generic);
+  }
+
   .app__preview-scroll {
-    overflow-y: visible;
+    overflow: auto visible;
   }
 }

@@ -76,10 +76,4 @@ const UNIT_SEPARATOR = '\u202f';
   line-height: var(--hb-typography-body-short-line);
   text-align: right;
 }
-
-@media (max-width: 40rem) {
-  .range-control-field__value {
-    text-align: left;
-  }
-}
 </style>

@@ -41,6 +41,15 @@ Use existing wrappers for shell controls. Add another headless primitive only wh
 
 Theme appearance and editor appearance are independent: the edited light/dark palettes drive the preview and generated theme, while the shell uses its own appearance preference. English/Russian UI and preview content are supported through the app's i18n layer.
 
+## Narrow layouts
+
+At 43rem and below, the workspace stacks controls and preview at full width;
+this breakpoint accounts for the combined minimum pane widths. Narrow fields
+keep the label above a shared input/addons row. Export actions stay fixed at
+the viewport bottom with safe-area padding, and the page reserves room for
+them, including validation messages. Wide preview content scrolls inside the
+preview surface instead of widening the document.
+
 ## Styling principles
 
 - Preview styles and shell styles stay separate.
