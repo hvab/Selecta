@@ -32,6 +32,10 @@ export const en = {
     themeMode: 'Theme mode',
     shellAppearance: 'Interface appearance',
     lockForRandom: 'Lock {label} for random',
+    unlockForRandom: 'Unlock {label} for random',
+    lockAllForRandom: 'Lock all {label} fields for random',
+    unlockAllForRandom: 'Unlock all {label} fields for random',
+    lockRemainingForRandom: 'Some {label} fields are locked. Lock all for random',
     lockGroupForRandom: 'Lock or unlock all {label} fields for random',
   },
   status: {

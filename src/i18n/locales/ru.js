@@ -32,6 +32,10 @@ export const ru = {
     themeMode: 'Режим темы',
     shellAppearance: 'Оформление интерфейса',
     lockForRandom: 'Зафиксировать {label} для случайной темы',
+    unlockForRandom: 'Снять фиксацию {label} для случайной темы',
+    lockAllForRandom: 'Зафиксировать все поля в разделе «{label}» для случайной темы',
+    unlockAllForRandom: 'Снять все замки в разделе «{label}» для случайной темы',
+    lockRemainingForRandom: 'Часть полей в разделе «{label}» зафиксирована. Зафиксировать все для случайной темы',
     lockGroupForRandom: 'Зафиксировать или снять все замки в разделе «{label}» для случайной темы',
   },
   status: {
