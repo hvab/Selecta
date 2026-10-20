@@ -15,7 +15,7 @@ fix/pages-build
 docs/release-flow
 ```
 
-Do not add a permanent `develop` branch unless the project grows into several active contributors or long-running release trains.
+`develop` is a legacy branch and is not the source of the current deployed app. Do not use it as a release baseline or create a permanent integration branch.
 
 ## Daily Work
 
@@ -25,24 +25,24 @@ Do not add a permanent `develop` branch unless the project grows into several ac
 4. Open a pull request into `main`.
 5. Merge into `main` when the diff is reviewed.
 
-After merge, GitHub Pages deploys the current app from `main`.
+After merge, GitHub Pages deploys the current app from `main`. CI and Pages are separate workflows; a successful deployment does not prove that the quality checks passed.
+
+Branch creation, commits, pushes, merges, and tags require the owner's explicit instruction. This workflow describes authorized release work; it does not grant that authorization.
 
 ## Local Checks
 
-Before merging a code change, run:
+CI uses the latest Node.js 22 and `npm ci`. The development tools require
+Node.js 22.13+ within the 22.x line or Node.js 24+. Before merging a code change, run:
 
 ```bash
 npm run lint
 npm run lint:styles
 npm run format:check
+npm test
 npm run build
 ```
 
-For changes that touch generation logic, also run:
-
-```bash
-npm test
-```
+CI runs all five commands on pull requests to `main` and pushes to `main`.
 
 ## Versions
 
@@ -56,6 +56,8 @@ Use semantic versioning where practical:
 
 Public releases are cut from `main`.
 
+Merged fixes can remain under `Unreleased` until the owner requests a versioned release. Completing an audit or deploying `main` does not create a new public version.
+
 ## Release Checklist
 
 For each public release:
@@ -67,7 +69,8 @@ For each public release:
 5. Bump the package version.
 6. Create the git tag for the same version.
 7. Push `main` and tags.
-8. Check that GitHub Pages deploys successfully from `main`.
+8. Check that both CI and GitHub Pages complete successfully for the release commit on `main`.
+9. For theme-contract or preview changes, record the relevant Aegea installation/preview acceptance and its limits in `PREVIEW-BASELINE.md` or the linked audit closeout.
 
 Example:
 

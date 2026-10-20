@@ -11,27 +11,22 @@
 ## Deferred Aegea source
 
 - Aegea `12.0a`, build `v4271`, commit `deb13007265d551ec51d9a25cfc514a2102ec65a`
-- Keep this as a later compatibility target; it should not drive the first public release while user-available Aegea is still `11.5`.
+- Keep this as a later compatibility target; it does not replace the checked `11.5` baseline.
 
 ## Release compatibility notes
 
 - The `plain` layout template is unchanged between Aegea `11.5` and the deferred `12.0a` source checked here.
 - The `plain` CSS-variable set is unchanged between these sources.
 - Aegea `11.5` body links use `text-decoration` with `text-decoration-color`; the deferred `12.0a` source keeps the same contract but refines it further. Selecta preview may approximate some link states with a scoped border-bottom subset where that is enough for theme tuning.
-- The deferred `12.0a` source adds bundled Inter and JetBrains Mono fonts. Selecta MVP still intentionally generates only system web-safe font choices.
+- The deferred `12.0a` source adds bundled Inter and JetBrains Mono fonts. Selecta's inherited `plain` preview font stack follows the checked `11.5` source; explicit typography overrides support system stacks and the curated Google Fonts catalog. Selecta does not bundle font files.
 
-## Plain font contract
+## Audit acceptance — 2026-10-19
 
-- Rechecked against the clean Aegea `11.5` / `v4199` checkout at the exact
-  baseline commit above; both `system/themes/plain/src/styles/variables.scss`
-  and compiled `system/themes/plain/styles/main.css` declare the same stack.
-- Default `--mainFontFamily`: `system-ui, -apple-system, BlinkMacSystemFont, "SF UI Text", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif`.
-- `--noteMainFontFamily` and `--smallFontFamily` remain `inherit`. The preview
-  supplies this default locally; a plain-source child theme omits these font
-  overrides and inherits them from Aegea. Explicit system/Google selections
-  keep their existing generation and font-loading paths.
-- A live Aegea render and paired width/linebreak comparison are still needed
-  to verify visual parity; source equality does not establish pixel parity.
+- R04 aligns the inherited preview font stack with Aegea `11.5` `plain`; exported themes continue to inherit the parent fonts unless an explicit override is selected.
+- The owner confirmed that installation in Aegea and the preview work correctly. This closes the V02/V03 owner acceptance items for this audit.
+- The owner's confirmation did not specify an exact installed Aegea version or a browser/platform matrix. It does not change the checked source target above or imply measured line-break parity across platforms.
+- The narrow-header fix is merged. Full Aegea renderer parity remains outside the simplified preview scope.
+- See [`audit/README.md`](./audit/README.md) for the audit closeout and remaining optional work.
 
 ## Dark mode contract
 
@@ -87,14 +82,3 @@ When preview-related code changes:
 5. Recheck link underline behavior for the selected Aegea target version.
 6. Recheck whether the preview still covers all required states from `SPEC.md`.
 7. Update this baseline when the checked Aegea release target or the preview contract changes.
-
-## R04 refresh source check (2026-10-19)
-
-- The available release checkout still matches the pinned `11.5` / `v4199`
-  commit. Source and compiled plain CSS retain the system font stack above.
-- The available development checkout at
-  `fada36ef1e5fba78d8d9f66dcc1b0d646e2df2fb` still uses InterVariable;
-  it remains outside this release target. Its plain CSS-variable names and
-  English/Russian preview content match the pinned release. Its layout adds
-  a drafts block outside Selecta's supported preview states.
-- This refresh changes no preview markup or represented states.

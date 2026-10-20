@@ -9,10 +9,13 @@ import ActionMenu from '../../ui/ActionMenu/ActionMenu.vue';
 import ConfirmDialog from '../../ui/ConfirmDialog/ConfirmDialog.vue';
 import FeedbackTooltip from '../../ui/FeedbackTooltip/FeedbackTooltip.vue';
 import RadioGroup from '../../ui/RadioGroup/RadioGroup.vue';
+import Popover from '../../ui/Popover/Popover.vue';
 import { saveStoredLocale, setDocumentLocale } from '../../i18n/index.js';
 import { clearSession, loadSession, saveSession } from '../../storage.js';
 import { normalizeFolderName, suggestFolderName } from '../../theme/metadata.js';
 import { initialThemeState } from '../../theme/model.js';
+import { deserializeThemeDrop } from '../../theme/importDrop.js';
+import { deserializeThemeFiles } from '../../theme/importFiles.js';
 import { themePresets } from '../../theme/presets.js';
 import {
   decodeThemeFromUrlParam,
@@ -53,7 +56,7 @@ const shareFeedbackOpen = ref(false);
 const shareFeedbackView = ref('');
 const shareMenuElement = ref(null);
 const importErrorKey = ref('');
-const themeJsonFileInput = ref(null);
+const themeFilesInput = ref(null);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
 const translatedMetadataErrors = computed(() => translateMessageMap(metadataErrors.value, 'validation'));
 const activePaletteSection = computed(() => (themeMode.value === 'dark' ? 'darkPalette' : 'palette'));
@@ -79,13 +82,19 @@ const lightDarkModeOptions = computed(() => [
   {
     value: 'light',
     label: t('controls.lightThemeMode'),
+    title: t('controls.lightThemeTitle'),
     icon: '☀',
   },
   {
     value: 'dark',
     label: t('controls.darkThemeMode'),
+    title: t('controls.darkThemeTitle'),
     icon: '☾',
   },
+]);
+const shellAppearanceOptions = computed(() => [
+  { value: 'light', label: t('controls.shellLight') },
+  { value: 'dark', label: t('controls.shellDark') },
 ]);
 const shareActions = computed(() => [
   {
@@ -102,12 +111,12 @@ const shareActions = computed(() => [
 const localeOptions = computed(() => [
   {
     value: 'ru',
-    label: 'RU',
+    label: t('language.ru'),
     ariaLabel: t('language.ru'),
   },
   {
     value: 'en',
-    label: 'EN',
+    label: t('language.en'),
     ariaLabel: t('language.en'),
   },
 ]);
@@ -521,22 +530,48 @@ function downloadThemeJson() {
 
 function openThemeJsonImport() {
   clearStatusMessages();
-  themeJsonFileInput.value?.click();
+  themeFilesInput.value?.click();
 }
 
 async function importThemeJson(event) {
-  clearStatusMessages();
-  const [file] = event.target.files ?? [];
+  return importThemeFiles(event, (files) => deserializeThemeFile(files[0]), 'status.themeJsonInvalid');
+}
 
-  if (!file) {
+async function importSelectedThemeFiles(event) {
+  if (event.target.files?.length === 1 && /\.json$/i.test(event.target.files[0].name)) {
+    return importThemeJson(event);
+  }
+
+  return importThemeFiles(event, deserializeThemeFiles, 'status.themeFilesInvalid');
+}
+
+async function importThemeFiles(event, readTheme, errorKey) {
+  const files = [...(event.target.files ?? [])];
+
+  if (!files.length) {
+    clearStatusMessages();
     return;
   }
 
-  const importRevision = ++themeImportRevision;
   event.target.value = '';
 
+  return applyThemeImport(() => readTheme(files), errorKey);
+}
+
+function importDroppedTheme(dataTransfer) {
+  if (![...(dataTransfer?.types ?? [])].includes('Files')) {
+    return;
+  }
+
+  return applyThemeImport(() => deserializeThemeDrop(dataTransfer), 'status.themeFilesInvalid');
+}
+
+async function applyThemeImport(readTheme, errorKey) {
+  clearStatusMessages();
+  const importRevision = ++themeImportRevision;
+
   try {
-    const nextThemeState = await deserializeThemeFile(file);
+    const nextThemeState = await readTheme();
 
     if (importRevision !== themeImportRevision) {
       return;
@@ -546,7 +581,7 @@ async function importThemeJson(event) {
     clearThemeUrlParam();
   } catch {
     if (importRevision === themeImportRevision) {
-      importErrorKey.value = 'status.themeJsonInvalid';
+      importErrorKey.value = errorKey;
     }
   }
 }
@@ -649,80 +684,53 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
   </Teleport>
 
   <main class="app" :style="appStyle">
-    <header class="app__topbar">
-      <div class="app__brand">
-        <h1 class="app__header-title hb-text hb-text_typography_header-2">{{ t('app.name') }}</h1>
-        <p class="app__header-description hb-text hb-text_typography_body-3 hb-text_color_secondary">
-          {{ t('app.descriptionPrefix') }}
-          <a :href="t('app.aegeaHref')" class="hb-link hb-link_view_secondary hb-link_underline">
-            {{ t('app.aegeaName') }}
-          </a>
-        </p>
-      </div>
-
-      <div class="app__topbar-controls">
-        <div class="app__mode-control">
-          <span class="hb-text hb-text_typography_body-1">{{ t('controls.themeMode') }}</span>
-          <RadioGroup
-            name="theme-mode"
-            :value="themeMode"
-            :aria-label="t('controls.themeMode')"
-            :options="lightDarkModeOptions"
-            :show-option-labels="false"
-            @update:value="updateThemeMode"
-          />
-        </div>
-        <div class="app__mode-control">
-          <span class="hb-text hb-text_typography_body-1">{{ t('controls.shellAppearance') }}</span>
-          <RadioGroup
-            name="shell-appearance"
-            :value="shellAppearance"
-            :aria-label="t('controls.shellAppearance')"
-            :options="lightDarkModeOptions"
-            :show-option-labels="false"
-            @update:value="updateShellAppearance"
-          />
-        </div>
-        <RadioGroup
-          name="locale"
-          :value="locale"
-          :aria-label="t('aria.language')"
-          :options="localeOptions"
-          @update:value="updateLocale"
-        />
-      </div>
-
-      <div class="app__share">
-        <div ref="shareMenuElement">
-          <ActionMenu :actions="shareActions" @menu-open="clearShareFeedback" @select="handleShareAction">
-            <template #trigger>
-              <Button view="outlined">{{ t('actions.share') }}</Button>
-            </template>
-          </ActionMenu>
-        </div>
-        <FeedbackTooltip
-          :message="shareFeedbackKey ? t(shareFeedbackKey) : ''"
-          :open="shareFeedbackOpen"
-          :reference="shareButtonElement"
-          :view="shareFeedbackView"
-        />
-        <p v-if="shareFeedbackKey" class="app__visually-hidden" :role="shareFeedbackView ? 'alert' : 'status'">
-          {{ t(shareFeedbackKey) }}
-        </p>
-      </div>
-
-      <div class="app__download">
-        <Button class="app__download-button" view="action" :disabled="!canDownloadTheme" @click="downloadThemeZip">
-          {{ t('actions.downloadThemeZip') }}
-        </Button>
-        <p v-if="!canDownloadTheme" class="download-error hb-text hb-text_typography_body-1">
-          {{ t('status.fixMetadata') }}
-        </p>
-      </div>
-    </header>
-
     <div ref="workspaceElement" class="app__workspace">
       <aside class="app__controls-pane">
+        <header class="app__sidebar-header">
+          <div class="app__brand">
+            <h1 class="app__header-title hb-text hb-text_typography_header-2">{{ t('app.name') }}</h1>
+            <p class="app__header-description hb-text hb-text_typography_body-3 hb-text_color_secondary">
+              {{ t('app.descriptionPrefix') }}
+              <a :href="t('app.aegeaHref')" class="hb-link hb-link_view_secondary hb-link_underline">
+                {{ t('app.aegeaName') }}
+              </a>
+            </p>
+          </div>
+          <Popover :label="t('actions.interfaceSettings')">
+            <template #trigger>
+              <Button
+                class="app__symbol-button"
+                size="l"
+                :aria-label="t('actions.interfaceSettings')"
+                :title="t('actions.interfaceSettings')"
+              >
+                <span class="app__button-symbol" aria-hidden="true">⚙︎</span>
+              </Button>
+            </template>
+            <div class="app__interface-settings">
+              <div class="app__settings-field">
+                <span class="hb-text hb-text_typography_body-1">{{ t('controls.shellAppearance') }}</span>
+                <RadioGroup
+                  name="shell-appearance"
+                  :value="shellAppearance"
+                  :aria-label="t('aria.shellAppearance')"
+                  :options="shellAppearanceOptions"
+                  @update:value="updateShellAppearance"
+                />
+              </div>
+              <div class="app__settings-field">
+                <span class="hb-text hb-text_typography_body-1">{{ t('aria.language') }}</span>
+                <RadioGroup
+                  name="locale"
+                  :value="locale"
+                  :aria-label="t('aria.language')"
+                  :options="localeOptions"
+                  @update:value="updateLocale"
+                />
+              </div>
+            </div>
+          </Popover>
+        </header>
         <div class="app__controls-scroll">
           <div class="app__theme-actions">
             <ConfirmDialog
@@ -741,7 +749,9 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
                 <Button view="action">{{ t('actions.confirmReset') }}</Button>
               </template>
             </ConfirmDialog>
-            <Button view="normal" size="l" @click="randomizeTheme">{{ t('actions.random') }}</Button>
+            <Button class="app__random-button" view="normal" size="l" @click="randomizeTheme">
+              {{ t('actions.random') }}
+            </Button>
           </div>
           <section class="app__controls-section">
             <PresetSelector
@@ -749,14 +759,16 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
               :presets="themePresets"
               :selected-preset-id="selectedPresetId"
               @apply-preset="applyPreset"
-              @import-theme="openThemeJsonImport"
+              @import-files="openThemeJsonImport"
+              @drop-theme="importDroppedTheme"
             />
             <input
-              ref="themeJsonFileInput"
+              ref="themeFilesInput"
               class="app__import-json-input"
               type="file"
-              accept=".json,application/json"
-              @change="importThemeJson"
+              accept=".zip,.json,.css,.php"
+              multiple
+              @change="importSelectedThemeFiles"
             />
             <ThemeControls
               :meta="themeState.meta"
@@ -777,6 +789,48 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
             />
           </section>
         </div>
+        <footer class="app__sidebar-footer">
+          <div class="app__export-actions">
+            <Button view="action" size="l" :disabled="!canDownloadTheme" @click="downloadThemeZip">
+              {{ t('actions.downloadThemeZip') }}
+            </Button>
+            <div class="app__share">
+              <div ref="shareMenuElement">
+                <ActionMenu
+                  side="top"
+                  :actions="shareActions"
+                  @menu-open="clearShareFeedback"
+                  @select="handleShareAction"
+                >
+                  <template #trigger>
+                    <Button
+                      class="app__symbol-button"
+                      view="outlined"
+                      size="l"
+                      :aria-label="t('actions.moreActions')"
+                      :title="t('actions.moreActions')"
+                    >
+                      <span class="app__button-symbol" aria-hidden="true">⋮</span>
+                    </Button>
+                  </template>
+                </ActionMenu>
+              </div>
+              <FeedbackTooltip
+                side="top"
+                :message="shareFeedbackKey ? t(shareFeedbackKey) : ''"
+                :open="shareFeedbackOpen"
+                :reference="shareButtonElement"
+                :view="shareFeedbackView"
+              />
+              <p v-if="shareFeedbackKey" class="app__visually-hidden" :role="shareFeedbackView ? 'alert' : 'status'">
+                {{ t(shareFeedbackKey) }}
+              </p>
+            </div>
+          </div>
+          <p v-if="!canDownloadTheme" class="download-error hb-text hb-text_typography_body-1">
+            {{ t('status.fixMetadata') }}
+          </p>
+        </footer>
       </aside>
 
       <div
@@ -796,8 +850,26 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
         @keydown="handleControlsPaneResizeKeydown"
       ></div>
 
-      <section class="app__preview-pane" :aria-label="t('aria.preview')">
-        <AegeaPreview :theme-state="themeState" :preview-mode="themeMode" />
+      <section
+        class="app__preview-pane"
+        :style="{ backgroundColor: activePalette.background }"
+        :aria-label="t('aria.preview')"
+      >
+        <div class="app__preview-toolbar">
+          <div class="app__preview-mode">
+            <RadioGroup
+              name="theme-mode"
+              :value="themeMode"
+              :aria-label="t('aria.themeMode')"
+              :options="lightDarkModeOptions"
+              :show-option-labels="false"
+              @update:value="updateThemeMode"
+            />
+          </div>
+        </div>
+        <div class="app__preview-scroll">
+          <AegeaPreview :theme-state="themeState" :preview-mode="themeMode" />
+        </div>
       </section>
     </div>
   </main>

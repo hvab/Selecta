@@ -351,7 +351,9 @@ function toggleGroupLock(section, keys) {
       />
     </ControlGroup>
 
-    <ControlGroup :title="t('controls.colors')">
+    <ControlGroup
+      :title="t(paletteSection === 'darkPalette' ? 'controls.darkPaletteColors' : 'controls.lightPaletteColors')"
+    >
       <template #actions>
         <GroupLock
           :label="t('controls.colors')"

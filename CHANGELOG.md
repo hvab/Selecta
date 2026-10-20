@@ -6,6 +6,30 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+### Added
+
+- A single theme-import button opens ZIP/JSON/CSS/PHP file selection directly and accepts dropped folders or files. Use an optional JSON snapshot as a baseline, then apply supported PHP/CSS settings with priority over that snapshot. Unsupported source content is ignored.
+- `selecta.json` inside each exported theme folder for continuing work without a separate JSON download.
+
+### Changed
+
+- Reorganized the editor into a sidebar with interface settings and fixed export actions, plus a theme-mode control inside the preview frame.
+- Replaced the preset select with named five-color cards and gave Random a light animated gradient that respects reduced-motion preferences.
+- Replaced lock checkboxes with compact open/closed icons, distinct group/mixed states, localized action hints and a reduced-motion-aware crossfade.
+- Polished narrow layouts: full-width stacked panes, locks/values beside inputs, and fixed mobile export actions with safe-area clearance.
+- Integrated `hvab-blocks` 0.3.0 for the editor shell, with separate floating/modal layers and responsive controls.
+- Updated dependencies to current stable releases, including `hvab-blocks` 0.4.0, Vue 3.5.44, Reka UI 2.11, Vite 8 and ESLint 10.
+- Development tools now require Node.js 22.13+ within the 22.x line or Node.js 24+. Production builds use Vite 8's default browser target (Chrome/Edge 111, Firefox 114 and Safari 16.4).
+
+### Fixed
+
+- Validate supported theme values at JSON, URL, session-storage, and ZIP boundaries: keep the `plain` parent, supported colors/font values, and finite numeric ranges.
+- Keep the controls pane within the measured workspace width after resizing and session restore, accounting for the divider.
+- Preserve pending session edits on page leave and save edits after Reset, including a Reset that does not change the current values.
+- Match the default preview font stack to Aegea `11.5` `plain` while preserving inherited fonts in exported themes.
+- Ignore superseded JSON file imports and their errors after a newer import, Reset, or theme edit.
+- Keep header controls readable at narrow widths and restore the lint, formatting, and CI checks.
+
 ## 0.8.0 - 2026-07-06
 
 ### Added

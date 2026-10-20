@@ -1,6 +1,7 @@
 import { strToU8, zipSync } from 'fflate';
 import { generateThemeCss } from './css.js';
 import { generateThemeInfo } from './themeInfo.js';
+import { serializeTheme } from './serialize.js';
 import { isValidThemeState, validateMetadata } from './validation.js';
 
 export function getThemeZipFileName(themeState) {
@@ -13,6 +14,7 @@ export function getThemeZipEntries(themeState) {
   }
 
   return {
+    [`${themeState.meta.folderName}/selecta.json`]: serializeTheme(themeState),
     [`${themeState.meta.folderName}/theme-info.php`]: generateThemeInfo(themeState),
     [`${themeState.meta.folderName}/styles/main.css`]: generateThemeCss(themeState),
   };

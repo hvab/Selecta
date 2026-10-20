@@ -1,1897 +1,489 @@
 # Progress
 
-This file is the working context, active feature plan, progress summary, and
-next-step checklist for continuing Selecta with an AI assistant. Keep it current
-after every implementation slice. `SPEC.md` remains the product source of truth.
-
-## Current state
-
-Selecta is a Vite + Vue + JavaScript app for generating Aegea child themes
-based on `plain`.
-
-The app currently has:
-
-- Aegea-based preview surface with fixed demo content.
-- Editable metadata, color, typography, and layout controls.
-- Metadata validation and guarded ZIP download.
-- Non-blocking contrast warnings.
-- Field locks for Random.
-- Session restore in localStorage and Reset.
-- Aegea theme presets.
-- URL state and JSON export/import.
-- Google Fonts support through the CSS API with a curated Cyrillic catalog.
-- English/Russian app UI and localized preview content; the selected language is
-  stored separately from theme/session state.
-- Dark-mode theme support with separate light/dark palettes, preview theme mode,
-  independent generator-shell appearance, and Aegea-compatible dark CSS output.
-- Generated `styles/main.css` and `theme-info.php` from one theme state model.
-- Shell UI block adoption is complete: the generator shell now uses local Vue
-  adapters over `hvab-blocks` CSS blocks, without a shell redesign.
-
-Current prepared release: `0.8.0`.
-
-## Audit status after PR #7 merge (2026-10-19)
-
-This snapshot describes remote `main` at
-`830607c083141fe9c623e5c9793ca3d756058f37`, including the V01 correction.
-It supersedes earlier pending-merge and audit next-step notes.
-The original reports in `audit/` remain historical evidence; the
-remediation and verification IDs below follow `audit/2-sol-6-1-xhigh.md`.
-
-### Implemented and merged
-
-- [x] **R01 / C01 / F01 — semantic validation at import and export boundaries.**
-      [PR #2](https://github.com/hvab/Selecta/pull/2), merged as `6b69a41`, rejects
-      unsupported colors, lengths, numeric values and parents across JSON/File,
-      URL and storage, with an invariant before direct ZIP generation. Invalid
-      external models are rejected atomically; editable metadata remains
-      repairable. This addresses the demonstrated generated-CSS injection and
-      invalid model cases, not an established PHP/JS execution vulnerability.
-      Integration with R05 was reviewed and accepted before merging.
-- [x] **R02 / C04 / F04 — working quality gate.** Included in
-      [PR #6](https://github.com/hvab/Selecta/pull/6), merged as `b9452c1`.
-      The stale session fixture, formatting and style integration failures are
-      resolved without restoring the rejected legacy `system` session policy.
-- [x] **R03 / C03 / F03 — responsive panel sizing.** Included in PR #6:
-      reactive workspace sizing, separator budget and effective-width clamping
-      are integrated with hvab-blocks 0.3.
-- [x] **R04 / C02 / F02 — plain preview font default.**
-      [PR #4](https://github.com/hvab/Selecta/pull/4), merged as `7d0f475`, matches
-      the pinned Aegea 11.5/v4199 source and compiled CSS stack. Plain ZIPs still
-      inherit the engine font; explicit system/Google choices are preserved.
-      Independent final review and coordinator acceptance completed. Live
-      width/linebreak parity remains the separate V02 acceptance gap below.
-- [x] **R05 / C05–C06 / F05–N01 — session persistence.** Included in PR #6:
-      no-op Reset no longer suppresses the next edit; pending local changes
-      flush on page lifecycle events; untouched tabs do not overwrite newer
-      saved state; mounted URL imports establish a saved baseline immediately.
-- [x] **V01 — stale File import and error handling.**
-      [PR #7](https://github.com/hvab/Selecta/pull/7), merged as `830607c`, closes
-      the additional P2 confirmed by the V01 experiment. A later selected File,
-      theme/lock edit, Reset or unmount invalidates older results and errors.
-      Input cleanup cannot clear a newer selection. R01 validation and R05
-      persistence remain intact. Independent final review and coordinator
-      acceptance completed; browser-specific timing/BFCache coverage is still
-      a verification limit, not an outstanding implementation in a fix branch.
-
-All five remediation implementations, covering six canonical findings, are in
-main, together with the additional V01 correction. This does not close every
-consumer/platform acceptance item in the audit.
-[Main CI](https://github.com/hvab/Selecta/actions/runs/39257123562) and
-[GitHub Pages deployment](https://github.com/hvab/Selecta/actions/runs/39257123500)
-both succeeded on `830607c`; no new versioned release is claimed.
-
-GitHub reconciliation: PR #2, #4, #6 and #7 are merged. PR #1, #3 and #5 are closed
-duplicates with no separate merge. Before the header PR, there were no open PRs and the repository's
-GitHub Issues list is empty, including closed issues. R/V IDs are audit plan
-items, not GitHub issue numbers. No new Issues were created in this update.
-
-### Remaining verification and decisions
-
-- [ ] **V02 — live Aegea acceptance.** Baseline provenance is now established at
-      `e1d058356e5426bb1878785c6f4ab4e68b6c4995` (11.5/v4199), and source font
-      parity is verified. The last recorded PHP startup failed because
-      `libzip.5.dylib` was missing; no environment repair or new runtime check
-      was performed in this summary update. Isolated install, PHP lint and
-      paired EN/RU render widths/linebreaks remain unverified. This is an
-      environment/acceptance gap, not a pending choice of baseline. Keep the
-      target unchanged; a different engine target or acceptance of remaining
-      visual differences requires an explicit decision.
-- [ ] **V03 — preview/consumer responsive parity and narrow header.** Paired
-      desktop geometry at equal content widths remains open.
-      The 641 px RU/EN shell check below confirmed subtitle/Theme-label overlap
-      without demonstrated control inaccessibility; the local CSS correction
-      below resolves that overlap. Consumer comparison still
-      depends on a working isolated Aegea runtime. The user dropped real 200%
-      zoom and extensive mobile acceptance from scope; narrow screens only
-      need a visually intact basic layout.
-- [ ] **V04 — bounded edge-case experiments.** Large import payloads, Google
-      font slow/offline delivery and marked-title contrast remain hypotheses,
-      not established defects. Check 1/5/20 MB inputs and responsiveness,
-      one known font family under slow/offline conditions, and marked-title
-      contrast on a valid palette separately. Font-network work needs current
-      primary API documentation. Measure before proposing size limits, catalog
-      or contrast-policy changes; these product changes may need a decision.
-- [ ] Complete remaining manual acceptance where the environment is available:
-      browser file-picker/download flow, Safari/BFCache, Windows/forced-colors,
-      and screen-reader behavior. A green CI run does not establish this coverage.
-
-The existing header/overlay and feedback-surface follow-ups below remain separate
-UI work; merging the audit fixes does not mark them complete. No merge decision
-remains for the completed audit PRs. Release acceptance and changes to the
-existing product/engine contract remain separate decisions.
-
-### V03 shell/header verification result (2026-10-19; no fixes)
-
-This part needs no product decision or working Aegea/PHP environment. It is a
-verification task; do not redesign the header or implement hypothetical fixes.
-The paired preview/consumer geometry part of V03 stays open until a working
-isolated consumer is available.
-
-- [x] Run the current merged main revision in an isolated workspace; record
-      the exact revision, browser, viewport and actual browser zoom.
-- [x] At 641 px, inspect RU and EN header controls: bounds, overlap, clipping,
-      reachability and hit targets. Include Theme, Interface, language, Share
-      and ZIP controls; verify keyboard access and opening/closing Share.
-- Dropped by the subsequent user decision: repeat at real 200% browser zoom.
-  The original attempt remains unverified; no simulated zoom was substituted.
-- [x] Save geometry/screenshots and distinguish functional inaccessibility from
-      cosmetic crowding. Record PASS/FAIL; propose a narrow correction only for
-      a reproduced problem. Do not claim preview/consumer parity from this run.
-
-Freshly fetched main remained `830607c083141fe9c623e5c9793ca3d756058f37`.
-An independent Sol 6.1 agent and the coordinator used separate browser tabs
-and origins serving an unchanged isolated archive of that revision. Existing
-dependencies were reused. The baseline was 641 × 900 CSS px, DPR 1 and visual
-viewport scale 1 in the in-app browser; Chrome reproduced the same EN geometry.
-
-**Visual FAIL / P3 optional polish:** in both RU and EN the brand subtitle
-overlaps the Theme label. The brand grid track shrinks to 32.234 px in EN and
-0 px in RU, while its text paints outside it. `App.css` keeps four columns with
-`minmax(0, 1fr)` for the brand above the `40rem` breakpoint; the narrow-header
-layout therefore does not apply at 641 px. Both reviewers independently
-reproduced the overlap. A future narrow correction can move header controls to
-another row before the brand loses usable width; no redesign is warranted by
-this result and no correction was made.
-
-**Control reachability PASS at the baseline:** Theme, Interface, RU/EN, Share
-and ZIP remain visible with unobstructed center hit targets. Header controls
-are 28 px high; no control clipping or horizontal page scroll was observed
-(`scrollWidth` 641; RU header has a subpixel width of 641.469). Mouse activation
-of theme, interface, language and Share worked. Keyboard Tab reaches the radio
-groups, Share and ZIP; arrows change radio selections, Enter opens Share,
-Down moves through its items, and Escape returns focus to Share. Keyboard ZIP
-activation produced an actual download in both runs. This checks header
-reachability, not every export/clipboard path or assistive technology.
-
-**Real 200% zoom UNVERIFIED:** exposed browser capabilities provide viewport
-dimensions but no zoom control. Native zoom shortcuts were accepted without
-changing viewport, DPR, visual scale or visible layout in the in-app browser
-and Chrome, including Chrome without a viewport override. No CSS zoom, device
-scale factor or narrower viewport was substituted. This tooling limitation is
-not an application failure or a successful 200% acceptance result.
-
-Evidence: temporary screenshots `selecta-v03-root-en641.png`,
-`selecta-v03-root-ru641.png`, `selecta-v03-root-ru-header.png` and geometry
-`selecta-v03-root-geometry.json`; independent captures corroborate the finding.
-No source files, dependency files or historical audit reports were changed;
-no commit, push or PR was created. V03 remains partially verified.
-
-The zoom follow-up above was superseded by the user's scope decision below.
-Preview/consumer parity remains gated by V02's runtime.
-
-### Desktop priority and minimal narrow-header correction (2026-10-19)
-
-The user prioritizes desktop use. Real 200% zoom and an extensive mobile
-acceptance matrix are no longer required; mobile only needs to look intact.
-Keep basic responsiveness required by `SPEC.md`, without a separate mobile UX
-project. The previous V03 experiment remains historical evidence, not a reason
-to spend further time on zoom tooling.
-
-- [x] Adjust only shell header layout in `src/components/App/App.css` so brand
-      text and controls do not collide at narrow widths. Preserve normal desktop
-      layout and the existing workspace breakpoint.
-- [x] Coordinator review: visually check RU/EN at a representative phone width,
-      641 px and desktop, then run scoped style/format checks. No zoom campaign.
-- [x] Record the accepted result and limits here. The initial implementation
-      stayed local; the owner subsequently authorized a fix branch and PR.
-
-Sol 6.1 moved the existing compact header rules to `64rem` and allowed the
-control groups to wrap instead of requiring horizontal scrolling. The workspace
-breakpoint stays at `40rem`. The coordinator reviewed the minimal CSS diff and
-applied it to the isolated main `830607c` archive for browser acceptance.
-
-RU/EN checks at 375, 641 and 1280 CSS px found no header text collisions or
-horizontal page overflow; all header control centers remain reachable. At
-1280 px the measured RU header/control geometry is identical before and after
-the patch, and the desktop header remains 73 px high in both languages.
-Scoped Stylelint and Prettier checks passed. `SPEC.md` now records desktop
-priority and the reduced mobile/zoom scope. No preview, generation or state
-logic changed. This is basic visual acceptance, not a comprehensive mobile
-device certification. The P3 overlap is resolved in this fix branch. Next audit
-work can focus on desktop V02 acceptance or
-the bounded V04 experiments rather than zoom/mobile coverage.
-
-Publication: [PR #8](https://github.com/hvab/Selecta/pull/8) uses the authorized
-`codex/fix-narrow-header` branch based on main
-`830607c`, including only the header CSS, `SPEC.md` and this progress update.
-The complete local gate passed: lint, stylelint, format check, 166/166 tests,
-build and diff whitespace check. Build retains the existing dependency
-PURE-annotation warnings. Independent Sol 6.1 review of `8d4b2c9` found no
-actionable problems, and the coordinator accepted the result.
-[PR CI passed](https://github.com/hvab/Selecta/actions/runs/39264559698) on that
-code commit, including clean dependency installation on Node 22/Linux. This
-records the code run; the subsequent documentation commit triggers its own CI.
-The PR remains open, and merging remains explicitly unauthorized.
-
-### V01 verification result (2026-10-19; no fixes)
-
-- [x] Use the current merged main revision in an isolated workspace. Inspect
-      `App.vue` import/reset orchestration and the File deserializer first.
-- [x] In a temporary component harness, delay import A; complete a later import
-      B, Reset or manual edit; then settle A successfully or with an error.
-      Record final state, application order and error-feedback ownership.
-- [x] Check the ordinary real File input path in the in-app browser. Selecting a
-      valid local JSON file updates Display name and Folder name as expected.
-      This is a control for the import path, not a browser race reproduction.
-- [x] Record the confirmed failure and independently repeat the reproduction.
-      No application correction or permanent test infrastructure was added.
-
-Baseline: freshly fetched main
-`7d0f4751615ed8fd9decdf16ff8f36d1ecc50882`, exported to an isolated directory.
-An independent Sol 6.1 agent compiled the unchanged actual App script using the
-existing component-harness approach. Child UI rendering was stubbed; actual
-import, deserialization, Reset, edit, watcher and persistence logic ran. File
-reads used controlled promises and storage was in memory. Node was `24.22.0`;
-existing dependencies were reused, not freshly installed for this experiment.
-
-**Confirmed P2: a pending File import can overwrite newer user intent.** Start
-import A with its read pending; complete import B, confirm Reset, or edit the
-name/color; then resolve A with a valid older theme. Each case applies A over the
-newer state. Both ordinary debounce and pagehide save that stale final theme.
-The defect needs overlapping asynchronous operations; its frequency with real
-files is not measured. This is state loss, not evidence of CSS/JS execution or
-a bypass of the R01 semantic validator.
-
-The independent run covered 15 scenarios: single-import control; B/Reset/edit
-crossed with stale A success/read failure and debounce/pagehide; malformed JSON
-from stale A after B; and two overlapping imports completed in start order.
-All six stale-success variants overwrote the newer state. Stale read failures
-and malformed JSON preserved the current theme but set `status.themeJsonInvalid`
-after the newer action. Single import and A-then-B completion controls behaved
-normally. The coordinator inspected the harness and repeated all 15 scenarios.
-
-The coordinator also ran three stronger cases: allow B, Reset or manual edit to
-finish its 500 ms save, verify the saved newer state, then resolve A. After A and
-its debounce, both current and stored names became `Import A` instead of
-`Import B`, `My Theme` or `Manual Edit`. Thus the result is not merely an initial
-autosave timing artifact.
-
-Source locations on this exact main revision: `src/components/App/App.vue`
-lines 508–523 (`importThemeJson`) unconditionally apply the awaited result at
-517 and set its error at 520. `src/theme/serialize.js` lines 54–55 await
-`file.text()`. Reset at App lines 350–356 and edit handlers at 256–275 do not
-invalidate that pending work. These are main-revision locations, not line
-references into the older local develop checkout.
-
-Temporary evidence: `v01-agent-repro.mjs` / `v01-agent-results.json`, repeated
-run output `selecta-v01-root-recheck.txt`, and
-`v01-root-persisted-repro.mjs` / `v01-root-persisted-results.json`. Each harness
-can be rerun with `node <harness-name>` from its isolated main snapshot. These
-are local reproduction artifacts, not committed product files. The browser
-control used the unmodified main app; no delayed File read was injected into
-the browser, so browser race timing and cross-browser coverage remain open.
-
-At the end of verification, the next step was to authorize stale-import invalidation for
-success and error paths, preserving later import/Reset/edit state and R05
-persistence. No correction was made in that verification-only iteration.
-V02–V04 remain as listed above.
-Only this progress document changed in the working repository; no source fixes,
-commits, pushes, PR changes or merges were made during V01 verification.
-
-### V01 correction plan (2026-10-19)
-
-The owner authorized the correction after the verification above. Preserve R01
-atomic validation and R05 session persistence; do not change preview, export,
-storage policy or UI behavior outside File import ordering.
-
-- [x] In `src/components/App/App.vue`, track the latest selected File operation.
-      Invalidate pending reads on later theme/lock changes, theme replacement
-      and unmount; ignore stale success and error results. Clear the captured
-      input selection before awaiting, so older cleanup cannot erase a newer
-      choice. UI-only actions and a canceled chooser keep the pending import.
-- [x] Extend the existing `App.session.test.js` harness with controlled File
-      reads for import ordering, Reset/edit/lock invalidation, current/stale
-      failures, unmount and R05 persistence compatibility. Keep deserialization
-      and application atomic; no new infrastructure.
-- [x] Run focused regressions and the existing complete quality gate:
-      `npm test`, `npm run lint`, `npm run lint:styles`,
-      `npm run format:check`, `npm run build`, and `git diff --check`.
-      Record actual results, remaining limits and the next small step here.
-
-### V01 correction result (2026-10-19; local verification)
-
-- `App.vue` now accepts File success/error results only for the latest import
-  revision. A selected newer File supersedes older work even if it later fails.
-  Theme replacement, metadata/palette/typography/layout edits, valid presets,
-  Random, field/group locks, enabling dark support and unmount invalidate
-  pending reads synchronously. Existing UI-only mode switching, shell/locale/
-  sidebar changes and a canceled chooser preserve the pending operation.
-- Input selection is cleared immediately after capturing the File. No older
-  completion can clear a newer selection, change the URL, show an obsolete
-  error or trigger a stale theme save. R01 deserialization remains atomic;
-  neither serialization nor the storage implementation changed.
-- Added 35 focused cases to the existing real-App script harness: 43 App cases
-  pass. They cover both import completion orders, stale success/read/malformed
-  failures, latest failure ownership, all superseding handlers, input/URL and
-  storage-write isolation, UI-only actions, atomic invalid-model rejection,
-  unmount, mounted URL saving and untouched-tab snapshot behavior. Existing
-  Reset, debounce, pagehide/visibility and unavailable-storage cases also pass.
-- On Node 24.22.0 after a clean lockfile install, `npm test` passes 166/166;
-  `npm run lint`, `npm run lint:styles`, `npm run format:check`,
-  `npm run build` and `git diff --check` pass. Build emits only dependency
-  `@vueuse/core` PURE-annotation warnings. Dependencies and lockfile are unchanged.
-- The coordinator independently repeated the original 15 temporary scenarios
-  with corrected expectations and three stronger scenarios where B/Reset/edit
-  had already been saved before A settled. All 18 preserve the newer current
-  and stored state; stale errors are ignored.
-- Independent review found no actionable problems and reran all 43 App cases
-  successfully. The coordinator accepted the source diff after its own review
-  and the 18 temporary checks above.
-
-Limits: the controlled File reads exercise actual App/deserializer/lifecycle
-logic with child rendering stubbed and in-memory storage. Real-browser race
-frequency, browser-specific File timing and cross-browser coverage remain
-unmeasured. File reads are logically invalidated rather than physically aborted.
-No preview, ZIP contract or new HTML/URL rendering is introduced; the existing
-R01 input boundary remains in force, with no new XSS/CSRF surface identified.
-
-Initially published as [PR #7](https://github.com/hvab/Selecta/pull/7) on
-`codex/fix-v01-import-ordering`, code commit `31b1654`.
-[Node 22/Linux CI passed](https://github.com/hvab/Selecta/actions/runs/39256403821)
-for that code commit, including clean installation and all quality/build steps.
-This records the code run, not CI coverage for this subsequent documentation
-update. The coordinator accepted the reviewed implementation before publication.
-Final independent review of `25d5f4b` found no actionable problems; the
-coordinator checked its conclusions. PR #7 was then merged with owner approval
-as `830607c` on 2026-10-19. Main CI and Pages both succeeded; see the current
-audit snapshot above. V01 is now merged and deployed.
-
-The subsequent V03 header verification and correction are recorded above.
-V02 and V04 remain separate.
-
-## Source of truth
-
-- `SPEC.md` — product specification and future-feature backlog.
-- `UI-ARCHITECTURE.md` — preview layer vs generator shell boundaries.
-- `PREVIEW-BASELINE.md` — Aegea preview baseline and maintenance notes.
-- `CHANGELOG.md` — public release history.
-- `AGENTS.md` — repository-specific agent rules.
-- `AGENTS.local.md` — local Aegea paths; keep machine-local paths there only.
-
-If preview markup, theme inheritance, or CSS variables are in question, inspect
-the current Aegea checkout before changing preview or export behavior.
-
-## Important decisions
-
-- Use Vite, Vue, and plain JavaScript.
-- Do not add TypeScript or a backend.
-- Generate only child themes based on `plain`.
-- Export a ZIP archive with the theme folder inside it.
-- User-facing app UI supports English and Russian; the selected language is an
-  app preference, not theme/export/share state.
-- Preview should stay close to real Aegea markup and CSS-variable contracts.
-- Generator-shell styles stay separate from preview/theme styles.
-- Google Fonts load through Google Fonts CSS API; font files are not bundled.
-- Google Fonts catalog is a curated Cyrillic metadata snapshot.
-- Font picker uses a flat select with category groups; no separate `Google Fonts`
-  group and no Cyrillic-only toggle.
-- Code font is still controlled by Aegea `plain`; Selecta edits interface and
-  note text font slots.
-
-## Validation slice on the previous published base
-
-Scope: keep imported and restored themes based on `plain`, and reject non-finite
-numeric model values. The published shell still supports `system`; preserve its
-existing session behavior and optional UI fields. Do not add numeric ranges,
-CSS grammar, payload limits, migrations, or UI changes.
-
-- [x] Reproduce unsupported parent and overflowing JSON numbers on the published
-      base; add regressions in `src/theme/serialize.test.js` and
-      `src/storage.test.js`, covering JSON, File, URL, and session restore.
-      Verification: targeted Node tests reproduced seven failing regressions on
-      the unchanged base; existing tests and positive compatibility cases passed.
-      Next: implement the shared boundary check. No CSS grammar was tested.
-- [x] Share field-value checks between `src/theme/serialize.js` and
-      `src/storage.js` through `src/theme/validation.js`; preserve font normalization
-      and known-field copying. Verification: all 28 targeted tests passed, including
-      the new regressions, all ten built-in presets, finite values outside UI ranges,
-      and the existing `system` session test. No UI or persistence timing changed.
-      Next: run the complete local quality gate and inspect generated ZIP contents.
-- [x] Run `npm test`, `npm run lint`, `npm run lint:styles`,
-      `npm run format:check`, and `npm run build`; inspect the diff.
-      Verification: 108 tests, JS lint, style lint, build, changed-file Prettier,
-      and `git diff --check` passed on local Node 24 after a clean lockfile install.
-      Full `format:check` still fails on the two unchanged audit prompt files in
-      the published base; leave these outside this slice. Verified ten preset ZIPs
-      after JSON/URL round-trips and unknown Google font fallback. Chrome rejects
-      unsupported-parent and `1e999` URLs without applying their state; EN/RU
-      feedback remains available. File decoding is covered with synthetic Blob
-      tests; browser file picker, PHP/live Aegea, and Linux/Node 22 are unverified.
-      Generators still consume trusted in-memory state; no direct-generator guards
-      or CSS-string validation were added. Next: review the draft PR and CI;
-      resolve baseline formatting independently before merging.
-
-### Quality-gate prerequisite follow-up
-
-- [x] Cherry-pick the verified R02 prerequisite `c29c7e3` as `d6691a5`,
-      preserving both independent progress sections. Dependency: PR #1.
-- [x] Verify all five local checks: 108 tests, JS/style lint, full formatting,
-      and build pass. Next: verify the complete Ubuntu/Node 22 CI on the updated
-      PR #2 head, then review the draft without merging.
-
-The formatting failure above describes the first R01 check before R02.
-Only the prerequisite prompt formatting and this progress update extend R01;
-its runtime code and validation scope remain unchanged.
-
-## Active R01 synchronization with the new UI base
-
-Base: `origin/main` at `8662ce5`. Its documented UI contract requires a concrete
-`light`/`dark` shell appearance and ignores old `system`/missing values. Preserve
-that policy; theme JSON/URL still excludes shell state and keeps `basedOn=plain`.
-The preceding validation notes describe verification before the UI merge.
-
-- [x] Merge current main normally, retaining the new UI and both independent
-      progress sections. Inspect `storage.js`, App restore/import handlers,
-      the theme model, and SPEC; theme-field contracts are unchanged.
-- [x] Adapt only R01 session regression fixtures to valid light/dark UI state;
-      prove invalid parent/overflow rejection and valid restored finite values.
-      Areas: `src/storage.test.js`. Verification: all 23 selected R01 tests pass.
-      The seven rejection regressions fail again against the unmodified new base;
-      positive restore checks accept both current shell modes and finite values
-      outside UI slider ranges. No session migration or runtime policy changed.
-- [x] Run the five quality commands and verify browser URL rejection in the
-      new UI: build passes; 108/109 tests pass, with only the base's stale `system`
-      fixture failing; JS/style lint and full formatting expose the known base
-      failures. Chrome still rejects unsupported-parent and overflow URLs,
-      preserves the theme, and provides EN/RU error feedback in the new shell.
-      A new local clean install is blocked by npm's Git-package restriction;
-      local checks use a copy of the already installed project dependencies.
-- [ ] Incorporate the verified new quality prerequisite, keeping both progress
-      sections and all main UI changes. Push normally and verify full CI on the
-      exact final head; the previous green run is historical evidence only.
-
-## Completed tracks
-
-- Project scaffold and tooling.
-- Initial serializable theme state.
-- CSS and `theme-info.php` generation outside the UI layer.
-- Aegea preview baseline and expanded preview states.
-- Main theme controls.
-- Theme metadata fields and validation.
-- Client-side ZIP export.
-- Manual install verification in a live Aegea blog.
-- MVP polish and browser QA.
-- Random button.
-- Aegea 11.5 target audit.
-- Contrast warnings and field locks.
-- Session restore and Reset.
-- Aegea theme presets.
-- URL state and JSON export/import.
-- Google Fonts, including curated Cyrillic catalog cleanup.
-- English/Russian localization, including the language switcher, review fixes,
-  verification, and the `0.7.0` release.
-- Dark palette / dark mode support, including built-in dark-capable Aegea
-  preset palettes, prepared for the `0.8.0` release.
-
-Historical setup notes live in `.project/SETUP-PLAN.md`.
-
-## Completed dark-mode track (historical)
-
-Dark palette / dark mode support is implemented and prepared for the `0.8.0`
-release.
-
-This slice should let the user enable Aegea dark mode support, edit light and
-dark palettes separately, preview both modes in Selecta, and export a child
-theme that follows Aegea's real dark-mode contract.
-The Selecta generator shell should also have its own light/dark appearance
-mode, separate from the generated theme palettes and preview mode, so the
-controls pane remains comfortable while editing either palette.
-
-### Feature plan
-
-- [x] Audit current Aegea dark contract:
-  - checked current Aegea checkout at commit `deb13007`;
-  - `system/themes/plain/theme-info.php` has `supports_dark_mode` set to `true`;
-  - `system/themes/plain/src/styles/variables.scss` defines light values in
-    `:root` and dark values in
-    `@media (prefers-color-scheme: dark) { :root .e2-responds-to-dark-mode { ... } }`;
-  - `system/theme/templates/main.tmpl.php` adds `e2-responds-to-dark-mode` to
-    `<body>` only when the current theme supports dark mode and the blog setting
-    `respond_to_dark_mode` is enabled;
-  - `system/theme/templates/form-preferences.tmpl.php` shows the Aegea
-    "Support Dark Mode" switch only for themes that support it;
-  - `system/theme/templates/note.tmpl.php` uses `use_likely_light` for sharing
-    widgets; Selecta does not preview sharing widgets yet, so keep generating
-    this metadata but do not block the dark palette slice on it;
-  - current Selecta preview uses `.aegea-preview` with inline light variables
-    and has no dark-mode preview class or preview-mode state;
-  - expected files/areas: `.project/PROGRESS.md` only;
-  - verification: read-only source audit; no app behavior changed.
-- [x] Extend the theme model for a separate dark palette:
-  - keep the existing `palette` section as the light palette for minimal diff;
-  - add a parallel `darkPalette` section with the same user-editable color keys;
-  - keep `meta.supportsDarkMode` as the exported Aegea capability flag;
-  - use Aegea `plain` dark values as the initial dark palette;
-  - expected files/areas: `src/theme/model.js`, `src/theme/serialize.js`,
-    `src/storage.js`, `src/theme/fieldLocks.js`, focused theme tests;
-  - changed: added `darkPalette` to the initial theme state, field locks, theme
-    JSON serialization, URL sharing payloads, and session validation;
-  - changed: bumped theme JSON serialization and session storage versions to `2`;
-  - verification: targeted model/serialization/storage/CSS/theme-info tests,
-    `npm test`, and `npm run build`.
-- [x] Generate dark CSS and dark-capable theme metadata:
-  - refactor color-variable derivation so the same helper can produce variables
-    from either `palette` or `darkPalette`;
-  - keep base `:root` output for light values;
-  - when `meta.supportsDarkMode` is true, add the Aegea-compatible
-    `@media (prefers-color-scheme: dark) { :root .e2-responds-to-dark-mode { ... } }`
-    block;
-  - keep `theme-info.php` `colors` based on the light palette because Aegea uses
-    it for theme-list preview swatches;
-  - expected files/areas: `src/theme/css.js`, `src/theme/themeInfo.js`,
-    `src/theme/zip.js`, CSS/theme-info tests;
-  - changed: `generateThemeCss()` now emits the Aegea-compatible dark media
-    block only when `meta.supportsDarkMode` is true;
-  - changed: `theme-info.php` keeps theme-list `colors` tied to the light
-    palette and reflects `supports_dark_mode` from theme state;
-  - verification: targeted CSS/theme-info/ZIP tests, `npm test`, and
-    `npm run build`.
-- [x] Add UI controls for enabling and editing dark mode:
-  - add a native checkbox/toggle for "supports dark mode";
-  - add a compact mode control for editing the light or dark palette;
-  - reuse the existing color controls for whichever palette is active;
-  - keep typography, layout, metadata, presets, and language controls outside the
-    theme palette mode;
-  - expected files/areas: `src/components/ThemeControls.vue`, `src/App.vue`,
-    locale files, shell CSS only if needed;
-  - changed: added localized controls for `supportsDarkMode` and the edited
-    light/dark palette;
-  - changed: palette color controls and palette locks now target the active
-    light or dark palette;
-  - changed: active edited palette is persisted as UI state only;
-  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, `npm run build`, and browser check at
-    `http://localhost:5174/Selecta/`.
-- [x] Add preview mode support:
-  - add a preview mode state for light/dark preview independent from the app UI
-    language;
-  - emulate Aegea's dark class in preview while keeping exported CSS selector
-    faithful to Aegea;
-  - ensure preview mode is app UI state, not exported theme metadata;
-  - expected files/areas: `src/App.vue`, `src/preview/AegeaPreview.vue`,
-    `src/preview/style.css`, `src/storage.js`;
-  - changed: added a separate light/dark preview mode persisted as UI state
-    only;
-  - changed: `AegeaPreview` can render variables from `darkPalette` while the
-    exported CSS selector stays tied to the real Aegea contract;
-  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, `npm run build`, and browser check at
-    `http://localhost:5174/Selecta/`.
-- [x] Add generator-shell appearance mode:
-  - add a separate Selecta UI appearance state for the controls pane and app
-    chrome;
-  - do not derive shell colors from the generated theme palette;
-  - keep shell appearance independent from the light/dark palette being edited
-    and from the preview mode;
-  - persist it as app UI state only, not in theme JSON, share URLs, ZIP output,
-    or exported Aegea theme metadata;
-  - expected files/areas: `src/App.vue`, `src/style.css`, `src/storage.js`,
-    locale files if the control needs new labels;
-  - changed: added a localized light/dark interface appearance control for
-    Selecta shell chrome;
-  - changed: shell appearance is saved in session UI state and kept out of theme
-    JSON, share URLs, ZIP output, and Aegea theme metadata;
-  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, `npm run build`, and browser check at
-    `http://localhost:5174/Selecta/`.
-- [x] Update Random, locks, and contrast warnings for two palettes:
-  - decide whether palette locks are per light/dark palette or shared before
-    coding; prefer per-palette locks if the UI remains understandable;
-  - make Random update the dark palette only when dark mode is enabled or when
-    the active edited palette is dark;
-  - show contrast warnings for the currently edited palette;
-  - expected files/areas: `src/theme/random.js`, `src/theme/fieldLocks.js`,
-    `src/theme/contrast.js`, `src/App.vue`, tests;
-  - changed: `getRandomThemeState()` now generates a contrast-checked
-    `darkPalette` and respects `fieldLocks.darkPalette`;
-  - changed: the app applies randomized dark colors only when dark mode support
-    is enabled;
-  - changed: contrast warnings continue to follow the currently edited palette,
-    using the existing active-palette warning path;
-  - verification: targeted Random/locks/contrast tests, `npm test`,
-    `npm run lint`, `npm run lint:styles`, `npm run format:check`, and
-    `npm run build`;
-  - manual check: pending in user browser because the in-app browser bridge
-    blocked `http://localhost:5174/Selecta/` by URL policy during this slice.
-- [x] Update sharing/import/export state contracts:
-  - bump the theme serialization version if the JSON shape changes;
-  - make URL share and JSON export include the dark palette and dark-mode flag;
-  - keep UI language out of theme JSON, share URLs, ZIP output, and theme state;
-  - expected files/areas: `src/theme/serialize.js`, `src/storage.js`,
-    `src/App.vue`, serialization/storage tests;
-  - changed: confirmed `THEME_SERIALIZATION_VERSION = 2` already covers the
-    current dark-mode shape;
-  - changed: added serialization tests for dark mode enabled, dark mode
-    disabled, URL sharing, and excluding UI-only state from theme JSON;
-  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, and `npm run build`.
-- [x] Update project docs and release notes:
-  - update `PREVIEW-BASELINE.md` only if the preview/export contract changes;
-  - add an `Unreleased` note in `CHANGELOG.md`;
-  - update this file after each completed implementation slice;
-  - expected files/areas: `.project/PROGRESS.md`, `PREVIEW-BASELINE.md`,
-    `CHANGELOG.md`;
-  - changed: documented the dark-mode preview/export contract in
-    `PREVIEW-BASELINE.md`;
-  - changed: added an `Unreleased` changelog entry for dark-mode theme support;
-  - verification: documentation matches the implemented behavior.
-- [x] Simplify theme and interface mode controls:
-  - replace separate palette and preview controls with one preview-side theme
-    mode control;
-  - keep `supportsDarkMode` as the exported Aegea capability flag, enabling it
-    automatically when the user switches to dark theme mode;
-  - move Selecta interface appearance into the app header and add
-    system/light/dark choices;
-  - keep interface appearance as UI state only, separate from generated themes;
-  - changed: `themeMode` now drives both the edited palette and preview mode;
-  - changed: `shellAppearance` now supports `system`, using
-    `prefers-color-scheme` for the effective app chrome mode;
-  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, and `npm run build`.
-- [x] Verify Aegea built-in preset dark-mode support:
-  - checked user-available Aegea themes `plain`, `acute`, `chancery`,
-    `douglas`, `fiesta`, `gal`, `holm`, `kolomna`, `vox`, and `vulcano`;
-  - dark-mode capable in Aegea: `plain`, `acute`, `fiesta`, and `gal`;
-  - no dark-mode support in Aegea: `chancery`, `douglas`, `holm`, `kolomna`,
-    `vox`, and `vulcano`;
-  - changed: Selecta presets now store `supportsDarkMode` and dark palettes for
-    the dark-capable built-ins;
-  - changed: applying a dark-capable preset updates both light and dark palettes,
-    so the right-side theme mode control previews the preset's dark colors;
-  - changed: applying a preset without Aegea dark support disables dark theme
-    mode and returns the preview to light mode;
-  - expected files/areas: `src/theme/presets.js`, `src/theme/presets.test.js`,
-    `src/App.vue`, `PREVIEW-BASELINE.md`, `CHANGELOG.md`;
-  - verification: `npm test`, `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, and `npm run build`.
-- [x] Final verification:
-  - `npm test`;
-  - `npm run lint`;
-  - `npm run lint:styles`;
-  - `npm run format:check`;
-  - `npm run build`;
-  - manual browser review accepted by the user for the final dark-mode concept
-    and built-in preset behavior.
-
-### Implementation notes
-
-- The previous English/Russian localization track is reviewed, verified,
-  released, and complete in `0.7.0`.
-- Dark mode work is not just a preview toggle; it changes model, CSS
-  generation, serialization, Random/locks, contrast warnings, and ZIP output.
-- Selecta shell appearance is separate app UI state. It should protect the
-  controls pane from becoming unreadable while previewing a dark theme, but it
-  must not change exported theme files.
-- Aegea activates dark variables through the `e2-responds-to-dark-mode` class and
-  `prefers-color-scheme: dark`, not through a Selecta-specific selector.
-- The dark preview can emulate the Aegea class locally, but exported CSS should
-  use the real Aegea selector.
-- `theme-info.php` `colors` should stay tied to the light palette unless current
-  Aegea behavior proves otherwise.
-
-## Historical dark-mode checklist
-
-- [x] Implement the model and serialization slice for `darkPalette`.
-- [x] Implement dark CSS generation and `theme-info.php` behavior.
-- [x] Add UI controls for enabling and editing dark mode.
-- [x] Add preview mode support.
-- [x] Add generator-shell appearance mode.
-- [x] Update Random, locks, and contrast warnings for two palettes.
-- [x] Update sharing/import/export state contracts.
-- [x] Update project docs and release notes.
-- [x] Simplify theme and interface mode controls.
-- [x] Verify Aegea built-in preset dark-mode support.
-- [x] Run final verification.
-- [ ] Keep author-credit placement and full-width layout as separate future work.
-
-## Completed shell UI block-adoption track (historical)
-
-Shell UI block adoption with `hvab-blocks` is the next planned track. Its goal
-is to add the library from GitHub as a pinned npm dependency, add local Vue
-adapter components around its documented CSS blocks, and move the existing
-generator-shell controls onto that contract. This is not a visual-design track:
-retain the current information architecture, control behaviour, responsive
-layout, copy, and Aegea preview unchanged.
-
-`hvab-blocks` is CSS-only. Selecta's `src/ui/` Vue components own the stable
-component API, slots, attribute/event forwarding, accessibility wiring, and
-class/modifier mapping. The application continues to own state, file import,
-persistence, and responsive page layout.
-
-### Blocks selected from the current shell audit
-
-Required in this track:
-
-- `field` for the existing label/control/addon/message rows in
-  `ThemeControls.vue` and `PresetSelector.vue`;
-- `text-input` for display and folder names;
-- `select` for preset, font, language, shell-appearance, and theme-mode
-  selectors;
-- `range-input` for typography and layout sliders;
-- `color-input` for palette colors;
-- `checkbox` for the per-field Random locks;
-- `switch` for the `supportsDarkMode` boolean;
-- `button` for Random, Unlock all, Reset, copy-link, JSON import/export, and
-  ZIP download actions.
-
-The hidden JSON file input has no matching library block and remains a native
-file input behind its visible trigger button. The drag pane resizer also stays
-consumer-owned because `hvab-blocks` deliberately provides no layout or resize
-primitive.
-
-Explicitly out of scope until a requested design slice: `card`, `tabs`,
-`dialog`, `toast`, `alert`, `link`, `text`, `label`, and all overlay/navigation
-blocks. Status copy may keep its current semantic markup in this track; do not
-introduce a toast or alert design implicitly. The Aegea preview uses its own
-real markup/CSS contract and must not receive `hb-*` classes or tokens.
-
-### Feature plan
-
-- [x] Add the GitHub dependency and establish the integration entry point:
-  - use the current immutable release tag:
-    `"hvab-blocks": "github:hvab/hvab-blocks#0.1.0"`;
-  - upgrade deliberately by changing this Git ref to a reviewed newer tag and
-    updating the lockfile; do not depend on a moving branch;
-  - consume selectively rather than importing `hvab-blocks/index.css`, so the
-    shell loads only the required blocks and all token files they require;
-  - expected files/areas: `package.json`, `package-lock.json`, a new local
-    shell entry stylesheet, `src/main.js`;
-  - changed: installed `hvab-blocks` from GitHub tag `0.1.0`; added
-    `src/ui/hvab.css` with tokens first and the eight selected block styles
-    second; imported it before Selecta's local shell stylesheet;
-  - verification: `npm install github:hvab/hvab-blocks#0.1.0` resolved the
-    pinned GitHub commit in `package-lock.json`; `npm run build` passed with all
-    selected CSS exports loaded by Vite.
-- [x] Create the local Selecta UI adapter layer before changing consumers:
-  - [x] add `src/ui/Button/Button.vue` as a native button adapter with
-        `view`, `size`, and `type` props; native attributes, events, and consumer
-        classes fall through to its single root button;
-  - [x] add `Field/Field.vue` with label, default control, addons, and message
-        slots; `layout="inline"` and `messageView` map to the documented
-        modifiers while validation semantics remain with the caller;
-  - [x] add `TextInput/TextInput.vue` as a native input adapter with `type`
-        and `size` props; value, input events, invalid/disabled states, and
-        other native attributes fall through to the input;
-  - [x] add `Select/Select.vue` as a native select adapter with a `size` prop;
-        option and optgroup markup, values, change events, and native states
-        remain with the caller;
-  - [x] add `RangeInput/RangeInput.vue` with its documented wrapper/input
-        structure; class/style stay on the wrapper, while range attributes and
-        events are forwarded to the native input;
-  - [x] add `ColorInput/ColorInput.vue` as a native color-input adapter with a
-        `size` prop; color values, picker behavior, events, and native states
-        remain with the caller;
-  - [x] add `Checkbox/Checkbox.vue` with its documented label/input/box
-        structure; visible content is an optional default slot, and native
-        checkbox attributes/events are forwarded to the input;
-  - [x] add `Switch/Switch.vue` with the documented label/input/track
-        structure; the checkbox remains the state and accessibility host;
-  - each component renders the documented native host and `hb-*` class names;
-    it exposes only the props/slots needed by Selecta and forwards native
-    attributes and events without reimplementing library CSS;
-  - keep field label, control, addon, and message composition as slots so
-    validation/warning semantics remain at the caller;
-  - expected files/areas: `src/ui/**`, new shell integration stylesheet;
-  - verification: component markup follows the corresponding current
-    `hvab-blocks` README and no wrapper creates custom popup behaviour;
-    completed Button, Field, TextInput, Select, RangeInput, ColorInput, Checkbox, and Switch adapters pass `npm run lint`,
-    `npm run lint:styles`, and `npm run format:check`.
-- [x] Establish the Selecta-to-hvab token bridge without selecting a new visual
-      design:
-  - [x] import `ref`, `color`, `typography`, `radius`, `spacing`, `motion`, `size`,
-        and `focus` before block CSS, in the documented order;
-  - [x] import only `field`, `text-input`, `select`, `range-input`, `color-input`,
-        `checkbox`, `switch`, and `button` CSS;
-  - [x] bind the effective existing shell appearance to
-        `data-color-scheme="light|dark"` alongside its current state attribute;
-        changed: the `.app` root now receives both attributes, so all future
-        `hb-*` descendants inherit the matching library color scheme;
-  - [x] keep the library's public `--hb-*` token values unchanged after the
-        import; do not override block selectors, private `--_*` tokens, or use
-        `!important`;
-        changed: removed the temporary Selecta token mapping so the shell uses
-        the library's own light/dark visual contract until a design slice calls
-        for deliberate overrides;
-        changed: removed the legacy `--shell-*` aliases and changed the
-        remaining shell composition/status rules to read the matching public
-        library tokens directly;
-  - expected files/areas: new shell integration stylesheet, `src/main.js`,
-    `src/App.vue`, `src/style.css` only where old control styling becomes dead;
-  - verification: `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, and `npm run build` pass; browser verification
-    confirms the restored library default
-    `--hb-color-base-generic: rgb(0 0 0 / 5%)` in the light scheme.
-- [x] Replace the theme-editor form controls with the selected documented
-      blocks:
-  - convert each row to `hb-field`, using `hb-field_layout_inline` where the
-    current three-column arrangement applies;
-  - map metadata errors to `aria-invalid="true"` plus
-    `hb-field__message_view_error`, and contrast warnings to
-    `hb-field__message_view_warning`, preserving `aria-describedby`;
-  - put control classes on the documented native host/wrapper for text, select,
-    range, and color controls;
-  - preserve all event handling, numeric conversions, font `optgroup`s, locks,
-    and localization;
-  - expected files/areas: `src/components/ThemeControls.vue`,
-    `src/components/PresetSelector.vue`, shell CSS;
-  - changed: migrated preset, metadata, font, slider, palette, warning, and
-    Random-lock markup to Field plus the matching native adapter; retained the
-    prior ids, event handlers, values, option groups, `aria-invalid`, and
-    `aria-describedby` relationships;
-  - verification: browser DOM check exposes native textboxes, sliders, color
-    controls, checkboxes, and the dark-mode switch with their previous labels.
-- [x] Replace shell-header, preview-toolbar, and export action controls:
-  - apply `hb-select` to language, shell-appearance, and theme-mode controls;
-  - use `hb-switch` for dark-mode support and `hb-checkbox` for field locks
-    with visible/accessible labels following the block contract;
-  - assign button priority only from the existing action hierarchy; no new
-    labels, icons, grouping, or layout are part of this step;
-  - preserve native `disabled` attributes, hidden JSON file input flow, live
-    status text, and pane-resizer keyboard/pointer behaviour;
-  - expected files/areas: `src/App.vue`, `src/components/ThemeControls.vue`,
-    shell CSS;
-  - changed: migrated interface appearance, language, and theme-mode selectors
-    to Select; migrated export actions to Button with outlined secondary actions
-    and the existing ZIP download as the sole action button; preserved the
-    hidden JSON file input and all current handlers/disabled conditions;
-  - verification: browser DOM check exposes the same named controls and keeps
-    `Unlock all` disabled when no locks are active.
-- [x] Remove superseded local control chrome and document the adopted contract:
-  - delete only CSS declarations replaced by the imported blocks; retain
-    Selecta-owned composition, spacing, pane sizing, mobile layout, and status
-    placement;
-  - record the installed `hvab-blocks` source/version and selected block list
-    here, including any public token overrides;
-  - expected files/areas: `src/style.css`, `.project/PROGRESS.md`;
-  - changed: removed the superseded local control, lock, error, and button
-    chrome; retained Selecta-owned shell layout, status-message placement,
-    pane sizing, and mobile composition;
-  - verification: `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, and `npm run build` pass; browser inspection
-    confirms all adopted block hosts and the restored system scheme. No Aegea
-    preview or export behavior changed.
-
-## Active track: global action hierarchy and header layout (planned)
-
-Status: the first header-layout slice is implemented and awaiting manual browser
-review. This track changes only the generator shell, not the Aegea preview
-markup or exported-theme contract.
-
-### Agreed interaction model
-
-- Replace the separate shell header and preview toolbar with one global top bar.
-  Its desktop order is: localized Selecta name and short generator context,
-  `Theme` light/dark toggle, `Interface` light/dark toggle, `RU / EN`, `Share`
-  menu, and the primary `Download ZIP` action at the right edge.
-- `Theme` clearly means the edited palette and Aegea preview mode. Selecting
-  dark continues to enable Aegea dark-mode support as it does now; it is not a
-  cosmetic-only preview control.
-- `Interface` is a separate two-position segmented control with sun/moon
-  icons. Remove the visible and persisted `system` choice: on first visit,
-  resolve the OS preference to `light` or `dark`, then store only that concrete
-  value. Old sessions with a `system` value are incompatible and ignored.
-- Use a compact textual `RU / EN` language switcher, not flags or a select.
-- `Share` contains only outward actions: copy the theme link and download the
-  theme JSON. Keep JSON import out of this menu because it replaces the current
-  work state; place `Import theme` beside the preset selector at the top of the
-  controls pane.
-- Keep `Randomize` and `Reset` as two prominent actions in the first row above
-  all controls in the left pane. `Download ZIP` remains the only global primary
-  action; `Reset` stays visually quieter and requires a deliberate confirmation
-  if it discards unsaved work.
-- Remove the whole-theme `Unlock all` action. Each editable-card header gains a
-  group lock that locks or unlocks all fields in that card. Its mixed state must
-  be represented accessibly and visually; per-field locks remain available.
-- At narrow widths, keep the Selecta name and ZIP action on the first header
-  row; place the remaining toolbar controls on a second horizontally scrollable
-  row. Do not hide ZIP in an overflow menu.
-
-### Implementation plan
-
-- [x] Audit the current component split and the existing i18n keys
-      before choosing the exact component boundaries; expected areas:
-      `src/components/App/`, `src/components/ThemeControls/`, `src/ui/`, and
-      `src/i18n/`.
-  - changed: confirmed the completed component split keeps App responsible for
-    global actions and shell composition, while ThemeControls and AegeaPreview
-    remain separate; the header slice does not overlap the CSS refactor.
-- [x] Build the global responsive header and move existing global controls into
-      it without changing their theme/export semantics; expected areas:
-      `src/components/App/` and shell-only styles.
-  - changed: moved the Selecta identity, current theme-mode select, current
-    interface-appearance select, language select, and existing ZIP action into
-    one app-wide header; removed the duplicate preview toolbar; kept the
-    remaining actions and all handlers unchanged in the left pane.
-  - changed: narrow screens keep the brand and ZIP action in the first header
-    row, with the remaining existing controls in a horizontally scrollable
-    second row.
-  - verification: pending manual browser review of desktop and narrow layouts.
-- [x] Replace persisted `system` shell appearance with initial OS-preference
-      resolution to a concrete light/dark value; expected areas:
-      `src/components/App/` and `src/storage.js`.
-  - changed: interface appearance now starts as a concrete OS-derived light or
-    dark value, exposes only those two choices, and no longer follows later OS
-    changes.
-  - changed: `system` and missing shell-appearance values are invalid session
-    data, so their old sessions are ignored instead of migrated.
-  - verification: pending manual browser review of first visit and explicit
-    light/dark selection.
-- [x] Add distinct, labelled two-option controls for theme palette/preview mode
-      and interface appearance; retain the current dark-palette/export contract.
-      Expected areas: App component, UI controls, and shell styles.
-  - changed: both controls show explicit localized group labels, while their
-    light/dark native-radio options use sun/moon icons with accessible labels.
-  - changed: theme mode and interface appearance now use separate toggle groups;
-    selecting dark theme still enables the generated theme's dark-mode support,
-    while the interface toggle changes only shell appearance.
-  - verification: pending manual browser review of appearance, keyboard radio
-    navigation, and independent theme/interface state changes.
-- [x] Relocate Randomize, Reset, preset selection, and JSON import according to
-      the agreed hierarchy; make Reset confirmation behaviour explicit before
-      implementation. Expected areas: App, preset component, i18n, and shell
-      styles.
-  - changed: Randomize and Reset are now large first-row actions in the controls
-    pane; JSON import is in the preset card, with its file input and status copy
-    kept beside that action.
-  - changed: Reset uses a native localized confirmation before it replaces the
-    current theme, clears locks, and resets session state.
-  - verification: pending manual browser review of action placement, reset
-    confirmation, and successful JSON import from the preset card.
-- [x] Replace the global unlock action with card-level group locks, including an
-      accessible mixed state; expected areas: ThemeControls, lock controls,
-      i18n, and shell UI.
-  - changed: removed the whole-theme unlock action and added header locks for
-    metadata, fonts, typography, layout, and the currently edited palette.
-  - changed: a partially locked card displays an indeterminate state; activating
-    it locks all fields in that card, while activating a fully locked card
-    unlocks all of its fields. The dark-mode capability switch remains outside
-    locks because Random does not change it.
-  - verification: pending manual browser review of per-card scope, mixed state,
-    and Random respecting the resulting locks.
-- [x] Consolidate copy-link and JSON-export actions into the `Share` menu while
-      retaining status feedback and the existing hidden file-input flow. Expected
-      areas: App, i18n, and shell styles.
-  - changed: moved Copy link and Export JSON into a native Share menu in the
-    global header; kept JSON import beside presets, where it replaces the
-    current work state rather than sharing it.
-  - changed: copy-link success/error feedback appears inside the open menu;
-    ZIP remains the sole primary action, with metadata validation feedback next
-    to it.
-  - verification: pending manual browser review of the menu, copy feedback,
-    JSON export, and narrow-layout placement.
-
-## Active track: `hvab-blocks` 0.2.0 radio-group migration (planned)
-
-Status: the global action-hierarchy work is ready for browser review. The
-radio-group migration is implemented and must not change preview, export, or
-locale-storage contracts.
-
-### Implementation plan
-
-- [x] Upgrade `hvab-blocks` from the pinned `0.1.0` tag to `0.2.0`, refresh the
-      lockfile, and inspect the release's documented radio-group CSS/markup
-      contract. Changed: installed the published `v0.2.0` tag (commit
-      `b9c78a6bdccbc6d511032381b04c9b5143cc3719`) and selectively imported
-      `radio-group.css`; verified package and lockfile resolve to `0.2.0`, and
-      the upstream block uses native radio inputs in `hb-radio-group` /
-      `hb-radio-group__option` / `hb-radio-group__content`. Manual check: the
-      existing shell still loads unchanged after this dependency-only slice.
-- [x] Add one local Vue adapter for the upstream radio-group block and replace
-      the light/dark Theme and Interface `ModeToggle` instances without changing
-      their current state or side effects. Changed: added `RadioGroup`, which
-      renders the upstream native radio markup and accepts option labels/icons;
-      both header mode controls now use it with their existing state handlers;
-      deletion of `ModeToggle` was deferred to the final migration step. Manual
-      check: each group keeps independent state and native keyboard radio
-      navigation.
-- [x] Replace the language select with the same radio-group adapter using the
-      compact `RU` and `EN` labels. Changed: locale persistence and document
-      metadata keep their existing handlers; only the native select host was
-      replaced. Manual check: changing language updates the UI and survives
-      reload.
-- [x] Remove the superseded local `ModeToggle` and record the final
-      `hvab-blocks` version/selected block in this file. Changed: removed the
-      unused local component; the shell now consumes `radio-group.css` from
-      `hvab-blocks` `v0.2.0` alongside the existing selected blocks.
-
-## Planned track: headless overlay behavior for Share and Reset
-
-Status: Share and Reset now use the selected headless primitives. This track
-must not change theme state, sharing/export behavior, or the generator-shell
-visual language.
-
-### Chosen composition
-
-- Add `reka-ui` as the single Vue headless dependency after checking its current
-  release and lockfile result. It supplies the required accessible primitives in
-  one package: `DropdownMenu` for Share and `Dialog` for Reset
-  confirmation. Do not add Headless UI or Floating UI alongside it.
-- Keep all visible styling in `hvab-blocks`: import `popover.css` for the Share
-  panel and `modal.css` for Reset. `reka-ui` owns only portal,
-  anchoring, collisions, dismissal, keyboard handling, focus return/trap, and
-  inert background behavior.
-- Use a dropdown menu, not a generic popover, for Share because its contents
-  are command items. Use a dialog for Reset: it retains the explicit confirm
-  action but also supports dismissal by clicking outside the panel.
-- Keep portal overlays in one shell layer contract: the top bar stays in normal
-  document stacking, the Reka floating-content wrapper uses the floating layer,
-  and the modal veil uses the higher modal layer. Do not set a local stacking
-  value only on the menu surface.
-- Preserve the existing local `Button` component, localized copy, and action
-  handlers. The reset action must be split into opening the confirmation and a
-  separate confirmed reset handler; `window.confirm` must disappear.
-
-### Implementation plan
-
-- [x] Dependency and contract slice: install one reviewed `reka-ui` release,
-      refresh the lockfile, and selectively import the needed `hvab-blocks`
-      overlay styles. Changed: installed `reka-ui` `2.10.1` and imported
-      `popover.css`, `modal.css`, and `dialog.css`; verified its menu and
-      dialog triggers support `as-child`, and both content hosts use Portal.
-      Manual check: existing controls and header remain unchanged.
-- [x] Add compact local Vue adapters over the specific Reka primitives rather
-      than exposing library markup throughout the app: one for dropdown action
-      menus and one for dialogs. Changed: added `ActionMenu` with local
-      action data and a trigger slot, plus controlled `ConfirmDialog` with
-      trigger, Cancel, and confirm-action slots; both use `as-child` with the
-      existing root-button adapter and apply only `hb-*` visual classes. Manual
-      check: mounted examples receive `data-state` and can be themed only by
-      `hb-*` classes.
-  - changed: the Share panel uses a namespaced unscoped selector because its
-    DOM is teleported outside the component; keep ordinary local component DOM
-    styles scoped, and reserve unscoped selectors for portal hosts only.
-- [x] Migrate Share alone: replace native `details` with the dropdown adapter,
-      portal the content, apply `hb-popover`, and keep Copy link / Export JSON
-      actions and their status feedback. Changed: selected actions close the
-      menu through Reka while success/error feedback remains next to the Share
-      trigger. Manual check: Enter/Space/Arrow keys, Escape, click outside,
-      focus return, collision near viewport edges, and closing after either
-      action.
-- [x] Migrate Reset alone: replace `window.confirm` with a dialog styled by
-      `hb-modal`; add a localized question, Cancel, and destructive Confirm
-      labels. Changed: Reset now opens controlled `ConfirmDialog`; Cancel,
-      Escape, and clicks outside the panel leave current work untouched, while
-      confirm calls the unchanged reset handler after the dialog closes. Manual
-      check: focus stays trapped while open and returns to Reset.
-- [x] Correct the overlay stacking and minimal-dialog composition after browser
-      review. Changed: removed the top bar stacking context; the actual Reka
-      floating-content wrapper now uses the shared floating layer, while the
-      reset veil uses the higher modal layer. Reset retains a single question
-      and actions without dialog header or dividers, but restores the standard
-      480px panel width and 24px/32px spacing. The question and all action-track
-      status messages use explicit `hb-text` typography roles.
-  - changed: interface colour scheme is applied to the document root, so Reka
-    portal content inherits the same dark/light `hvab-blocks` tokens as the
-    generator shell.
-- [x] Restore `hb-dialog` composition for Reset. Changed: the panel now uses
-      the library's `hb-dialog`, `__body`, and `__footer` elements without a
-      header or dividers. Reka `Dialog` replaces `AlertDialog` so clicking the
-      overlay closes the modal without resetting the theme.
-- [ ] Review desktop, narrow layout, light/dark shell appearance, and reduced
-      viewport height; then remove only the superseded native-menu/confirmation
-      CSS and record the installed `reka-ui` version and final block list here.
-  - code-review changed: Share success uses a polite live region and its error
-    uses an alert role.
-
-## Active track: `hvab-blocks` 0.3.0 integration acceptance
-
-Scope: preserve selective npm CSS imports and local Vue/Reka adapters. Keep
-the Aegea preview/export contract and unrelated planned tracks unchanged.
-
-- [x] Pin `github:hvab/hvab-blocks#v0.3.0` in `package.json` and refresh
-      `package-lock.json`; verify resolution to
-      `4dfa1c71dc169172c7e6f1de720b6b47044261fc` and installed LICENSE/notices.
-      Check existing public token overrides against the new contrast roles.
-- [x] Review the combined shell integration in Chromium: light/dark, narrow/wide
-      sidebar, narrow viewport, Reset with long actions, field/color-input,
-      used control states, keyboard navigation and overlay focus return.
-      Fix only integration defects found in these areas; record library defects
-      separately. Do not add unused table/toast blocks for acceptance.
-- [x] Run the applicable existing project checks (unit suite, lint, style lint,
-      formatting, production build). Record concrete results, remaining manual
-      Safari/Windows/screen-reader limits, and the next small step here.
-
-Initial audit: clean `develop`; dependency-based integration at `v0.2.0`, no
-vendored CSS. `src/ui/hvab.css` imports eight token files and sixteen blocks.
-The shell uses library light/dark colors, with only local card padding,
-color-input width and error-tooltip component-token overrides. No custom status
-palette needs migration: new contrast roles must inherit from the library in
-both schemes. Edited Aegea themes do not consume `--hb-*` tokens.
-
-Integration fixes selected after browser inspection (within the shell boundary
-in `SPEC.md` / `UI-ARCHITECTURE.md`):
-
-- [x] Make inline fields respond to the sidebar container, not just the viewport
-      (`App.css`, `Field.vue`). At 320px, fixed label/addon columns currently
-      leave range inputs at 0px. Check 320px, default 416px, 672px and mobile.
-- [x] Set the shell's system font at document-body level (`App.vue`) so portal
-      dialog/menu/tooltip content inherits it. Aegea preview already sets its
-      own font. Check computed portal and preview fonts in both schemes.
-- [x] Re-clamp the sidebar on window resize (`App.vue`). Resizing a 672px
-      sidebar down to a 768px viewport currently leaves only 88px for preview;
-      the maximum-width computed value also caches a nonreactive DOM read.
-      Track viewport width and verify 1280 → 768 → mobile and keyboard resize.
-
-### Result (2026-10-19)
-
-- Source: [hvab-blocks v0.3.0](https://github.com/hvab/hvab-blocks/releases/tag/v0.3.0),
-  commit `4dfa1c71dc169172c7e6f1de720b6b47044261fc`. The GitHub-tag dependency
-  and exact lockfile SHA preserve the existing integration model. All 24
-  imported token/block CSS files and installed `LICENSE` /
-  `THIRD_PARTY_NOTICES.md` match the tag byte for byte. No vendor patch or resync.
-- Existing card, full-width color-input and error-tooltip public-token
-  overrides are preserved. All three new functional contrast tokens resolve
-  to the release's light/dark values; field warnings use `warning-contrast`
-  (`rgb(145 74 17)` / `rgb(255 197 108)`). User-generated Aegea themes remain
-  isolated from shell tokens; there is no custom hvab status palette to migrate.
-- Fixed consumer layout at sidebar widths up to 23rem using a named container
-  query; range inputs at 320px now have 278px instead of 0px. At 416/672px,
-  the existing inline layout remains. Across both schemes and all three widths,
-  no field overflows; color inputs fill their slots (278/144/400px).
-- Fixed system-font inheritance for portal surfaces at body level; Reset,
-  Share and feedback tooltip use the shell font, while the preview still uses
-  its own selected font. Sidebar maximum width now reacts to window resize;
-  1280 → 768 clamps the 672px pane to 408px, and mobile remains stacked.
-- Browser acceptance: Chromium in-app browser, development app and a smoke
-  check of the final production build. Checked both shell schemes, independent
-  preview theme mode, sidebar 320/416/672px, viewports 320/375/768/1280px,
-  metadata validation/disabled ZIP and Share commands, native color value
-  propagation to preview, select/range/switch changes, checked/unchecked/mixed
-  locks, radio arrow keys/Space and locale switching. Focus-visible is shown;
-  Reset traps Tab/Shift+Tab and returns focus after Cancel, Escape, outside
-  click and confirm. Confirm resets values/locks. Share supports ArrowDown /
-  Enter / Escape, Copy link feedback and trigger focus return.
-- Long-action stress check: temporarily lengthened both English Reset actions
-  to roughly 60 characters in the real app, then restored the original copy.
-  At 480px dialog width the actions wrap in a row; at 327/272px they stack and
-  remain fully visible, including a 320×320 viewport. No horizontal overflow.
-- `hb-table`, `hb-toast` and dialog dividers are not used/imported by Selecta;
-  no synthetic catalogue coverage is claimed. The preview's existing table
-  belongs to Aegea, not the hvab table contract. No library defects found in
-  the exercised integration paths.
-- `npm run build` passes. The final production smoke check has no captured
-  browser console warnings/errors. Rollup reports two existing VueUse PURE
-  annotation warnings during build.
-- Existing checks are not all green: `npm test` is 98/99 (the session fixture
-  uses removed `shellAppearance: 'system'`); `npm run lint` has one pre-existing
-  Prettier error in `PresetSelector.vue`; `npm run lint:styles` has seven
-  pre-existing errors in `App.css` (`:global`, duplicate/order of
-  `.download-error`, deprecated `clip` and property order);
-  `npm run format:check` flags four audit Markdown files and `PresetSelector`.
-  The same failures were reproduced from an untouched archive of HEAD
-  `8662ce5`; this integration adds no check failures. Unrelated fixes deferred.
-- Not verified: real Safari/iOS, Windows High Contrast / forced colors, a real
-  screen reader, OS color-picker dialog internals, or disabled/mixed control
-  combinations not reachable in Selecta. Chromium keyboard/DOM inspection is
-  not a substitute for those checks.
-
-Next small step: manual Safari/Windows/screen-reader acceptance of these same
-used paths; separately fix the baseline check failures. Earlier browser-review
-checkboxes are covered where listed above; unrelated cleanup tracks stay parked.
-No staging, commit, branch switch or publication performed.
-
-## Active track: baseline check cleanup (separate follow-up)
-
-Scope: fix the remaining check failures without changing application behavior,
-the Aegea contract or the completed hvab integration. Checked against `SPEC.md`:
-this is maintenance only. Preserve all earlier uncommitted changes.
-
-- [x] Correct the successful session test fixture to use a supported explicit
-      shell appearance (`src/storage.test.js`); run the focused storage suite.
-- [x] Resolve shell Stylelint errors without changing rendered declarations:
-      move Vue global rules into the existing unscoped style block, merge and
-      reorder download-error rules, and retain the current visually-hidden
-      clipping with a documented declaration-level deprecation exception
-      (`App.css`, `App.vue`). Compare compiled CSS declarations before/after.
-- [x] Format only the five reported files: `PresetSelector.vue` and the four
-      audit Markdown files. Check the diff for content changes.
-- [x] Repeat `npm test`, `npm run lint`, `npm run lint:styles`,
-      `npm run format:check`, `npm run build` and `git diff --check`; record
-      results, limitations and the next small step here.
-
-### Result (2026-10-19)
-
-- The successful session fixture now uses supported `shellAppearance: 'dark'`
-  instead of removed `system`, in both saved and expected data. Storage runtime
-  logic is unchanged. Focused storage checks pass 6/6; the full suite passes
-  99/99.
-- Overlay layer rules now live in the existing unscoped `App.vue` style block
-  as ordinary global selectors. Download-error declarations are merged and
-  ordered by specificity; the visually-hidden rule follows property order.
-  Existing `clip` behavior is retained with one documented declaration-level
-  Stylelint exception; no lint rules are disabled globally.
-- The five reported formatting files are fixed. The four audit documents
-  retain identical content apart from whitespace and table separator padding.
-- Compared with the start of this follow-up, Vue-compiled shell CSS has the
-  same selector/property/value/importance mapping; App and PresetSelector
-  scripts and compiled template render code are unchanged. Prior hvab changes
-  remain intact.
-- Final checks pass: `npm test` (99/99), `npm run lint`,
-  `npm run lint:styles`, `npm run format:check`, `npm run build`, and
-  `git diff --check`. The build still prints the two existing VueUse PURE
-  annotation warnings; it exits successfully.
-- No new browser acceptance was needed for these behavior-preserving changes.
-  Earlier Safari/Windows/screen-reader verification gaps remain unchanged.
-
-Next small step: the previously deferred manual platform acceptance. The check
-cleanup is complete; nothing staged, committed, switched or published.
-
-## Next steps
-
-- [ ] Browser-review the three header radio groups: independent Theme and
-      Interface state, `RU` / `EN` switching and persistence, keyboard radio
-      navigation, and the narrow top-bar layout.
-- [ ] Browser-review Share and Reset overlays on desktop and narrow screens;
-      then remove only superseded native-menu and confirmation remnants.
-
-## Planned track: feedback surfaces and action status
-
-Status: planned after visual review found that action outcomes are rendered as
-detached text nodes and can change the header layout. This track affects only
-generator-shell feedback presentation, not theme state, import/export data, or
-the Aegea preview.
-
-### Audit result
-
-- Metadata validation and contrast warnings already use the local `Field`
-  adapter with `hb-field__message` and error/warning views; retain that pattern.
-- JSON import success/error, Share success/error, and the disabled ZIP reason
-  are standalone `App` paragraphs styled by local color classes. They are the
-  remaining feedback hardcodes.
-- `hvab-blocks` provides the right visual primitives: `field` for feedback
-  belonging to a control, `tooltip` for a short anchored outcome, and `alert`
-  only for a persistent standalone notification. Reka UI already supplies the
-  required tooltip portal, position, and dismissal behavior.
-
-### Implementation plan
-
-- [x] Add one local controlled tooltip adapter over Reka `Tooltip`, styled by
-      `hb-tooltip` and an optional arrow; import `tooltip.css`. Its portal CSS
-      must follow the existing overlay-layer contract, and it must support a
-      short programmatic open interval without changing layout.
-  - expected areas: `src/ui/`, `src/ui/hvab.css`, and shell overlay styles.
-  - changed: added `FeedbackTooltip` with an explicit controlled `open` value,
-    immediate trigger response, bottom placement by default, its own Reka
-    provider, and the tooltip block's CSS arrow.
-  - manual check: collision at header edges, keyboard focus, Escape, and
-    automatic close without a stale timer reopening it.
-- [x] Move JSON import feedback into `PresetSelector`: pass the translated
-      error from App and render it as the Import button's `Field` message with
-      the `error` view. Do not keep a detached App paragraph. Successful import
-      needs no extra banner because the selected values visibly update.
-  - expected areas: `src/components/App/` and `src/components/PresetSelector/`.
-  - changed: invalid JSON now appears as the Import JSON field message and is
-    linked to that button through `aria-describedby`; the unused import-success
-    copy and local import-status styles are removed.
-  - manual check: invalid JSON is adjacent to Import JSON, has field error
-    styling, and a successful import clears it.
-- [x] Replace Share's layout-affecting status paragraphs with a controlled
-      feedback tooltip anchored to the Share button. Copy success opens it
-      briefly; copy/link errors use the same anchored surface with the tooltip
-      block's public color tokens and remain announced through a nonvisual
-      polite/error status region.
-  - expected areas: `src/components/App/`, the new tooltip adapter, and i18n
-    status handling.
-  - changed: `FeedbackTooltip` is a sibling overlay with an explicit reference
-    to the Share button, not a child of `ActionMenu`. Nesting its `TooltipRoot`
-    had shadowed the menu's popper context and placed an opened menu off-screen.
-    Opening Share clears active feedback before the direct menu trigger opens.
-  - manual check: header controls never move; Copy link shows feedback, errors
-    are announced, and the menu still closes and returns focus correctly.
-- [ ] Remove the redundant disabled-ZIP paragraph after verifying metadata
-      fields provide the actionable errors. If an explanation is still needed,
-      add it as an anchored disabled-control tooltip rather than a new header
-      row; do not use `hb-alert` for this short control-specific reason.
-  - expected areas: `src/components/App/` and shell status styles.
-  - manual check: invalid metadata blocks ZIP without moving the header and
-    leaves the relevant metadata field errors visible.
-- [ ] Delete the superseded `share-*`, `import-*`, and `download-error` local
-      feedback CSS only after all three feedback paths are moved. Reserve
-      `hb-alert` for a future persistent global notification, not transient
-      action confirmation.
-
-## Technical fix: panel sizing (R03)
-
-Scope: reactive sizing of the generator shell only, preserving the current
-320 px controls minimum, 672 px maximum, 360 px preview budget, and 40rem
-stacked-layout breakpoint. Preview markup and theme/export contracts do not change.
-The selected sidebar width stays separate from the constrained rendered width;
-resize must not overwrite the saved preference. Below the combined minima, keep
-the existing controls-minimum fallback rather than introduce a new layout policy.
-
-- [x] Verify current remote base and reproduce stale sizing before edits.
-  - Base: `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`, isolated branch.
-  - Chrome: 1280 to 768 after ArrowRight x16 gives controls 672 px,
-    divider 8 px, preview 88 px, ARIA max 672.
-- [x] Extract width constraints and reactive container/divider measurement.
-  - Areas: new `src/ui/` modules and narrow `src/App.vue` integration.
-  - Observe container and divider, measure before restore, disconnect on unmount.
-  - Use effective width for rendering/ARIA and keyboard stepping; preserve
-    preferred width in existing session UI state. Keep persistence slice separate.
-  - Checks: focused Node tests for resize, divider, min/max clamp, startup,
-    resize without window resize, and observer cleanup.
-- [x] Verify browser transitions and project checks; prepare draft fix PR.
-  - Chrome: 1280/768/375 transitions, restore, keyboard, pointer if available,
-    language changes; check actual DOM widths and ARIA together.
-  - Commands: `npm test`, `npm run lint`, `npm run lint:styles`,
-    `npm run format:check`, `npm run build`.
-  - Record pre-existing failures and browser/environment limits explicitly.
-
-Original iteration result on the pre-UI base (historical):
-
-- Added pure constraints plus a Vue composable that observes the actual container
-  and divider border boxes, measures at mount, and disconnects at unmount.
-  Rendering and separator ARIA use the effective width; pointer and keyboard
-  share its clamp. Session state keeps the preferred width, so shrinking and
-  expanding the window restores the preference without a resize-only save.
-- Added six regression tests covering container/divider changes, fractional
-  budgets, minimum fallback, default/restored widths, preferred/effective width
-  separation, keyboard stepping from the effective width, and observer/fallback
-  listener cleanup.
-- Verified: `npm test` 105/105, `npm run lint`, `npm run lint:styles`,
-  `npm run build`, changed-file Prettier check, and `git diff --check` pass.
-  `npm run format:check` fails only on two unchanged audit prompt files;
-  the exact same failure was reproduced on a clean archive of the base commit.
-- Chrome: before the fix, 1280 -> 768 retained 672/8/88 px and ARIA max 672.
-  After the fix, 768 gives 400/8/360 px after resize and narrow reload; expanding
-  restores preferred 672. Keyboard and real pointer drag clamp to 320..400.
-  375 -> 768, EN/RU, and clean production-build startup pass. At 375, stacked
-  layout has document width 375 and visible ZIP control. At 688, pane widths
-  are 320/8/360; at 641, the existing minimum fallback gives 320/8/313.
-- Limits: Safari/Firefox, zoom and touch were not available/tested. Checks ran
-  on macOS with Node 24.20.0 and the existing installed dependencies, not a clean
-  Node 22/Linux install. Theme output and Aegea markup were not modified.
-- Next small step: review the draft fix PR and coordinate its `src/App.vue`
-  import/restore and this progress section with the separate session-save fix.
-  Merge the session-save slice first, then resolve this narrow sizing integration
-  against it; rerun the combined browser/session checks before merging.
-
-### Revalidation against the current UI
-
-New base: `8662ce5a7a94fff4df4f95bab34a0f48eea9b561`. The separate
-UI merge moved App and introduced `.app__workspace`; the original resize bug
-is still reproduced in Chrome (1280 -> 768 yields 672/8/88, ARIA max 672).
-
-- [x] Read the new base and PR conflicts; reproduce before adapting code.
-- [x] Preserve the new UI and move the narrow sizing integration into
-      `src/components/App/App.vue`, measuring the actual `.app__workspace` and
-      keeping the pointer origin aligned with it. Keep all persistence/reset
-      lifecycle changes owned by the separate session-save fix.
-  - Checks: scoped diff vs new main, six focused panel regressions, build/lint.
-- [x] Repeat Chrome resize/restore/keyboard/pointer/mobile/EN/RU against the new
-      UI. Push the own branch without force and inspect exact-HEAD CI next.
-  - Check both feasible and insufficient budgets without changing the 40rem
-    breakpoint or minimum fallback. Coordinate inherited quality failures with
-    the separate quality worker; do not repeat the rejected R02 cherry-pick.
-
-Revalidation result:
-
-- The new App keeps its topbar, controls, theme actions and persistence lifecycle.
-  Only sizing imports/state, effective rendering/ARIA, pointer origin, keyboard
-  stepping, width restore and workspace/divider refs are adapted.
-- Chrome production build: clean 768 px startup gives 400/8/360, resize from
-  preferred 672 gives 400/8/360, and narrow reload after the existing debounce
-  retains preferred 672 on expansion. An immediate pre-debounce reload remains
-  the separate session-save issue; this iteration does not change that policy.
-  Keyboard starts at the effective width (400 -> 384), clamps to 320..400;
-  real pointer drag uses the same bounds. EN/RU and 375 -> 768 pass; at 375 the
-  document width is 375 and ZIP is visible/enabled within the viewport. At 688,
-  widths are 320/8/360. Below the combined minima, preserve the current controls
-  minimum and use the remaining preview space; do not introduce a new breakpoint.
-- Focused regressions 6/6 and build pass. All tests: 104/105; the stale `system`
-  session fixture also fails on the clean new base (98/99). Changed-file ESLint,
-  Prettier and scoped diff pass. Full JS lint fails only on PresetSelector:43;
-  stylelint has seven existing App.css errors; formatting has five existing
-  audit/prompt/PresetSelector failures. Each failure was reproduced unchanged
-  on a clean archive of the new base. The separate quality owner handles them.
-- Limits remain Safari/Firefox, zoom/touch, and combined R05 lifecycle validation.
-  Next small step: apply only an explicitly authorized new quality prerequisite,
-  rerun full checks and exact-HEAD CI, then review the combined R03/R05 integration.
-
-## Ideas and backlog
-
-Use `.project/IDEAS.md` for raw feature ideas and parked future work. Move only
-the selected next slice from `IDEAS.md` into `Active track` / `Next steps`.
-
-## Verification
-
-Common checks:
-
-```bash
-npm test
-npm run lint
-npm run lint:styles
-npm run format:check
-npm run build
-```
-
-Use targeted checks for small documentation-only changes.
-
-For preview and export-contract changes, prefer a concise manual verification
-path in a real local Aegea instance.
-
-## Notes for next AI
-
-- Read `AGENTS.md` and `AGENTS.local.md` before implementation work.
-- Read `SPEC.md` before changing product behavior.
-- Do not revive old Google Fonts search/filter UI ideas. The current direction
-  is a flat select with direct category groups.
-- Do not store language in theme JSON, share URLs, or ZIP output.
-- Do not stage, commit, switch branches, or push unless the user explicitly asks.
-- Keep diffs scoped; avoid reformatting unrelated files.
-
-## Integration iteration: R03 merge readiness (2026-10-19)
-
-- [x] Merge the verified R02 branch into R03, preserving panel sizing and both
-      progress histories. Expected area: `.project/PROGRESS.md`; resolve any
-      source conflict against the existing sizing contract, not legacy UI.
-- [x] Run existing quality commands and build; preserve measured divider budgets,
-      preferred/effective width and the current theme/export/session contracts.
-- [x] Verify compatibility in a disposable combination with R05 and the owner's
-      local hvab-blocks 0.3 integration, retaining R03 as the sizing authority.
-      Do not publish the unrelated develop commits in this PR.
-- [ ] Push only the R03 branch, inspect exact-head CI and mergeability, rewrite
-      the PR description around the final state. Do not merge PRs or push main.
-
-R02 prerequisite `954f71d` is integrated without rewriting either branch.
-Existing quality commands and production build all pass locally. Local npm ci
-is blocked by the existing Git-package restriction; npm settings were not changed.
-The local fixture uses installed dependencies with matching lockfile entries and
-hvab-blocks files from exact local pinned commit `b9c78a6`. Fresh lockfile install
-on Ubuntu/Node 22 remains required in the final PR CI.
-
-Compatibility result: a disposable combination of R02 + R03 + R05 and the
-owner's local develop commits `71d4e64` / `29fb10c` passes all five quality
-commands and builds with hvab-blocks 0.3.0. The actual fix branches keep their
-pinned 0.2.0 dependency and do not publish those develop commits.
-
-For eventual integration with that develop state, keep R03's usePanelLayout and
-preferred/effective width separation. Remove develop's superseded viewportWidth,
-handleWindowResize and resize-listener wiring; retain its controls-pane container
-query, Field adaptation and body system font. Keep R02's AppLayers stylesheet,
-clip-path and current session fixtures rather than restoring duplicate globals
-or the deprecated clipping declaration. Keep R05's lifecycle save and cleanup.
-
-No theme/ZIP/preview contract or session schema changed in this integration.
-Browser/platform coverage remains as previously documented; no new Safari,
-Windows/forced-colors or screen-reader verification is claimed.
-Next step: push this branch, confirm exact-head Ubuntu/Node 22 CI and report
-mergeability in the PR. No main/develop push, PR merge or deployment is requested.
-
-## Technical iteration: remote quality gate (R02)
-
-Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
-At that original baseline, the remote implementation supported shell `system`;
-its valid-session fixture was correct. Tests (99/99), JavaScript/style lint, and build passed. Only
-Prettier fails on the two already tracked audit prompt documents.
-
-- [x] Format only `audit/1-astra-xhigh-prompt.md` and
-      `audit/2-sol-6-1-xhigh-verify-prompt.md`, preserving their content.
-      Verify with `npm run format:check` and a scoped diff.
-- [x] Rerun `npm test`, `npm run lint`, `npm run lint:styles`,
-      `npm run format:check`, and `npm run build`: all pass locally.
-      Keep the independent plain-font fix and local UI work out of this branch.
-
-No lint rules, thresholds, session behavior, or audit reports are changed.
-The prompt changes add exactly four blank lines; ignoring blank lines produces
-no diff. No new test is needed for Markdown formatting.
-
-Local verification uses Node 24/macOS. Next small step: create a draft PR and
-verify the existing Node 22/Linux CI without running deployment.
-
-## Technical iteration: complete R01 value contract
-
-The owner delegated the value-policy decision and authorized commits and pushes
-on separate fix branches, without merging or pushing main. Continue the existing
-R01 PR from its updated main baseline; leave develop and unrelated fixes alone.
-
-- [x] Define shared control/import constraints in `src/theme/constraints.js`:
-      six-digit HEX colors (either case); decimal px text size 14..24; decimal
-      rem content width 36..64 and margins 1..4; finite unitless title scale
-      1.2..2 and text line height 1.3..1.9. Reuse these limits in ThemeControls.
-      Verify defaults, Random and all presets fit; accept decimal precision
-      independently of the sliders' interaction steps.
-- [x] Extend the existing shared boundary validator for JSON/File/URL/storage.
-      Reject unsupported models atomically; retain editable metadata errors,
-      known-field copying, version 2 and existing font normalization/fallback.
-      Verify CSS breakout, wrong units, malformed colors and range endpoints
-      using a temporary harness; adjust existing range fixtures to the contract.
-- [x] Guard the ZIP boundary (including direct callers) and Download availability
-      with the same model invariant; retain the separate metadata validity gate.
-      Verify ZIP paths, CSS declarations and escaped PHP metadata against the
-      real Aegea variable contract without changing preview markup or engine.
-- [x] Run scoped quality checks and build; record existing R02 failures rather
-      than fixing them. Commit/push only this iteration and update draft PR #2.
-      Inspect CI; no merge, release, main push or environment repair.
-
-Policy rationale: inputs remain exactly representable by the current editor;
-presets and generated themes already use these units and bounds. Arbitrary CSS
-functions/declarations and manual values outside the editor are rejected, never
-silently clamped or partially applied. Invalid stored sessions use the existing
-fallback. CSS injection into the exported artifact is relevant; JS/PHP execution
-or XSS has not been demonstrated by this audit.
-
-Implementation: shared limits now drive the existing sliders and value validator.
-Custom system stacks retain named/quoted families and generic fallbacks, with
-balanced quotes and complete comma-separated tokens; unsupported font syntax is
-rejected at external boundaries. The existing trusted generator fallback remains.
-Download availability and direct ZIP callers also reject an invalid model;
-editable empty/invalid metadata can still be imported and repaired in the UI,
-but cannot become an archive path. No preview structure or Aegea target changed.
-
-Verification before prerequisite integration: scoped ESLint/Prettier, build and
-ZIP parsing passed. A temporary harness rejected 250 invalid models across
-JSON/File/URL/storage and direct ZIP, accepted all catalog font choices and ten
-preset archives, and checked range endpoints plus 200 Random themes applied as
-the App applies them. Existing range fixtures now use the supported endpoints;
-no new repository test or infrastructure was added.
-
-Browser file-chooser verification remains unavailable: the Chrome extension
-requires file-URL access, which was not enabled. File decoding was verified via
-Blob. PHP/live Aegea installation and paired rendering remain unverified; no
-runtime repair or V01/V03/V04 work was attempted.
-
-Full checks still encountered the known main R02 failures. The already prepared
-quality prerequisite at PR #1 head `954f71d` has successful Node 22/Linux CI and
-is merged into this fix branch as a separate integration commit. This does
-not merge either PR into main or deploy the site.
-
-## Technical iteration: quality gate after main update
-
-New baseline: `8662ce5a7a94fff4df4f95bab34a0f48eea9b561`. It includes the
-UI migration, concrete light/dark session policy, document-root colour scheme,
-and already published audit reports. Reproduced on an isolated worktree:
-98/99 tests, one PresetSelector formatting error, seven App.css style errors,
-and formatting failures in two prompts, two reports and PresetSelector.
-Build passes. No dependencies or quality rules are changed.
-
-- [x] Merge new main into this branch without rewriting history; retain its UI.
-- [x] Format only the PresetSelector opening tag, with unchanged attributes.
-- [x] Align the session test fixture with the current light/dark contract and
-      add explicit rejection regressions for legacy system/missing values.
-      Coordinate `storage.test.js`; leave runtime persistence unchanged.
-- [x] Move global root/popper layer declarations out of scoped App.css into
-      global shell CSS, preserving selectors/values. Consolidate the duplicate
-      download-error rule and replace deprecated clip with equivalent clip-path.
-      Coordinate App.css; keep widths, overlays and theme behavior unchanged.
-- [x] Format the already published reports in a separate commit under the
-      renewed technical-fix authorization. Their normalized Markdown and
-      embedded JavaScript ASTs match the baseline: words, data, links and
-      semantic structure are unchanged.
-- [x] Run all five checks locally: 104/104 tests, JS/style lint, formatting and
-      build pass. Unknown ordinary CSS pseudo-classes still fail stylelint.
-- [ ] Confirm clean Node 22/Linux PR CI after pushing this branch.
-
-Local clean npm ci is blocked by EALLOWGIT for the pinned hvab-blocks dependency.
-No bypass was attempted. Existing installed dependencies were copied with
-executable symlinks preserved; the shared and new-main lockfiles match exactly.
-The CI clean install remains the authoritative independent install check.
-
-Verified shell layers: Vue compilation of the former scoped :global rules and
-the new global CSS produces identical selectors/declarations/priorities.
-Chrome light/dark Share/Reset portals use floating z-index 10 and modal 20;
-Copy-link status retains role=status, a 1px box and inset(50%) clipping. Metadata
-errors still disable ZIP; download-error flex-basis remains auto in the header.
-
-Read-only npm audit: 16 flagged package records (14 high, 1 moderate, 1 low),
-including inherited dependency records, not 16 independent vulnerabilities.
-Production-only audit flags PostCSS and nanoid through Vue's compiler package;
-the built browser chunks contain no modules from either package. Tooling
-issues include brace-expansion, braces and its stylelint chain, fast-uri,
-js-yaml, colord and postcss-selector-parser. Audit proposes breaking downgrades
-for the braces/stylelint chain; do not run audit fix --force. Dependencies and
-lockfile remain unchanged. Dependency remediation requires separate scope.
-
-Final R01 combination after integrating the verified R02 prerequisite:
-all five existing quality commands pass locally (114/114 existing tests,
-ESLint, stylelint, Prettier and build). The temporary contract harness also
-passes again. Chrome URL import rejects CSS breakout and out-of-range scale,
-preserves the saved theme, and announces the error in EN/RU. A valid endpoint
-payload applies all values and enables ZIP; the download bridge timed out, so
-browser-downloaded archive inspection remains unverified. The ten archives
-created through the real ZIP API were parsed and inspected independently.
-
-Implementation is complete; next small step is owner review of draft PR #2 and
-its final CI, followed by the separately requested PR integration. Live Aegea
-installation, Chrome file permissions, R05 integration and other verification
-experiments are outside this iteration.
-
-## Integration iteration: R05 merge readiness (2026-10-19)
-
-- [x] Merge the verified current R02 branch, incorporating its main baseline;
-      port the existing R05 persistence changes into the current App component.
-      Preserve current shell controls, overlays, language and light/dark policy.
-- [x] Adapt the existing App persistence regression harness to its relocated
-      component and current UI state; keep debounce, no-op Reset and lifecycle
-      save semantics, and preserve timer/listener cleanup.
-- [x] Run existing quality commands and build; verify a disposable combination
-      with R03 and local hvab-blocks 0.3 without publishing develop changes.
-- [ ] Push only the R05 branch and inspect exact-head CI and mergeability;
-      update the existing draft PR. Do not merge PRs or push main.
-
-R02 prerequisite `954f71d` is integrated without rewriting either branch.
-Existing quality commands and production build all pass locally. Local npm ci
-is blocked by the existing Git-package restriction; npm settings were not changed.
-The local fixture uses installed dependencies with matching lockfile entries and
-hvab-blocks files from exact local pinned commit `b9c78a6`. Fresh lockfile install
-on Ubuntu/Node 22 remains required in the final PR CI.
-
-Conflict resolution keeps the current relocated App, radio groups, Reka overlays,
-Share feedback and concrete light/dark state policy. R05 only adds the shared
-session flush and page lifecycle listeners, removes the Reset skip flag and
-preserves existing shell cleanup. Its existing eight regressions were moved
-with App and adapted to current state handlers; no old UI or system mode returns.
-
-Compatibility result: a disposable combination of R02 + R03 + R05 and the
-owner's local develop commits `71d4e64` / `29fb10c` passes all five quality
-commands and builds with hvab-blocks 0.3.0. The actual fix branches keep their
-pinned 0.2.0 dependency and do not publish those develop commits.
-
-For eventual integration with that develop state, keep R03's usePanelLayout and
-preferred/effective width separation. Remove develop's superseded viewportWidth,
-handleWindowResize and resize-listener wiring; retain its controls-pane container
-query, Field adaptation and body system font. Keep R02's AppLayers stylesheet,
-clip-path and current session fixtures rather than restoring duplicate globals
-or the deprecated clipping declaration. Keep R05's lifecycle save and cleanup.
-
-No theme/ZIP/preview contract or session schema changed in this integration.
-Browser/platform coverage remains as previously documented; no new Safari,
-Windows/forced-colors or screen-reader verification is claimed.
-Next step: push this branch, confirm exact-head Ubuntu/Node 22 CI and report
-mergeability in the PR. No main/develop push, PR merge or deployment is requested.
-
-## Active iteration: idle-tab persistence and combined hvab 0.3 delivery
-
-The owner authorized fixes, commits and pushes on fix branches, including a
-joint R03/R05/hvab-blocks 0.3 integration. Do not modify or publish main/develop,
-merge GitHub PRs, change theme generation, or expand unrelated audit work.
-
-- [x] R05 persistence: compare a complete current-session snapshot with this
-      instance's last persisted/restored snapshot before lifecycle writes.
-      Capture the restore baseline after mount; keep explicit Reset/URL import
-      save intent, the 500 ms debounce and synchronous pre-watcher exit handling.
-      Advance the snapshot only after a successful storage write; retry failures.
-      Expected areas: App session helpers, mount/Reset and storage write result.
-- [x] Verify the idle-tab overwrite scenario before/after, ordinary save,
-      immediate pre-watcher pagehide, visibility/unmount, Reset and storage retry
-      in a temporary harness; run existing quality commands. Update/push PR #5.
-- [x] Create a separate fix integration branch with R03, corrected R05 and the
-      existing hvab 0.3 develop commits 71d4e64 / 29fb10c. Keep R03 measured sizing,
-      R05 lifecycle persistence, 0.3 Field/container/body-font adaptations and R02
-      AppLayers/clipping/session policy. Resolve conflicts without dropping work.
-- [x] Verify the integrated snapshot and existing quality commands, publish its
-      fix branch and PR for exact-head clean Node 22/Linux CI. CI passed for
-      corrected R05 e785be0 and integrated 7dff3ac; no main push or PR merge.
-
-R05 implementation result: restored/last-successful session snapshots are local
-to each App instance. Idle lifecycle calls cancel redundant timers without
-writing. A synchronous snapshot comparison still catches edits before the async
-watcher. Reset explicitly invalidates the snapshot before saving defaults; valid
-URL imports retain save intent. saveSession returns success/failure so failed
-writes do not mark edits as saved. No schema or storage key changes.
-
-The temporary two-tab reproduction failed on the previous head and passes with
-the fix. It also covers restored idle tabs, hidden/pagehide/unmount, immediate
-exit, duplicate flush suppression, repeated default Reset, quota retry and an
-explicit default-state URL import. All existing local quality commands and the
-production build pass. No repository test or infrastructure was added. Local
-checks use copied matching dependencies and exact pinned hvab-blocks b9c78a6;
-clean installation remains the responsibility of the exact-head PR CI.
-
-Combined integration now contains the corrected R05, R03 and the actual existing
-hvab-blocks 0.3 develop commits. App conflicts keep measured workspace/divider
-sizing and preferred width; the superseded viewport resize handler is removed.
-The controls-pane container, Field adaptation and body system font are retained.
-R02 AppLayers remains the single overlay-layer definition, with clip-path and
-current session fixtures. All related component/session changes are preserved;
-there is no R01/R04 scope, engine contract change or application deployment.
-
-Final local combined verification: all existing quality commands and production
-build pass with the unchanged 0.3 lockfile. Imported library CSS matches exact
-pinned commit 4dfa1c7 byte for byte. The same temporary two-tab/exit/Reset/quota/
-URL-import harness passes against the integrated App; R03 sizing cases remain
-covered by the existing checks. No new repository test infrastructure was added.
-
-The combined fix is published separately from the focused R05 PR as ready PR #6.
-Its exact-head Ubuntu/Node 22 CI passed for 7dff3ac.
-Remaining platform limits are the prior Safari/Windows/forced-colors/screen-reader
-coverage; no new manual browser coverage or crash-durability guarantee is claimed.
-The mounted default URL-import baseline correction is complete; see the follow-up
-below for its published commit and successful CI. Next step: owner review and
-merge decision for the combined PR, with the remaining platform limits recorded.
-
-## Follow-up: URL-import persistence baseline (2026-10-19)
-
-Scope checked against SPEC.md: session persistence only; generated theme, preview,
-URL validation and session schema stay unchanged.
-
-- [x] Save the successful mounted URL import synchronously before its early return
-      (`src/components/App/App.vue`) so default imports also establish a baseline.
-- [x] Reproduce default/non-default imports and idle-window pagehide using a
-      temporary harness; run existing quality commands and production build.
-- [x] Publish the correction and confirm exact-head CI. PR #6 is ready and
-      mergeable; code commit 2576a954911ba166c9015095aed152d5c789325f passed CI.
-
-Result: the successful mounted URL-import path now calls saveCurrentSession
-before returning. Before the fix, a default import left the old stored theme
-unchanged and its later idle pagehide overwrote the second window's newer theme.
-The temporary harness now confirms that default and non-default imports persist
-the imported theme, and idle pagehide preserves the second window's newer theme
-without an extra storage write. The harness compiles the current App.vue setup;
-no repository tests or infrastructure were added.
-
-Existing checks pass: npm test (118/118), npm run lint, npm run lint:styles,
-npm run format:check, npm run build and git diff --check. Build retains the two
-existing VueUse PURE annotation warnings. The coordinator accepted and repeated
-the temporary reproduction. Published code commit
-2576a954911ba166c9015095aed152d5c789325f passed
-[Ubuntu/Node 22 CI](https://github.com/hvab/Selecta/actions/runs/39227319857),
-including npm ci and all quality/build steps. This CI result belongs to that code
-commit; it does not cover a later documentation revision. Safari/BFCache,
-Windows/forced-colors and real screen-reader coverage remain unverified. URL
-decoding/validation is unchanged; this correction adds no rendering or URL trust
-boundary.
-
-Next small step: owner review and merge decision for PR #6, accounting for the
-remaining manual platform checks. No main/develop modification, merge or
-deployment is part of this iteration.
-
-## Technical iteration: R01 integration with current main
-
-Scope: refresh draft PR #2 on main `b9452c172071ac0b85d48ce5aaf24f4dc8c351f4`,
-retaining the existing R01 semantic value contract and the integrated R03
-preferred/effective sizing, R05 session lifecycle, and hvab-blocks 0.3 migration.
-V01–V04 remain outside this iteration. This result supersedes the earlier R01
-integration limitation recorded above.
-
-- [x] Merge current main into the existing R01 fix branch; resolve only overlapping
-      progress text, preserving atomic rejection and direct ZIP guards.
-      The only conflict was in this document; both histories are retained.
-      Production source merged without a textual conflict. R03 sizing, R05
-      snapshot comparison/lifecycle cleanup and synchronous URL save before the
-      mount return match current main.
-- [x] Check the merged boundaries and R05 URL save ordering with a temporary
-      integration harness: 26/26 cases pass. It mounts the actual App setup and
-      covers invalid File imports without partial state changes, invalid mounted
-      URL fallback preserving the saved theme, invalid stored sessions, direct
-      ZIP rejection, editable metadata followed by repair, decimal endpoints,
-      ordinary debounce, Reset, immediate exit, idle tabs, failed-write retry and
-      default/non-default URL imports. No new repository tests were added.
-- [x] Run existing quality commands: npm test (128/128), npm run lint,
-      npm run lint:styles, npm run format:check, npm run build and git diff --check.
-      Production build retains the two inherited VueUse PURE annotation warnings.
-- [x] Independent review and coordinator acceptance: reviewer r01_review reported
-      no findings; the coordinator inspected the production diff and repeated
-      all 26 temporary integration cases successfully.
-- [x] Publish code commit `76850e212cec12640c6717ddf6a6c02b7f2e164c` and update
-      PR #2. Its exact-head [Node 22/Linux CI](https://github.com/hvab/Selecta/actions/runs/39236141426)
-      passed; GitHub reports it mergeable against main `b9452c1`. This CI result
-      covers that code commit, not this later documentation update.
-
-Clean dependency installation succeeded on Node 24.22.0 / npm 11.19.1 using a
-writable temporary npm cache (`npm ci --cache <temporary-cache>`), without
-configuration changes or copied dependencies. The first plain npm ci could not
-write the sandbox-protected default cache. The lockfile is unchanged from main.
-Exact-head Node 22/Linux CI passed for the published code commit listed above.
-
-The semantic contract and metadata repair policy are unchanged from R01. CSS
-injection into generated CSS is the relevant boundary risk; this integration
-adds no new rendering, URL or authentication capability. Live Aegea installation,
-real browser file-picker/download flow, Safari/BFCache, Windows/forced-colors and
-screen-reader verification remain unverified; no V01–V04 expansion is claimed.
-
-PR #1 was closed as a duplicate because R02 is already included in main.
-Next small step: owner decision whether to merge PR #2. No merge or deployment
-was performed.
-
-## Technical iteration: Aegea 11.5 plain font parity (R04)
-
-Baseline: `origin/main` at `a95eb2c4df1151a8d9adad5afe3e7919ceef7968`.
-Source oracle: clean Aegea `11.5` / `v4199` checkout at the exact documented
-commit `e1d058356e5426bb1878785c6f4ab4e68b6c4995`. Its plain source and
-compiled CSS use a system stack; Selecta currently defaults to InterVariable.
-
-- [x] Replace only `src/preview/style.css`'s default main font family with
-      the Aegea 11.5 stack; keep note/small inheritance and explicit sources.
-      Added baseline provenance in `PREVIEW-BASELINE.md`. Named families
-      use optional CSS quoting accepted by existing stylelint, preserving the
-      canonical family names and their order. No lint rules change.
-- [x] Add focused regression checks for the actual preview CSS default, plain
-      ZIP inheritance in light/dark, and unchanged system/Google overrides.
-      Verified: 102/102 tests pass; the new parity regression fails on the
-      unpatched baseline CSS. Chrome EN/RU and light/dark plain inheritance
-      pass; explicit Sans-serif/Georgia overrides pass; PT Sans in both slots
-      produces one Google CSS link, removed on return to plain.
-- [x] Run JS/style lint, build, formatting, and scoped diff. Tests, JS/style
-      lint and build pass locally; scoped formatting passes. Full formatting
-      still has only the independently reproduced baseline failure fixed by
-      R02 (draft PR #1). Keep its prerequisite patch in a separate commit
-      so the font implementation remains independently reviewable.
-
-Consumer limit: local PHP cannot start because a required libzip dylib is
-missing. Source/compiled-CSS and browser checks do not replace a live Aegea
-install or paired width/linebreak verification. Do not change engine target.
-
-Combined R02 + R04 verification in an isolated copy: all five commands pass,
-including full formatting and 102/102 tests. R02 CI Node 22/Linux also passes.
-
-Updated after main `8662ce5`: the font regression now reads the relocated
-AegeaPreview.css and uses corrected relative theme imports. The updated R02
-branch is merged as the quality prerequisite; its Node 22/Linux CI passes.
-Combined verification passes locally: 107/107 tests, JS/style lint, formatting
-and build. Chrome on the new UI confirms EN/RU/light/dark plain inheritance,
-explicit system overrides, one PT Sans CSS link and removal on return to plain.
-Next small step: push the updated draft PR #4 and inspect its CI. Merge R02
-first. Live Aegea visual verification remains open.
-
-## R04 refresh against current main (2026-10-19)
-
-- [x] Merge current `origin/main` into the existing R04 fix branch without
-      rewriting history; resolve only integration conflicts.
-- [x] Recheck the pinned Aegea 11.5/v4199 font contract, relevant markup,
-      variables and preview states against the available source checkout.
-- [x] Verify the existing font regression, generation/validation compatibility
-      and quality commands after a clean dependency install.
-- [x] Record factual results and prepare the updated PR description; independent
-      review and browser smoke accepted. Publication and remote CI completed.
-
-Refresh results: merged main `6b69a417cc50473d15d0e9e69abc1a222d7655c7`
-without rewriting history; the only conflict was this progress document. Main's
-R01 validation, session fixes and hvab-blocks v0.3.0 are retained. The R04 diff
-against main remains the font default, existing font regression and provenance.
-
-Clean `npm ci --cache` succeeded after the sandbox DNS failure was isolated;
-the completed network-enabled clean install was repeated after the first
-process exited. No dependency files or install-script policy were changed.
-All five quality commands pass: 131/131 checks, JS/style lint, full formatting
-and production build. The targeted font regression passes 3/3; evaluating it
-against unpatched main CSS fails only the intended plain-stack assertion (2/3).
-Existing R01 boundary coverage passes together with the plain ZIP and explicit
-system/Google override checks. Install reports 19 inherited audit package
-records (2 moderate, 17 high); dependency remediation is outside R04.
-
-The pinned engine source/compiled CSS and current development source were
-rechecked; details are in PREVIEW-BASELINE.md. This is source-contract evidence,
-not a live Aegea width/linebreak comparison. The earlier clean-install blocker
-is resolved. Independent review found no issues, and the root accepted the
-source diff and current browser smoke before publication.
-
-Browser smoke in the in-app browser on macOS confirms canonical computed stacks
-for EN/light plain preview, note and metadata; the shell keeps its own
-`system-ui, sans-serif` stack. Explicit Sans-serif interface and Georgia note
-choices apply correctly. PT Sans in both slots creates one Google CSS link;
-returning to plain removes it. RU/dark preview with a dark shell retains plain
-font inheritance. These are UI/computed-style checks, not proof of rasterized
-font identity or paired live Aegea widths/linebreaks. A fresh `php -v` check
-still fails because `libzip.5.dylib` is missing, so live Aegea verification
-remains blocked; no environment repair was attempted.
-
-Published code commit: `8e1685e5efe8228fdb1704e28eaf9cd971fdb92d`.
-[Remote CI succeeded](https://github.com/hvab/Selecta/actions/runs/39243742098)
-for that code commit; PR #4 is mergeable against main `6b69a41`. This result
-does not claim CI coverage for the subsequent documentation-only update.
-
-Next small step: the owner decides whether to merge PR #4. The unresolved live
-Aegea width/linebreak comparison remains a separate verification limit because
-PHP cannot start without `libzip.5.dylib`. No PR merge is part of this refresh.
+Current working context for Selecta. Product behavior is defined in
+[`SPEC.md`](../SPEC.md); historical plans are not active instructions.
+
+## Status
+
+The audit remediation is complete. Main is `8f5c722` after PR #8 (2026-10-19).
+[CI](https://github.com/hvab/Selecta/actions/runs/39265357150) and
+[Pages](https://github.com/hvab/Selecta/actions/runs/39265357066) succeeded on
+that revision. No new versioned release was created during audit closeout.
+Package version remains `0.8.0`; subsequent changes belong to `Unreleased`.
+The dependency refresh below is committed locally on `develop` (`2913230`),
+not yet published to main. The theme-import and editor-interface iterations are
+now committed locally on `develop`. No push, main merge, deployment or versioned
+release was made during this closeout.
+
+Local `develop` was synchronized with main `8f5c722` on 2026-10-20 before
+the dependency refresh. Audit documentation closeout is preserved separately
+in commit `eb5b4c8`. The dependency refresh preserves that audit baseline.
+
+## Commit closeout (2026-10-20)
+
+The owner accepted the UI iterations and requested all accumulated changes to
+be committed in logical groups. Code commits: `c7467e1`, `1393605`, `1bd6084`, `85b57a7`, `4e26a63`.
+Each staged code snapshot passed a production build before its commit. Final
+lint, style lint, formatting and build passed. Browser verification and limits
+remain recorded with the relevant iterations below. Earlier uncommitted/no-commit
+notes describe the state when those iterations were completed.
+
+## Implemented
+
+- Vite, Vue and plain JavaScript; browser-only generation of child themes based
+  on Aegea `plain`, with a theme folder inside the ZIP.
+- Metadata, layout, typography and light/dark palette controls; independent
+  light/dark shell appearance and RU/EN interface/preview.
+- Aegea presets, Random, per-field/group locks, session restore and Reset.
+- Unified JSON, folder, ZIP and individual CSS/PHP import, JSON/ZIP export and URL sharing; validated input
+  boundaries and shared stale-import protection. Language and shell preferences
+  stay outside exports. Theme ZIPs include a `selecta.json` snapshot.
+- System/plain font choices and a curated Cyrillic Google Fonts catalog;
+  remote CSS loading with fallbacks, without bundling font files.
+- Non-blocking contrast hints; no comprehensive contrast certification.
+- Local Vue adapters over `hvab-blocks` 0.4.0, with Reka menu, dialog and
+  feedback-tooltip behavior. Shell and Aegea preview styles remain separate.
+- Two-column workspace with a fixed sidebar header/footer, scrollable controls,
+  interface-settings popover, bottom ZIP/overflow actions and a theme-mode control
+  inside the preview frame. Workspace breakpoint is `43rem`, matching the combined minimum pane widths.
+  Desktop is the primary use case.
+
+## Audit closeout
+
+The authoritative outcome and PR mapping are in [`audit/README.md`](../audit/README.md).
+
+- R01–R05 are merged: validation, quality gate, panel sizing, plain font stack
+  and persistence. V01 stale File success/error handling is also merged.
+- V02 install/render acceptance and V03 desktop preview comparison are closed
+  by the owner's manual confirmation. Do not repair local PHP/libzip merely
+  to repeat that acceptance; no detailed platform matrix is claimed.
+- The separate V03 header overlap is fixed and merged in PR #8.
+- V04 large-file stress scenarios were withdrawn: real configs are about 1 KB.
+  Font-network fallback and highlighted-link contrast are optional backlog items.
+- No further zoom or mobile checks. Historical unchecked checklists do not
+  reinstate them. Broader platform coverage is not claimed or a mandatory audit
+  follow-up without a concrete task.
+- PR #2, #4, #6, #7 and #8 are merged; #1, #3 and #5 are closed duplicates.
+  No open PR or GitHub Issue remained at closeout.
+
+## Latest iteration: mobile layout polish (2026-10-20)
+
+Owner explicitly requested mobile polish and supplied the narrow-layout screenshot;
+this iteration authorizes focused mobile verification beyond the prior desktop scope.
+
+- [x] Step 1 — Check narrow rendering, then make the stacked workspace/sidebar
+      fill the viewport and keep each lock beside its input under the label.
+      Areas: App.css and Field.vue. Preserve desktop layout and control styles.
+- [x] Step 2 — Refine narrow-screen action/preview spacing as needed, verify
+      phone widths and the desktop boundary, run quality gates/build and record
+      actual results. No new features, theme contract changes or commit/push.
+
+The stacked workspace/sidebar fills the available width. Narrow fields now use
+one label row and one input/addons row, keeping locks and numeric values beside
+the control. Mobile export actions are fixed at the viewport bottom with
+safe-area padding and page clearance, including the validation-message state.
+The responsive breakpoint is 43rem so the two desktop panes never compete below
+their combined minimum widths; wide preview content is contained horizontally.
+
+Browser verification used same-origin app frames at 320px and 390px plus a 700px
+two-column boundary check. Verified preset layout, metadata/color/font/range
+controls, export-menu placement, validation feedback and persistent ZIP access
+while scrolling the preview. The temporary review wrapper was removed and
+metadata restored. This is browser-width verification, not a physical-device
+or Safari/iOS certification. Lint, style lint, formatting and production build
+passed. No Aegea contract changes, commit or push.
+Next small step: owner visual acceptance of this final layout pass.
+
+## Latest follow-up: unfilled closed locks (2026-10-20)
+
+- [x] Use the flat Button view for closed locks, matching the open-lock surface
+      while retaining native hover feedback. Area: ui/LockToggle. Mixed-state
+      outline, crossfade and toggle behavior remain unchanged.
+      Next step: owner visual acceptance of the unfilled closed state.
+
+## Latest follow-up: lock crossfade (2026-10-20)
+
+- [x] Fade between open/closed/mixed lock details over 140ms, keeping the SVG
+      frame and button geometry fixed. Area: ui/LockToggle. Honor reduced motion;
+      verify field/group states and unchanged dimensions in the desktop browser,
+      then run lint/style lint/format/build. No commit/push or mobile/zoom.
+
+Open, closed and mixed SVG details now overlap in the same frame and fade only
+opacity; the body remains fixed. There are no timers or transition-dependent
+state updates. Reduced-motion CSS removes the fade. Desktop browser confirmed
+0.14s opacity transitions, 16px SVGs in unchanged 20×20px buttons, one active
+state layer, and working field/group none→mixed→all→none transitions. Lock state
+was restored. Lint, style lint, formatting and build passed. Next small step:
+owner acceptance of the fade; no commit/push.
+
+## Latest follow-up: compact lock icons (2026-10-20)
+
+- [x] Reduce the lock artwork to 16px and its button to XS (20px). Replace
+      group list marks with two overlapping locks. Area: ui/LockToggle.
+      Verify visual clarity, unchanged none/mixed/all semantics and quality checks.
+
+Desktop browser confirmed 16px artwork in 20px buttons and the group's two-lock
+silhouette. Palette group transitions none→mixed→all→none remain unchanged;
+locks were restored afterward. Lint, style lint and formatting passed.
+Next small step: owner visual acceptance; no commit/push.
+
+## Latest iteration: lock icons (2026-10-20)
+
+- [x] Step 1 — Replace field/group lock checkboxes with a local LockToggle
+      adapter over the existing Button. Draw monochrome open/closed SVG locks;
+      add list marks to group locks and a dash for mixed state. Preserve existing
+      toggle semantics and add localized action tooltips. Areas: FieldLock,
+      GroupLock, ui/LockToggle and RU/EN locales. No theme-state/export changes.
+- [x] Step 2 — Verify single/all/mixed states and keyboard operation in the
+      desktop browser, check both shell appearances, run quality gates/build,
+      and update current documentation. No commit/push or mobile/zoom checks.
+
+Field locks now use open/closed monochrome SVG locks in the existing small
+Button surface. Group locks add three list lines and show a dash for a mixed
+state. The local LockToggle adapter exposes aria-pressed=false/true/mixed and
+localized action titles; the lock data, grouping and Random behavior stay in
+the existing model. No hvab-blocks source or shared Checkbox styles changed.
+
+Desktop browser verified field toggles, none→mixed→all→none group transitions,
+Space/Enter, focus ring, RU/EN titles and both shell appearances. Existing lock
+state was restored after verification. Lint, style lint, formatting and production
+build passed. No mobile/zoom or commit/push. Next small step: owner visual
+acceptance of open/closed icons and the group/mixed markers.
+
+## Latest follow-up: lighter Random gradient (2026-10-20)
+
+- [x] Remove hover movement and use the supplied sky-blue (#58a6ff), coral
+      (#ff6b6b) and cream (#ffedd5) palette with a dark readable label. Retain
+      slow gradient animation and reduced-motion handling. Area: App.css.
+      Verify computed geometry/colors and run scoped code-quality checks.
+
+The gradient now uses the reference's blue/coral/cream colors with #172033
+text. Hover/active transforms and the transform transition were removed;
+only the soft glow changes on hover. The 9s animation and reduced-motion rule
+remain. Desktop browser confirmed gradient stops, label color, no transform
+and 9s duration. Style lint and formatting passed. Next step: owner visual
+acceptance of the lighter palette; no commit/push.
+
+## Latest follow-up: colorful Random button (2026-10-20)
+
+- [x] Give Random a custom gradient as explicitly requested, retaining its
+      existing size, label and action. Areas: App.vue/App.css. Check text contrast,
+      hover/focus and both shell appearances; run lint/style lint/format checks.
+      Owner follow-up: add slow, continuous gradient animation and respect
+      prefers-reduced-motion.
+      Keep other buttons and hvab-blocks source unchanged.
+
+Random now has an app-local blue/purple/pink/teal gradient with a slow 9s
+alternating animation, white semibold label and a subtle hover lift/glow.
+Native button semantics, L size, action and focus ring are preserved.
+Reduced-motion CSS disables the background animation; hover transitions use
+shared motion tokens. The animation is confined to this button.
+
+Desktop browser confirmed the scoped keyframe, 9s duration, 36px height,
+keyboard focus ring and appearance in both light/dark shell. White-text contrast
+at the gradient stops ranges from 4.99:1 to 6.51:1. Lint, style lint, formatting
+and production build passed. No theme-model changes, mobile/zoom or commit/push.
+Next small step: owner acceptance of the gradient and animation intensity.
+
+## Latest follow-up: preset swatch order (2026-10-20)
+
+- [x] Match the sidebar order from left to right: background, foreground,
+      headings, link, hover. The fifth segment uses hover instead of active.
+      Areas: PresetSelector and specification; no selection or theme-data changes.
+      Next step: owner visual acceptance of the ordered swatches.
+
+## Latest follow-up: heading color in preset swatches (2026-10-20)
+
+- [x] Add headings as the fifth swatch segment, preserving background,
+      foreground, link and active colors. Areas: PresetSelector and current
+      specification. Verify Fiesta's pink heading segment and code quality.
+
+Desktop browser confirmed five rendered segments in Fiesta, including its
+pink heading color (#ff00a0) and cyan active color (#03c7ce). Lint, style lint
+and formatting passed. No changes to preset selection or theme data.
+Next step: owner visual acceptance of the five-color swatches; no commit/push.
+
+## Latest iteration: preset color cards (2026-10-20)
+
+- [x] Step 1 — Replace the preset select with a compact grid of named color
+      cards. Reuse hb-card selection/hover surfaces through a native radio-card
+      adapter; display background, foreground, link and active colors in the same
+      order for every preset. Keep import behavior unchanged. Areas:
+      PresetSelector, ui/RadioCard, locales if needed. Verify keyboard selection,
+      selected/custom state, preset application and both UI languages.
+- [x] Step 2 — Verify desktop layout in light/dark shell and adjustable sidebar
+      widths, run lint/style lint/format/build, and document actual results.
+      No hvab-blocks source edits, theme-model changes, commit/push or mobile/zoom.
+
+All ten presets are visible as compact cards with localized names and fixed
+base-palette swatches (background, foreground, link, active). The local RadioCard
+adapter uses native radio semantics with hb-card hover/selection states and the
+shared focus tokens; no hvab-blocks source or existing control styles changed.
+Custom values clear selection and show the existing localized custom label.
+Import and drag/drop handlers remain unchanged.
+
+Desktop browser verification covered mouse selection, native arrow navigation,
+Fiesta palette application, custom-state detection after a typography change,
+RU/EN labels, light/dark shell and sidebar resizing. The grid uses four columns
+at the current normal width and three at the 320px minimum, with no clipped
+labels at that minimum. Swatches intentionally summarize the base palette only;
+they do not preview dark palettes or typography. Lint, style lint, formatting
+and production build passed. No mobile/zoom, commit or push. Next small step:
+owner visual acceptance of the card density and swatch presentation.
+
+## Latest follow-up: equal export-button heights (2026-10-20)
+
+- [x] Set the overflow button to L to match the ZIP button's 36px height.
+      Keep the vertical symbol and square geometry; use the existing size variant.
+      Area: App.vue. Desktop browser measurement confirmed both buttons are 36px
+      high. No component-style changes. Next step: owner visual acceptance.
+
+## Latest follow-up: symbol action buttons (2026-10-20)
+
+- [x] Use text-presentation Unicode symbols for settings and overflow; make the
+      settings button L and the vertical-ellipsis button M. Give these two local
+      icon-only compositions square geometry through the public padding token,
+      and size the symbols separately. Areas: App.vue/App.css. Check centered
+      symbols, existing popover/menu behavior and code-quality commands.
+      Keep hvab-blocks source and shared Button styles unchanged.
+
+Verified in the desktop browser: settings is 36×36 (L), overflow is 28×28
+(M), both have zero inline padding and 20px centered text symbols. Settings
+uses U+2699 with text presentation (U+FE0E); overflow uses U+22EE. The installed
+hvab-blocks version has no dedicated icon-only button variant. Both popover
+and upward menu open and dismiss with Escape. Lint, style lint, formatting
+and production build passed. Shared Button and hvab-blocks source are unchanged.
+Unicode glyph shapes depend on the system font. Next small step: owner visual
+acceptance of these two buttons; no commit/push.
+
+## Latest iteration: two-column editor layout (2026-10-20)
+
+Scope: remove the shared topbar; keep hvab-blocks control styles unchanged.
+Theme data, import/export behavior and the Aegea page contract stay unchanged.
+
+- [x] Step 1 — Move branding into a fixed sidebar header, retain the scrollable
+      controls, and pin ZIP download plus an upward overflow menu to the bottom.
+      Areas: App.vue/App.css. Check desktop scrolling, resizing and both exports.
+- [x] Step 2 — Add an interface-settings popover using Reka and hb-popover with
+      existing RadioGroup controls; move the theme-mode control into the preview
+      frame and identify the active palette in the colors heading.
+      Areas: App, a local Popover adapter, ThemeControls, RU/EN locales.
+      Check separate shell/theme modes, keyboard dismissal/focus and RU/EN.
+      Inspect the pinned/current Aegea markup and variables for preview impact.
+- [x] Step 3 — Run lint, style lint, formatting and production build; visually
+      inspect the desktop layout and update this context with actual results.
+      No component restyling, commit/push, mobile or zoom verification.
+
+Desktop browser verification covered independent sidebar/preview scrolling,
+fixed header/footer and preview control, upward export menu, RU/EN settings,
+light/dark shell independent of the preview, active palette headings, Escape
+with focus return, and keyboard sidebar resizing. ZIP and JSON were downloaded;
+the JSON matches selecta.json inside the ZIP. Copy-link reported success.
+Lint, style lint, formatting and production build passed. hvab-blocks CSS and
+control styles were not changed; the Popover adapter only supplies Reka behavior
+and the existing hb-popover surface. The preview control reserves its own space
+above the scrollable blog so it cannot overlap the blog menu.
+
+The checked Aegea 11.5 baseline remains unchanged. Current local Aegea source
+was compared: preview demo content is unchanged, while the newer plain layout
+adds drafts and changes some variable defaults (including fonts). This iteration
+only changes the outer frame and does not migrate Aegea markup or variables.
+No mobile/zoom or live Aegea installation verification in this layout iteration.
+No commit/push. Next small step: owner visual acceptance of the arrangement.
+
+## Latest iteration: direct import and drag-and-drop (2026-10-20)
+
+Owner follow-up: show the localized import hint only in the button's native
+`title`; remove the paragraph below it and retain the error description link.
+
+- [x] Remove the import menu and directory picker. The import button directly
+      opens the existing multiple-file picker for ZIP/JSON/CSS/PHP.
+- [x] Accept a folder or files dropped on that button. Capture browser drag
+      entries during the drop event, read only supported folder paths, reuse
+      existing readers and include asynchronous directory reads in the revision
+      guard. Reject ambiguous selections without changing the theme.
+- [x] Verify direct picker/keyboard behavior and drag feedback, independently
+      review with Sol 6.1, run quality gates and update current documentation.
+      Keep browser evidence separate from simulated drag-entry verification.
+      No commit/push or mobile/zoom checks.
+
+Coordinator and independent Sol 6.1 review found no confirmed defects.
+The dropped directory reads exactly three supported paths with `create: false`;
+missing paths are skipped, other read failures reject the import. No imported
+PHP/CSS is executed or inserted into the page.
+
+Lint, style lint, formatting, all 166 existing checks and production build passed.
+Temporary checks covered 22 drop-reader scenarios and 86 App/UI scenarios;
+the coordinator repeated the latter and independently verified delayed folder
+reads after DataTransfer capture, precedence and rejection paths.
+These checks simulate browser Entry API callbacks; native dragging from Finder
+has not been verified because the browser automation does not expose that action.
+
+Desktop Chromium verified direct mouse/Enter file-picker opening, ZIP and paired
+CSS/PHP imports, RU/EN hints, absence of a popup and loaded drag-feedback tokens.
+No captured console warnings/errors. Next manual check: drag one theme folder
+from Finder onto the button and confirm the imported name/colors. Changes remain
+uncommitted; no push or mobile/zoom verification.
+
+## Previous iteration: unified theme import (2026-10-20)
+
+- [x] Replace separate import buttons with one localized theme-import menu:
+      choose a folder or files (ZIP, JSON, CSS, PHP), using the existing ActionMenu.
+      Verify keyboard menu behavior and native picker opening on desktop.
+- [x] Route file selection by format; allow one CSS and/or PHP with an optional
+      JSON baseline, retaining JSON < PHP < CSS precedence and revision protection.
+      Reuse readers without applying or executing source code; reject ambiguous
+      selections atomically. Check single files and paired CSS/PHP.
+- [x] Independently review with Sol 6.1, verify quality gates and production UI,
+      and update SPEC, README, CHANGELOG and this context. No commit/push.
+
+Coordinator and independent review confirmed supported combinations, file-order
+independence, case-insensitive extensions, JSON < PHP < CSS precedence and atomic
+rejection of duplicates/ZIP mixtures. Loose source files retain the JSON/default
+export folder name. Existing folder and ZIP behavior is preserved.
+
+Lint, style lint, formatting, all 166 existing checks and build passed.
+Temporary reader and App harnesses covered 29 and 145 scenarios respectively.
+Desktop Chromium verified the unified menu in RU/EN, keyboard file-picker
+activation, Escape with focus return, paired PHP/CSS, ZIP and folder selection.
+No captured console warnings/errors. No mobile/zoom verification.
+
+Limits: one CSS and/or PHP per selection with optional JSON, or one ZIP/JSON
+alone; only the existing supported theme settings are applied. Source PHP/CSS
+is never executed or inserted into the document. No commit/push.
+Next small step: owner acceptance of the unified import, then commit on request.
+
+## Latest iteration: ZIP import (2026-10-20)
+
+- [x] Define ZIP scope: one theme at archive root or inside one top-level theme
+      folder; reuse the folder importer and its JSON < PHP < CSS precedence.
+- [x] Add a ZIP reader using the existing `fflate` dependency. Read only the
+      three supported theme files, reject ambiguous/corrupt archives, and keep
+      extraction in memory. Verify generated archives and alternate layouts.
+- [x] Add a localized ZIP picker sharing the existing import revision guard.
+      Verify cancellation/races with JSON/folder imports and Reset.
+      The temporary App harness passed 142 scenarios, including 58 ZIP cases.
+- [x] Coordinator/independent Sol 6.1 review, existing quality gates/build and
+      a desktop ZIP upload; refresh SPEC, README, CHANGELOG and this summary.
+      No commit/push or mobile/zoom checks.
+
+Independent review found a decompression limit bypass caused by trusting the
+ZIP's declared size. Selected files now use streaming extraction in small
+compressed chunks, checking actual output before retaining it. The coordinator
+and independent reviewer confirmed rejection with both local and central sizes
+forged. Root/wrapper layouts, stored/deflate and data descriptors were verified.
+
+Lint, style lint, formatting, all 166 existing checks and production build passed.
+Desktop Chromium verified ZIP upload with stale JSON and edited PHP/CSS, reload
+persistence, RU/EN controls, atomic rejection of a corrupt ZIP and recovery on
+the next valid upload. No captured console warnings/errors.
+
+Limits: 32 MiB archive, 1 MiB per supported file, 4096 archive entries, one theme
+at root or in one top-level folder. Unsupported files are not decompressed;
+PHP/CSS keep the folder importer's supported subset. No full CRC certification
+or live Aegea installation was performed. No mobile/zoom checks.
+Next small step: owner acceptance, then commit when requested.
+
+Future import from an Aegea blog URL is recorded in `IDEAS.md`: discover CSS
+from public HTML and investigate indirectly available metadata and CORS.
+It is outside this implementation.
+
+## Latest iteration: theme-folder import (2026-10-20)
+
+Scope approved by the owner: embed `selecta.json` in exported theme folders;
+import a selected folder using JSON as a baseline and supported PHP/CSS values
+as the authority. Ignore unsupported content and generate a fresh plain child
+theme, without preserving arbitrary source files or executing imported code.
+
+1. [x] Define precedence and supported subset in SPEC before implementation.
+2. [x] Add static PHP/CSS readers and folder-to-state mapping in `src/theme/`.
+       The optional JSON baseline is followed by PHP metadata/colors and CSS
+       values. Normalize the selected directory name; ignore unsupported files.
+       PostCSS is a direct runtime dependency for parsing without applying CSS.
+3. [x] Include `selecta.json` in ZIP output and expose folder selection in the
+       RU/EN UI. Share stale-import protection with JSON import and preserve R05.
+       Update existing ZIP assertions for the additional archive entry.
+4. [x] Coordinator and independent Sol 6.1 review completed. Existing lint,
+       style lint, formatting, all 166 checks and production build passed.
+       Separate temporary checks covered source precedence, malformed/missing
+       JSON, PHP literals/expressions, supported CSS and cross-kind import races.
+       The coordinator verified 26 integration scenarios; the independent
+       reviewer also verified 1,000 snapshot round-trips with fractional sizes.
+5. [x] Desktop Chromium selected a real fixture folder with stale JSON and edited
+       PHP/CSS. The resulting name, folder, flags, colors, fonts and dimensions
+       matched the supported theme files, persisted after reload, and rendered
+       with RU/EN controls. No captured console errors/warnings. ZIP structure
+       and embedded JSON were verified programmatically. No mobile/zoom pass.
+6. [x] Update SPEC, README, CHANGELOG, agent guidance and backlog with the
+       implemented scope and limits. Leave the changes uncommitted.
+
+Limits: static return-array PHP, supported root/dark CSS scopes and literal
+values (plus simple known-variable references). Complex PHP, arbitrary styles,
+external CSS imports, assets, templates and inheritance chains are ignored.
+Unsupported values retain the JSON/default baseline; removed font overrides
+return to plain. Asymmetric margins and values outside controls are not mapped.
+The next export is a new supported theme, not a lossless copy of the folder.
+
+Aegea's local theme loader and built-in theme source were checked: an extra
+JSON file does not change the existing PHP/CSS contract. No live Aegea install
+was repeated. New implementation changes are local only: no commit, push, PR,
+main merge or deployment. Next small step: owner acceptance, then commit when
+requested. No further feature expansion is required for this iteration.
+
+## Latest iteration: dependency refresh (2026-10-20)
+
+- [x] Commit audit documentation closeout (`eb5b4c8`) and merge main into
+      `develop` (`ff68291`), preserving all merged audit fixes.
+- [x] Run `ncu -u` and update the lockfile to latest stable dependencies,
+      including `hvab-blocks` 0.4.0, Vue 3.5.44, Reka UI 2.11, Vite 8.3.4,
+      ESLint 10.13 and the current Stylelint toolchain.
+- [x] Verify library changes and engines/peers with independent Sol 6.1 agents.
+      Existing Vite/ESLint/Stylelint configurations and UI adapters remain
+      compatible. Remove one unused initial assignment required by ESLint 10.
+- [x] Document Node.js `^22.13.0 || >=24`; retain Node 22 in CI. Vite 8 uses
+      its current default browser targets (Chrome/Edge 111, Firefox 114,
+      Safari 16.4). The generated Aegea theme contract is unchanged.
+- [x] Verify clean `npm ci`, lint, style lint, formatting, all 166 existing
+      checks, and production build on Node 24.22. Repeat lint, style lint,
+      all 166 checks and build on Node 22.17; both builds produce matching assets.
+- [x] Verify production build in desktop Chromium: RU/EN, both shell themes,
+      light/dark preview, preset selection, keyboard radio navigation, Share
+      menu/copy feedback/disabled actions, dialog focus cycle/Escape/Reset,
+      immediate reload persistence, and downloaded ZIP entries/metadata.
+      Captured console has no warnings/errors. No zoom/mobile verification.
+- [x] Independently review the diff with Sol 6.1 and accept the result after
+      coordinator checks. No confirmed regressions found in this scope.
+
+`ncu` reports all direct dependencies current. `npm audit --omit=dev` reports
+zero vulnerabilities. Full audit retains nine related high-severity entries
+from the single unpatched [braces advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
+in Stylelint's dev-only dependency chain. `braces` 3.0.3 is still latest;
+there is no published compatible fix. Lint glob patterns here are fixed and
+browser theme data never reaches this chain. Do not force the proposed
+Stylelint downgrade. The separate `fast-uri` advisory was removed by updating
+the compatible transitive dependency.
+
+Audit documentation closeout is committed: historical setup/work logs and
+prompts are archived, original audit reports are preserved, and actual optional
+UI polish remains in [`IDEAS.md`](./IDEAS.md). No active audit task remains.
+
+The dependency refresh is committed as `2913230`. It has not pushed,
+merged into main, deployed, or created a release;
+GitHub CI has not run for these local commits. Verification above is local.
+No further application migration is currently required. Do not restart
+completed audit work from historical plans.
+
+## Working references
+
+- [`SPEC.md`](../SPEC.md): current product scope.
+- [`UI-ARCHITECTURE.md`](../UI-ARCHITECTURE.md): shell/preview separation.
+- [`PREVIEW-BASELINE.md`](../PREVIEW-BASELINE.md): pinned Aegea source contract.
+- [`RELEASE.md`](../RELEASE.md): checks, PR and release workflow.
+- [`CHANGELOG.md`](../CHANGELOG.md): release history and unreleased changes.
+- [`IDEAS.md`](./IDEAS.md): optional future work.
+- [`archive/README.md`](./archive/README.md): completed plans and detailed history.
+
+Read `AGENTS.md` before implementation; machine-local paths belong only in
+`AGENTS.local.md`. Use scoped checks for documentation changes. Plan the next
+implementation slice here before changing code, and record actual verification
+and remaining limits afterward.

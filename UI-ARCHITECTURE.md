@@ -27,26 +27,28 @@ The preview should be honest. The editor should remain dependable.
 
 ## UI stack
 
-For MVP:
+The current shell uses `hvab-blocks` 0.4.0 tokens and block styles through `src/ui/hvab.css`. Local Vue wrappers in `src/ui/` keep Selecta's component API and behavior separate from those styles.
 
-- use native controls wherever they are enough:
-  - color inputs;
-  - selects;
-  - sliders or numeric inputs;
-  - checkboxes;
-  - buttons;
-- style the generator shell locally;
-- do not add a styled framework such as Bootstrap;
-- do not adopt another project's design system as-is.
+- Native inputs remain the basis for ordinary color, select, range, text, checkbox, switch, and button controls.
+- Preset selection uses native radio inputs inside the local RadioCard adapter over hb-card. Card colors summarize each preset's base palette; shell surfaces and selected/focus states stay independent of theme colors.
+- Field/group locks use the local LockToggle adapter over Button, with monochrome SVGs and native toggle-button semantics. Group icons use overlapping locks; partial selection is exposed as aria-pressed="mixed" and a dash in the lock.
+- `Reka UI` supplies headless behavior for the action menu, interface-settings popover, confirmation dialog, and feedback tooltip.
+- `src/components/App/AppLayers.css` owns shared floating/modal layer values, including portalled Reka content.
+- `src/ui/panelLayout.js` and `src/ui/usePanelLayout.js` own the measured panel-width constraints. The saved preferred width stays separate from the effective width allowed by the current workspace.
+- App-specific layout and adaptations stay local; the preview does not consume the shell's visual tokens.
 
-If the product later needs complex accessible interactions that native controls do not cover well, add headless primitives selectively instead of introducing a fully styled UI kit. Good candidates:
+Use existing wrappers for shell controls. Add another headless primitive only when a concrete interaction requires it; do not introduce a second styled UI framework.
 
-- combobox or autocomplete;
-- custom select;
-- dialog;
-- tabs.
+Theme appearance and editor appearance are independent: the edited light/dark palettes drive the preview and generated theme, while the shell uses its own appearance preference. English/Russian UI and preview content are supported through the app's i18n layer.
 
-For Vue, `Reka UI` is the preferred first candidate for that headless layer because it provides unstyled accessible primitives while keeping styling local to `Selecta`.
+## Narrow layouts
+
+At 43rem and below, the workspace stacks controls and preview at full width;
+this breakpoint accounts for the combined minimum pane widths. Narrow fields
+keep the label above a shared input/addons row. Export actions stay fixed at
+the viewport bottom with safe-area padding, and the page reserves room for
+them, including validation messages. Wide preview content scrolls inside the
+preview surface instead of widening the document.
 
 ## Styling principles
 

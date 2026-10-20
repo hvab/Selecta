@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
-import Checkbox from '../../ui/Checkbox/Checkbox.vue';
+import LockToggle from '../../ui/LockToggle/LockToggle.vue';
 
 const { t } = useI18n();
 
@@ -19,9 +19,9 @@ defineEmits(['update:locked']);
 </script>
 
 <template>
-  <Checkbox
-    :checked="locked"
-    :aria-label="t('aria.lockForRandom', { label })"
-    @change="$emit('update:locked', $event.target.checked)"
+  <LockToggle
+    :state="locked ? 'all' : 'none'"
+    :label="t(locked ? 'aria.unlockForRandom' : 'aria.lockForRandom', { label })"
+    @toggle="$emit('update:locked', !locked)"
   />
 </template>

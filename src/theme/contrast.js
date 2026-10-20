@@ -25,7 +25,7 @@ function getHueDegrees(color) {
     return 0;
   }
 
-  let hue = 0;
+  let hue;
 
   if (max === red) {
     hue = ((green - blue) / delta) % 6;
