@@ -31,7 +31,7 @@ defineEmits(['update:value']);
 
 <template>
   <div :class="['hb-radio-group', `hb-radio-group_size_${size}`]" role="radiogroup" :aria-label="ariaLabel">
-    <label v-for="option in options" :key="option.value" class="hb-radio-group__option">
+    <label v-for="option in options" :key="option.value" class="hb-radio-group__option" :title="option.title">
       <input
         class="hb-radio-group__control"
         type="radio"

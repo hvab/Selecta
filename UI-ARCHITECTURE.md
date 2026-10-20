@@ -30,7 +30,7 @@ The preview should be honest. The editor should remain dependable.
 The current shell uses `hvab-blocks` 0.4.0 tokens and block styles through `src/ui/hvab.css`. Local Vue wrappers in `src/ui/` keep Selecta's component API and behavior separate from those styles.
 
 - Native inputs remain the basis for ordinary color, select, range, text, checkbox, switch, and button controls.
-- `Reka UI` supplies headless behavior for the action menu, confirmation dialog, and feedback tooltip.
+- `Reka UI` supplies headless behavior for the action menu, interface-settings popover, confirmation dialog, and feedback tooltip.
 - `src/components/App/AppLayers.css` owns shared floating/modal layer values, including portalled Reka content.
 - `src/ui/panelLayout.js` and `src/ui/usePanelLayout.js` own the measured panel-width constraints. The saved preferred width stays separate from the effective width allowed by the current workspace.
 - App-specific layout and adaptations stay local; the preview does not consume the shell's visual tokens.
