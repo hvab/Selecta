@@ -10,10 +10,11 @@ The audit remediation is complete. Main is `8f5c722` after PR #8 (2026-10-19).
 [Pages](https://github.com/hvab/Selecta/actions/runs/39265357066) succeeded on
 that revision. No new versioned release was created during audit closeout.
 Package version remains `0.8.0`; subsequent changes belong to `Unreleased`.
+The dependency refresh below is local to `develop`, not yet published to main.
 
 Local `develop` was synchronized with main `8f5c722` on 2026-10-20 before
 the dependency refresh. Audit documentation closeout is preserved separately
-in commit `eb5b4c8`. Application sources match that merged main baseline.
+in commit `eb5b4c8`. The dependency refresh preserves that audit baseline.
 
 ## Implemented
 
@@ -27,7 +28,7 @@ in commit `eb5b4c8`. Application sources match that merged main baseline.
 - System/plain font choices and a curated Cyrillic Google Fonts catalog;
   remote CSS loading with fallbacks, without bundling font files.
 - Non-blocking contrast hints; no comprehensive contrast certification.
-- Local Vue adapters over `hvab-blocks` 0.3.0, with Reka menu, dialog and
+- Local Vue adapters over `hvab-blocks` 0.4.0, with Reka menu, dialog and
   feedback-tooltip behavior. Shell and Aegea preview styles remain separate.
 - Compact header with wrapping groups below `64rem`; workspace breakpoint
   stays at `40rem`. Desktop is the primary use case.
@@ -50,24 +51,48 @@ The authoritative outcome and PR mapping are in [`audit/README.md`](../audit/REA
 - PR #2, #4, #6, #7 and #8 are merged; #1, #3 and #5 are closed duplicates.
   No open PR or GitHub Issue remained at closeout.
 
-## Active work
+## Latest iteration: dependency refresh (2026-10-20)
 
-No implementation track is active. Do not restart completed header, radio-group,
-overlay, block-library, validation or persistence migrations from old plans.
+- [x] Commit audit documentation closeout (`eb5b4c8`) and merge main into
+      `develop` (`ff68291`), preserving all merged audit fixes.
+- [x] Run `ncu -u` and update the lockfile to latest stable dependencies,
+      including `hvab-blocks` 0.4.0, Vue 3.5.44, Reka UI 2.11, Vite 8.3.4,
+      ESLint 10.13 and the current Stylelint toolchain.
+- [x] Verify library changes and engines/peers with independent Sol 6.1 agents.
+      Existing Vite/ESLint/Stylelint configurations and UI adapters remain
+      compatible. Remove one unused initial assignment required by ESLint 10.
+- [x] Document Node.js `^22.13.0 || >=24`; retain Node 22 in CI. Vite 8 uses
+      its current default browser targets (Chrome/Edge 111, Firefox 114,
+      Safari 16.4). The generated Aegea theme contract is unchanged.
+- [x] Verify clean `npm ci`, lint, style lint, formatting, all 166 existing
+      checks, and production build on Node 24.22. Repeat lint, style lint,
+      all 166 checks and build on Node 22.17; both builds produce matching assets.
+- [x] Verify production build in desktop Chromium: RU/EN, both shell themes,
+      light/dark preview, preset selection, keyboard radio navigation, Share
+      menu/copy feedback/disabled actions, dialog focus cycle/Escape/Reset,
+      immediate reload persistence, and downloaded ZIP entries/metadata.
+      Captured console has no warnings/errors. No zoom/mobile verification.
+- [x] Independently review the diff with Sol 6.1 and accept the result after
+      coordinator checks. No confirmed regressions found in this scope.
 
-Documentation closeout consolidated the current context and audit outcome,
-archived completed setup/work logs and audit prompts, removed generated local
-build output/Finder metadata, and moved actual unfinished UI polish to
-[`IDEAS.md`](./IDEAS.md). Application code and dependencies were not changed by
-this cleanup. Commit/push and release are separate actions, not implied here.
+`ncu` reports all direct dependencies current. `npm audit --omit=dev` reports
+zero vulnerabilities. Full audit retains nine related high-severity entries
+from the single unpatched [braces advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
+in Stylelint's dev-only dependency chain. `braces` 3.0.3 is still latest;
+there is no published compatible fix. Lint glob patterns here are fixed and
+browser theme data never reaches this chain. Do not force the proposed
+Stylelint downgrade. The separate `fast-uri` advisory was removed by updating
+the compatible transitive dependency.
 
-Documentation formatting and local links were checked; original audit reports
-and archived setup/prompts retain their contents. Independent Sol 6.1 review
-found no actionable documentation issues, and the coordinator accepted it.
+Audit documentation closeout is committed: historical setup/work logs and
+prompts are archived, original audit reports are preserved, and actual optional
+UI polish remains in [`IDEAS.md`](./IDEAS.md). No active audit task remains.
 
-Choose a small task from the backlog only when requested. The disabled-ZIP
-feedback layout remains optional UI polish; do not mark it implemented merely
-because audit remediation is complete.
+Next step: publish/review the local `develop` changes when requested. This
+iteration has not pushed, merged into main, deployed, or created a release;
+GitHub CI has not run for these local commits. Verification above is local.
+No further application migration is currently required. Do not restart
+completed audit work from historical plans.
 
 ## Working references
 

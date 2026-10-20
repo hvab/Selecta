@@ -27,7 +27,7 @@ The preview should be honest. The editor should remain dependable.
 
 ## UI stack
 
-The current shell uses `hvab-blocks` 0.3.0 tokens and block styles through `src/ui/hvab.css`. Local Vue wrappers in `src/ui/` keep Selecta's component API and behavior separate from those styles.
+The current shell uses `hvab-blocks` 0.4.0 tokens and block styles through `src/ui/hvab.css`. Local Vue wrappers in `src/ui/` keep Selecta's component API and behavior separate from those styles.
 
 - Native inputs remain the basis for ordinary color, select, range, text, checkbox, switch, and button controls.
 - `Reka UI` supplies headless behavior for the action menu, confirmation dialog, and feedback tooltip.

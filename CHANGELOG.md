@@ -9,6 +9,8 @@ The project follows semantic versioning where practical.
 ### Changed
 
 - Integrated `hvab-blocks` 0.3.0 for the editor shell, with separate floating/modal layers and responsive controls.
+- Updated dependencies to current stable releases, including `hvab-blocks` 0.4.0, Vue 3.5.44, Reka UI 2.11, Vite 8 and ESLint 10.
+- Development tools now require Node.js 22.13+ within the 22.x line or Node.js 24+. Production builds use Vite 8's default browser target (Chrome/Edge 111, Firefox 114 and Safari 16.4).
 
 ### Fixed
 

@@ -40,6 +40,8 @@ The app runs entirely in the browser. Google Fonts require network access. The i
 
 ## Development
 
+Use Node.js 24 LTS (or Node.js 22.13+ within the 22.x line).
+
 ```bash
 npm install
 npm start

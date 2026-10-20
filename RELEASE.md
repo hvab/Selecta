@@ -31,7 +31,8 @@ Branch creation, commits, pushes, merges, and tags require the owner's explicit 
 
 ## Local Checks
 
-CI uses Node.js 22 and `npm ci`. Before merging a code change, run:
+CI uses the latest Node.js 22 and `npm ci`. The development tools require
+Node.js 22.13+ within the 22.x line or Node.js 24+. Before merging a code change, run:
 
 ```bash
 npm run lint
