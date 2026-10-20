@@ -27,26 +27,17 @@ The preview should be honest. The editor should remain dependable.
 
 ## UI stack
 
-For MVP:
+The current shell uses `hvab-blocks` 0.3.0 tokens and block styles through `src/ui/hvab.css`. Local Vue wrappers in `src/ui/` keep Selecta's component API and behavior separate from those styles.
 
-- use native controls wherever they are enough:
-  - color inputs;
-  - selects;
-  - sliders or numeric inputs;
-  - checkboxes;
-  - buttons;
-- style the generator shell locally;
-- do not add a styled framework such as Bootstrap;
-- do not adopt another project's design system as-is.
+- Native inputs remain the basis for ordinary color, select, range, text, checkbox, switch, and button controls.
+- `Reka UI` supplies headless behavior for the action menu, confirmation dialog, and feedback tooltip.
+- `src/components/App/AppLayers.css` owns shared floating/modal layer values, including portalled Reka content.
+- `src/ui/panelLayout.js` and `src/ui/usePanelLayout.js` own the measured panel-width constraints. The saved preferred width stays separate from the effective width allowed by the current workspace.
+- App-specific layout and adaptations stay local; the preview does not consume the shell's visual tokens.
 
-If the product later needs complex accessible interactions that native controls do not cover well, add headless primitives selectively instead of introducing a fully styled UI kit. Good candidates:
+Use existing wrappers for shell controls. Add another headless primitive only when a concrete interaction requires it; do not introduce a second styled UI framework.
 
-- combobox or autocomplete;
-- custom select;
-- dialog;
-- tabs.
-
-For Vue, `Reka UI` is the preferred first candidate for that headless layer because it provides unstyled accessible primitives while keeping styling local to `Selecta`.
+Theme appearance and editor appearance are independent: the edited light/dark palettes drive the preview and generated theme, while the shell uses its own appearance preference. English/Russian UI and preview content are supported through the app's i18n layer.
 
 ## Styling principles
 

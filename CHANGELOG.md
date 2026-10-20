@@ -6,6 +6,19 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+### Changed
+
+- Integrated `hvab-blocks` 0.3.0 for the editor shell, with separate floating/modal layers and responsive controls.
+
+### Fixed
+
+- Validate supported theme values at JSON, URL, session-storage, and ZIP boundaries: keep the `plain` parent, supported colors/font values, and finite numeric ranges.
+- Keep the controls pane within the measured workspace width after resizing and session restore, accounting for the divider.
+- Preserve pending session edits on page leave and save edits after Reset, including a Reset that does not change the current values.
+- Match the default preview font stack to Aegea `11.5` `plain` while preserving inherited fonts in exported themes.
+- Ignore superseded JSON file imports and their errors after a newer import, Reset, or theme edit.
+- Keep header controls readable at narrow widths and restore the lint, formatting, and CI checks.
+
 ## 0.8.0 - 2026-07-06
 
 ### Added

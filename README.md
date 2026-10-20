@@ -12,13 +12,31 @@ Selecta is a work-in-progress tool for creating and testing visual themes for Ae
 
 ## Status
 
-Early development.
+The latest documented release is `0.8.0`. Subsequent audit fixes are merged into `main` and listed under `Unreleased` in [`CHANGELOG.md`](./CHANGELOG.md).
 
-The project is public, but the interface, generated output, and internal structure may still change.
+The tool currently supports:
+
+- Aegea `plain` child themes with editable metadata, light/dark palettes, typography, and layout;
+- live English/Russian preview based on Aegea `11.5`, build `v4199`;
+- Aegea presets, Random generation, field locks, and contrast hints;
+- inherited fonts, system font stacks, and a curated Google Fonts catalog;
+- local session restore, theme JSON import/export, and share links;
+- ZIP export containing the theme folder, `theme-info.php`, and `styles/main.css`.
+
+The app runs entirely in the browser. Google Fonts require network access. The interface, generated output, and internal structure may still change.
 
 ## Demo
 
-https://hvab.github.io/Selecta/
+[Open Selecta](https://hvab.github.io/Selecta/)
+
+## Project documentation
+
+- [`SPEC.md`](./SPEC.md): current product scope and theme contract.
+- [`.project/PROGRESS.md`](./.project/PROGRESS.md): current status and next step.
+- [`audit/README.md`](./audit/README.md): audit closeout, merged fixes, and remaining optional work.
+- [`PREVIEW-BASELINE.md`](./PREVIEW-BASELINE.md): Aegea target, preview coverage, and acceptance limits.
+- [`UI-ARCHITECTURE.md`](./UI-ARCHITECTURE.md): preview and editor responsibilities.
+- [`RELEASE.md`](./RELEASE.md): checks and release workflow.
 
 ## Development
 

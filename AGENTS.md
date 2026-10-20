@@ -25,10 +25,12 @@
 - Do not add backend.
 - Generate only child themes based on `plain`.
 - Export a ZIP archive with the theme folder inside it.
-- Use only system web-safe fonts in MVP.
-- User-facing app UI supports English and Russian after the dedicated i18n stage.
-- Do not add dark mode, presets, Google Fonts, bundled font files, JSON export/import, contrast warnings, or existing-theme import in MVP.
-- The interface and preview must be responsive from the start.
+- Support inherited `plain` fonts, system fonts, and the curated Cyrillic Google Fonts catalog through the CSS API; do not bundle font files.
+- User-facing app UI supports English and Russian.
+- Preserve implemented presets, Random with field/group locks, contrast warnings, light/dark theme palettes, JSON import/export, URL sharing, and local session persistence.
+- Keep generator-shell appearance independent from the edited theme; UI state and locks do not belong in theme JSON, share URLs, or ZIP output.
+- Do not add existing-theme import or other features outside `SPEC.md` without a new scoped iteration.
+- Desktop is the primary usage scenario. Keep the interface and preview visually intact on narrow screens; do not schedule further zoom or mobile verification under the agreed scope.
 
 ## Local commands
 
@@ -50,11 +52,11 @@
 - Build a working tool, not a landing page.
 - Follow `UI-ARCHITECTURE.md` for the separation between the preview layer and the generator shell.
 - Keep preview styles tied to Aegea `plain`; keep generator-shell styles separate and stable while the edited theme changes.
-- In MVP, prefer native controls with local styling; do not add a styled UI framework.
-- Add headless UI primitives only when a real complex interaction appears that native controls do not cover well.
+- Use local Vue adapters over the pinned `hvab-blocks` CSS blocks for generator-shell controls. Keep preview styles separate from these blocks and tokens.
+- Prefer native control semantics. Use the existing `reka-ui` headless primitives for menus, dialogs, and tooltips; keep their visible styling in `hvab-blocks`.
 - Keep controls understandable and aligned with the data type:
   - color inputs for colors;
-  - selects for system fonts;
+  - grouped selects for inherited, system, and curated Google fonts;
   - sliders or steppers for numeric values.
 - Keep the interface calm, compact, and task-focused.
 - Do not add decorative marketing-style layout.
@@ -74,8 +76,7 @@
 
 ## Tests and verification
 
-- Do not add test infrastructure just for the scaffold.
-- Start automated tests when the first pure generation logic appears, then keep adding focused tests for:
+- Keep the existing focused checks for:
   - theme state derivation;
   - CSS generation;
   - `theme-info.php` generation;
