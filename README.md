@@ -18,8 +18,9 @@ The tool currently supports:
 
 - Aegea `plain` child themes with editable metadata, light/dark palettes, typography, and layout;
 - live English/Russian preview based on Aegea `11.5`, build `v4199`;
-- Aegea presets, Random generation, field locks, and contrast hints;
+- visual Aegea preset cards, animated Random generation, field/group locks, and contrast hints;
 - inherited fonts, system font stacks, and a curated Google Fonts catalog;
+- independent interface settings and a narrow layout with fixed export actions;
 - local session restore, theme JSON import/export, folder/ZIP/CSS/PHP import, and share links;
 - ZIP export containing the theme folder, `theme-info.php`, `styles/main.css`, and `selecta.json`.
 
