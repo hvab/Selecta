@@ -172,6 +172,44 @@
   margin-bottom: var(--hb-gap-2);
 }
 
+.app__random-button {
+  --hb-button-text-color: #172033;
+  --hb-button-text-color-hover: #172033;
+  --hb-button-background: #ffedd5;
+  --hb-button-background-hover: #ffedd5;
+  --hb-button-background-image: linear-gradient(115deg, #58a6ff, #ff6b6b, #ffedd5);
+  --hb-button-background-size: 300% 300%;
+
+  font-weight: 600;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 18%),
+    0 2px 8px rgb(255 107 107 / 16%);
+  transition: box-shadow var(--hb-duration-fast) var(--hb-ease-out);
+  animation: random-gradient 9s ease-in-out infinite alternate;
+}
+
+.app__random-button:hover {
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 28%),
+    0 4px 16px rgb(255 107 107 / 24%);
+}
+
+@keyframes random-gradient {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app__random-button {
+    animation: none;
+  }
+}
+
 @media (max-width: 40rem) {
   .app {
     display: block;

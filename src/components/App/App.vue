@@ -749,7 +749,9 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
                 <Button view="action">{{ t('actions.confirmReset') }}</Button>
               </template>
             </ConfirmDialog>
-            <Button view="normal" size="l" @click="randomizeTheme">{{ t('actions.random') }}</Button>
+            <Button class="app__random-button" view="normal" size="l" @click="randomizeTheme">
+              {{ t('actions.random') }}
+            </Button>
           </div>
           <section class="app__controls-section">
             <PresetSelector
