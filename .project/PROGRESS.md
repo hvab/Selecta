@@ -5,19 +5,49 @@ Current working context for Selecta. Product behavior is defined in
 
 ## Status
 
-The audit remediation is complete. Main is `8f5c722` after PR #8 (2026-10-19).
+The audit remediation was merged as `8f5c722` in PR #8 (2026-10-19).
 [CI](https://github.com/hvab/Selecta/actions/runs/39265357150) and
 [Pages](https://github.com/hvab/Selecta/actions/runs/39265357066) succeeded on
 that revision. No new versioned release was created during audit closeout.
-Package version remains `0.8.0`; subsequent changes belong to `Unreleased`.
-The dependency refresh below is committed locally on `develop` (`2913230`),
-not yet published to main. The theme-import and editor-interface iterations are
-now committed locally on `develop`. No push, main merge, deployment or versioned
-release was made during this closeout.
+PR [#9](https://github.com/hvab/Selecta/pull/9) merged the dependency refresh,
+theme import and editor-interface iterations into main as `9222e8a` on 2026-10-20.
+[CI](https://github.com/hvab/Selecta/actions/runs/39430724768) and
+[Pages](https://github.com/hvab/Selecta/actions/runs/39430724821) succeeded on
+that revision. Version `0.9.0` is prepared locally below; the latest published
+version remains `0.8.0`.
 
 Local `develop` was synchronized with main `8f5c722` on 2026-10-20 before
 the dependency refresh. Audit documentation closeout is preserved separately
 in commit `eb5b4c8`. The dependency refresh preserves that audit baseline.
+
+## Release preparation: 0.9.0 (2026-10-20)
+
+- [x] Compare all commits since `v0.8.0` with CHANGELOG; add missing user-facing
+      changes, consolidate intermediate dependency entries and prepare the
+      dated `0.9.0` section. Keep historical release sections unchanged.
+- [x] Set package/lockfile versions to `0.9.0` without a commit or tag; align
+      README status and the SPEC export tree with the prepared release.
+- [x] Check formatting, version consistency and the production build; record
+      results and remaining publication steps. No app behavior changes.
+
+The release section includes unified theme import, JSON snapshots, the editor
+redesign, group locks, Reset confirmation, dependency/browser requirements and
+all merged audit fixes. Intermediate hvab-blocks versions are consolidated into
+the final 0.4.0 integration. The changelog now also records shared-URL session
+persistence and stale-import protection for every supported import route.
+Historical release sections are unchanged; Unreleased is empty.
+
+Package and both root lockfile versions agree at `0.9.0`. Formatting, diff
+whitespace checks and production build passed. The full quality gate passed
+immediately before PR #9 merged; main CI/Pages links above identify that code
+revision. Release preparation changes only documentation and version metadata.
+The Aegea 11.5 baseline and recorded platform/import limits remain unchanged.
+
+The owner authorized a release commit and annotated `v0.9.0` tag after reviewing
+this preparation. This changeset records that local release closeout.
+Next small step: push main/tag, then verify CI/Pages and publish GitHub release
+notes from CHANGELOG. Remote publication has not been performed. Earlier
+iteration entries below describe their completion-time state.
 
 ## Commit closeout (2026-10-20)
 

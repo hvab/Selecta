@@ -50,6 +50,7 @@ Selecta — браузерный конструктор тем для блого
 
 ```text
 theme-name/
+  selecta.json
   theme-info.php
   styles/
     main.css
@@ -57,6 +58,7 @@ theme-name/
 
 Где:
 
+- `selecta.json` сохраняет поддерживаемые настройки для продолжения работы в Selecta;
 - `theme-info.php` описывает тему для Эгеи;
 - `styles/main.css` содержит переопределения CSS-переменных поверх `plain`.
 
