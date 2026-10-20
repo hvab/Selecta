@@ -6,6 +6,11 @@ The project follows semantic versioning where practical.
 
 ## Unreleased
 
+### Added
+
+- A single theme-import button opens ZIP/JSON/CSS/PHP file selection directly and accepts dropped folders or files. Use an optional JSON snapshot as a baseline, then apply supported PHP/CSS settings with priority over that snapshot. Unsupported source content is ignored.
+- `selecta.json` inside each exported theme folder for continuing work without a separate JSON download.
+
 ### Changed
 
 - Integrated `hvab-blocks` 0.3.0 for the editor shell, with separate floating/modal layers and responsive controls.

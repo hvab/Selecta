@@ -28,11 +28,17 @@ Do not reintroduce zoom/mobile verification or artificially oversized imports.
 
 ## Inbox
 
+- [ ] Import a theme from an Aegea blog URL: inspect the page HTML to discover
+      theme stylesheet URLs, resolve relative paths, and import supported CSS
+      settings. Investigate which metadata can be inferred from public HTML
+      or other public resources without access to the PHP source. Account for
+      inherited styles, missing data and CORS; do not assume a backend or
+      complete theme recovery. This is future work, separate from ZIP import.
 - [ ] Theme contract expansion for more Aegea CSS variables.
 - [ ] Target Aegea version selection for generation and preview.
 - [ ] Deeper preview states and more page types.
 - [ ] Bundled Cyrillic open-source fonts.
-- [ ] Existing theme import and continued editing.
+- [ ] Extend theme-folder import beyond the currently supported metadata and CSS values only when concrete themes require it.
 - [ ] Visual diff between generated theme and `plain`.
 - [ ] Theme gallery.
 - [ ] Advanced mode for manual CSS-variable editing.

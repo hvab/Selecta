@@ -13,6 +13,8 @@ import { saveStoredLocale, setDocumentLocale } from '../../i18n/index.js';
 import { clearSession, loadSession, saveSession } from '../../storage.js';
 import { normalizeFolderName, suggestFolderName } from '../../theme/metadata.js';
 import { initialThemeState } from '../../theme/model.js';
+import { deserializeThemeDrop } from '../../theme/importDrop.js';
+import { deserializeThemeFiles } from '../../theme/importFiles.js';
 import { themePresets } from '../../theme/presets.js';
 import {
   decodeThemeFromUrlParam,
@@ -53,7 +55,7 @@ const shareFeedbackOpen = ref(false);
 const shareFeedbackView = ref('');
 const shareMenuElement = ref(null);
 const importErrorKey = ref('');
-const themeJsonFileInput = ref(null);
+const themeFilesInput = ref(null);
 const metadataErrors = computed(() => validateMetadata(themeState.meta));
 const translatedMetadataErrors = computed(() => translateMessageMap(metadataErrors.value, 'validation'));
 const activePaletteSection = computed(() => (themeMode.value === 'dark' ? 'darkPalette' : 'palette'));
@@ -521,22 +523,48 @@ function downloadThemeJson() {
 
 function openThemeJsonImport() {
   clearStatusMessages();
-  themeJsonFileInput.value?.click();
+  themeFilesInput.value?.click();
 }
 
 async function importThemeJson(event) {
-  clearStatusMessages();
-  const [file] = event.target.files ?? [];
+  return importThemeFiles(event, (files) => deserializeThemeFile(files[0]), 'status.themeJsonInvalid');
+}
 
-  if (!file) {
+async function importSelectedThemeFiles(event) {
+  if (event.target.files?.length === 1 && /\.json$/i.test(event.target.files[0].name)) {
+    return importThemeJson(event);
+  }
+
+  return importThemeFiles(event, deserializeThemeFiles, 'status.themeFilesInvalid');
+}
+
+async function importThemeFiles(event, readTheme, errorKey) {
+  const files = [...(event.target.files ?? [])];
+
+  if (!files.length) {
+    clearStatusMessages();
     return;
   }
 
-  const importRevision = ++themeImportRevision;
   event.target.value = '';
 
+  return applyThemeImport(() => readTheme(files), errorKey);
+}
+
+function importDroppedTheme(dataTransfer) {
+  if (![...(dataTransfer?.types ?? [])].includes('Files')) {
+    return;
+  }
+
+  return applyThemeImport(() => deserializeThemeDrop(dataTransfer), 'status.themeFilesInvalid');
+}
+
+async function applyThemeImport(readTheme, errorKey) {
+  clearStatusMessages();
+  const importRevision = ++themeImportRevision;
+
   try {
-    const nextThemeState = await deserializeThemeFile(file);
+    const nextThemeState = await readTheme();
 
     if (importRevision !== themeImportRevision) {
       return;
@@ -546,7 +574,7 @@ async function importThemeJson(event) {
     clearThemeUrlParam();
   } catch {
     if (importRevision === themeImportRevision) {
-      importErrorKey.value = 'status.themeJsonInvalid';
+      importErrorKey.value = errorKey;
     }
   }
 }
@@ -749,14 +777,16 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
               :presets="themePresets"
               :selected-preset-id="selectedPresetId"
               @apply-preset="applyPreset"
-              @import-theme="openThemeJsonImport"
+              @import-files="openThemeJsonImport"
+              @drop-theme="importDroppedTheme"
             />
             <input
-              ref="themeJsonFileInput"
+              ref="themeFilesInput"
               class="app__import-json-input"
               type="file"
-              accept=".json,application/json"
-              @change="importThemeJson"
+              accept=".zip,.json,.css,.php"
+              multiple
+              @change="importSelectedThemeFiles"
             />
             <ThemeControls
               :meta="themeState.meta"

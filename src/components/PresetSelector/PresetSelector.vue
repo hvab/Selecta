@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ControlGroup from '../../ui/ControlGroup/ControlGroup.vue';
 import Button from '../../ui/Button/Button.vue';
@@ -22,7 +23,41 @@ defineProps({
   },
 });
 
-const emit = defineEmits(['apply-preset', 'import-theme']);
+const emit = defineEmits(['apply-preset', 'import-files', 'drop-theme']);
+const isDraggingFiles = ref(false);
+
+function isFileDrag(event) {
+  return [...(event.dataTransfer?.types ?? [])].includes('Files');
+}
+
+function handleDragEnter(event) {
+  if (isFileDrag(event)) {
+    event.preventDefault();
+    isDraggingFiles.value = true;
+  }
+}
+
+function handleDragOver(event) {
+  if (isFileDrag(event)) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+    isDraggingFiles.value = true;
+  }
+}
+
+function handleDragLeave(event) {
+  if (!event.currentTarget.contains(event.relatedTarget)) {
+    isDraggingFiles.value = false;
+  }
+}
+
+function handleDrop(event) {
+  if (isFileDrag(event)) {
+    event.preventDefault();
+    isDraggingFiles.value = false;
+    emit('drop-theme', event.dataTransfer);
+  }
+}
 
 function getPresetLabel(preset) {
   return t(`presetLabels.${preset.id}`);
@@ -40,14 +75,20 @@ function getPresetLabel(preset) {
           </option>
         </Select>
       </Field>
-      <Field :message="importError" message-id="theme-json-import-error" message-view="error">
+      <Field :message="importError" message-id="theme-import-error" message-view="error">
         <Button
           class="preset-controls__import-button"
+          :class="{ 'preset-controls__import-button_drag-over': isDraggingFiles }"
           view="outlined"
-          :aria-describedby="importError ? 'theme-json-import-error' : undefined"
-          @click="emit('import-theme')"
+          :title="t('status.themeImportHint')"
+          :aria-describedby="importError ? 'theme-import-error' : undefined"
+          @click="emit('import-files')"
+          @dragenter="handleDragEnter"
+          @dragover="handleDragOver"
+          @dragleave="handleDragLeave"
+          @drop="handleDrop"
         >
-          {{ t('actions.importJson') }}
+          {{ t('actions.importTheme') }}
         </Button>
       </Field>
     </ControlGroup>
@@ -57,5 +98,10 @@ function getPresetLabel(preset) {
 <style scoped>
 .preset-controls__import-button {
   width: 100%;
+}
+
+.preset-controls__import-button_drag-over {
+  outline: var(--hb-focus-ring-width) solid var(--hb-color-line-focus);
+  outline-offset: var(--hb-focus-ring-offset);
 }
 </style>

@@ -29,7 +29,8 @@
 - User-facing app UI supports English and Russian.
 - Preserve implemented presets, Random with field/group locks, contrast warnings, light/dark theme palettes, JSON import/export, URL sharing, and local session persistence.
 - Keep generator-shell appearance independent from the edited theme; UI state and locks do not belong in theme JSON, share URLs, or ZIP output.
-- Do not add existing-theme import or other features outside `SPEC.md` without a new scoped iteration.
+- Keep folder/ZIP/CSS/PHP import limited to the supported settings and JSON snapshot defined in `SPEC.md`; do not add arbitrary code execution or source-file preservation.
+- Do not add features outside `SPEC.md` without a new scoped iteration.
 - Desktop is the primary usage scenario. Keep the interface and preview visually intact on narrow screens; do not schedule further zoom or mobile verification under the agreed scope.
 
 ## Local commands
