@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ThemeControls from '../ThemeControls/ThemeControls.vue';
 import PresetSelector from '../PresetSelector/PresetSelector.vue';
@@ -24,20 +24,26 @@ import {
 import { clearAllFieldLocks, createEmptyFieldLocks } from '../../theme/fieldLocks.js';
 import { getRandomThemeState } from '../../theme/random.js';
 import { getContrastWarningsByField } from '../../theme/contrast.js';
-import { validateMetadata } from '../../theme/validation.js';
+import { isValidThemeState, validateMetadata } from '../../theme/validation.js';
 import { generateThemeZip, getThemeZipFileName } from '../../theme/zip.js';
 import { FONT_SOURCE_GOOGLE, FONT_SOURCE_PLAIN, FONT_SOURCE_SYSTEM } from '../../theme/fonts.js';
 import { getSelectedGoogleFontsCss2Url } from '../../theme/googleFonts.js';
 import { googleFontsCatalog } from '../../theme/googleFontsCatalog.js';
+import { constrainControlsPaneWidth, controlsPaneMinWidth } from '../../ui/panelLayout.js';
+import { usePanelLayout } from '../../ui/usePanelLayout.js';
 
 const { locale, t } = useI18n();
 const themeState = reactive(structuredClone(initialThemeState));
 const fieldLocks = reactive(createEmptyFieldLocks());
 const folderNameEdited = ref(false);
-const appElement = ref(null);
-const defaultControlsPaneWidth = 416;
-const controlsPaneWidth = ref(defaultControlsPaneWidth);
-const viewportWidth = ref(window.innerWidth);
+const workspaceElement = ref(null);
+const {
+  controlsPaneWidth,
+  effectiveControlsPaneWidth,
+  effectiveControlsPaneMaxWidth,
+  paneResizerElement,
+  getConstrainedControlsPaneWidth,
+} = usePanelLayout(workspaceElement);
 const themeMode = ref('light');
 const shellAppearance = ref(getPreferredShellAppearance());
 const isResizingControlsPane = ref(false);
@@ -55,7 +61,9 @@ const activePalette = computed(() => themeState[activePaletteSection.value]);
 const activePaletteLocks = computed(() => fieldLocks[activePaletteSection.value]);
 const contrastWarningsByField = computed(() => getContrastWarningsByField(activePalette.value));
 const translatedContrastWarningsByField = computed(() => translateWarningMap(contrastWarningsByField.value));
-const canDownloadTheme = computed(() => Object.keys(metadataErrors.value).length === 0);
+const canDownloadTheme = computed(
+  () => Object.keys(metadataErrors.value).length === 0 && isValidThemeState(themeState)
+);
 const selectedPresetId = computed(
   () =>
     themePresets.find(
@@ -104,19 +112,17 @@ const localeOptions = computed(() => [
   },
 ]);
 const appStyle = computed(() => ({
-  '--controls-pane-width': `${controlsPaneWidth.value}px`,
+  '--controls-pane-width': `${effectiveControlsPaneWidth.value}px`,
 }));
 const shareButtonElement = computed(() => shareMenuElement.value?.querySelector('button') ?? null);
 const effectiveShellAppearance = computed(() => shellAppearance.value);
 const googleFontsPreviewUrl = computed(() => getSelectedGoogleFontsCss2Url(googleFontsCatalog, themeState.typography));
 
-const controlsPaneMinWidth = 320;
-const controlsPaneMaxWidth = 672;
-const previewPaneMinWidth = 360;
 const sessionSaveDelay = 500;
 let sessionSaveTimeout = null;
+let lastSavedSessionSnapshot = null;
 let shareFeedbackTimeout = null;
-let shouldSkipNextSessionSave = false;
+let themeImportRevision = 0;
 const themeUrlParam = 'theme';
 const fontSourceKeyByFamilyKey = {
   mainFontFamily: 'mainFontSource',
@@ -126,9 +132,6 @@ const fontFamilyKeyBySourceKey = {
   mainFontSource: 'mainFontFamily',
   noteFontSource: 'noteFontFamily',
 };
-const effectiveControlsPaneMaxWidth = computed(() => {
-  return Math.max(controlsPaneMinWidth, Math.min(controlsPaneMaxWidth, viewportWidth.value - previewPaneMinWidth));
-});
 
 function translateMessageMap(messagesByField, namespace) {
   return Object.fromEntries(
@@ -145,15 +148,13 @@ function translateWarningMap(warningsByField) {
   );
 }
 
-function getConstrainedControlsPaneWidth(value) {
-  return Math.min(Math.max(value, controlsPaneMinWidth), effectiveControlsPaneMaxWidth.value);
-}
-
 function hasSameSectionValues(section, referenceSection) {
   return Object.entries(referenceSection).every(([key, value]) => section[key] === value);
 }
 
 function applyThemeState(nextThemeState) {
+  invalidateThemeImport();
+
   for (const section of Object.keys(initialThemeState)) {
     Object.assign(themeState[section], nextThemeState[section]);
   }
@@ -172,6 +173,25 @@ function getUiState() {
     themeMode: themeMode.value,
     shellAppearance: shellAppearance.value,
   };
+}
+
+function getCurrentSession() {
+  return {
+    themeState,
+    fieldLocks,
+    uiState: getUiState(),
+  };
+}
+
+function saveCurrentSession() {
+  clearTimeout(sessionSaveTimeout);
+  sessionSaveTimeout = null;
+  const session = getCurrentSession();
+  const snapshot = JSON.stringify(session);
+
+  if (snapshot !== lastSavedSessionSnapshot && saveSession(session)) {
+    lastSavedSessionSnapshot = snapshot;
+  }
 }
 
 function resetThemeState() {
@@ -206,6 +226,10 @@ function clearStatusMessages() {
   importErrorKey.value = '';
 }
 
+function invalidateThemeImport() {
+  themeImportRevision += 1;
+}
+
 function updateLocale(nextLocale) {
   locale.value = nextLocale;
   saveStoredLocale(locale.value);
@@ -237,6 +261,7 @@ function applySharedThemeState(nextThemeState) {
 }
 
 function updateMetaField(key, value) {
+  invalidateThemeImport();
   clearStatusMessages();
   themeState.meta[key] = key === 'folderName' ? normalizeFolderName(value) : value;
 
@@ -254,12 +279,17 @@ function updateMetaField(key, value) {
 }
 
 function updatePaletteField(key, value) {
+  invalidateThemeImport();
   clearStatusMessages();
   activePalette.value[key] = value;
 }
 
 function updateThemeMode(nextThemeMode) {
   if (nextThemeMode === 'dark') {
+    if (!themeState.meta.supportsDarkMode) {
+      invalidateThemeImport();
+    }
+
     themeState.meta.supportsDarkMode = true;
   }
 
@@ -283,6 +313,7 @@ function handleShareAction(action) {
 }
 
 function updateTypographyField(key, value) {
+  invalidateThemeImport();
   clearStatusMessages();
   themeState.typography[key] = value;
 
@@ -296,6 +327,7 @@ function updateTypographyField(key, value) {
 }
 
 function updateLayoutField(key, value) {
+  invalidateThemeImport();
   clearStatusMessages();
   themeState.layout[key] = value;
 }
@@ -308,6 +340,7 @@ function applyPreset(presetId) {
     return;
   }
 
+  invalidateThemeImport();
   themeState.meta.supportsDarkMode = preset.supportsDarkMode;
   Object.assign(themeState.palette, preset.palette);
   Object.assign(themeState.darkPalette, preset.darkPalette ?? initialThemeState.darkPalette);
@@ -318,11 +351,13 @@ function applyPreset(presetId) {
 }
 
 function toggleFieldLock(section, key, locked) {
+  invalidateThemeImport();
   clearStatusMessages();
   fieldLocks[section][key] = locked;
 }
 
 function toggleGroupLock(section, keys, locked) {
+  invalidateThemeImport();
   clearStatusMessages();
 
   for (const key of keys) {
@@ -331,17 +366,12 @@ function toggleGroupLock(section, keys, locked) {
 }
 
 function resetToDefaults() {
-  clearTimeout(sessionSaveTimeout);
-  shouldSkipNextSessionSave = true;
   clearStatusMessages();
   clearThemeUrlParam();
   clearSession();
   resetThemeState();
-  saveSession({
-    themeState,
-    fieldLocks,
-    uiState: getUiState(),
-  });
+  lastSavedSessionSnapshot = null;
+  saveCurrentSession();
 }
 
 function randomizePalette(section, randomPalette) {
@@ -353,6 +383,7 @@ function randomizePalette(section, randomPalette) {
 }
 
 function randomizeTheme() {
+  invalidateThemeImport();
   clearStatusMessages();
   const randomThemeState = getRandomThemeState(themeState, fieldLocks);
 
@@ -393,9 +424,9 @@ function randomizeTheme() {
 }
 
 function resizeControlsPane(event) {
-  const appLeft = appElement.value?.getBoundingClientRect().left ?? 0;
+  const workspaceLeft = workspaceElement.value?.getBoundingClientRect().left ?? 0;
 
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(event.clientX - appLeft);
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(event.clientX - workspaceLeft);
 }
 
 function startControlsPaneResize(event) {
@@ -420,12 +451,7 @@ function handleControlsPaneResize(event) {
 }
 
 function resizeControlsPaneByStep(step) {
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(controlsPaneWidth.value + step);
-}
-
-function handleWindowResize() {
-  viewportWidth.value = window.innerWidth;
-  controlsPaneWidth.value = getConstrainedControlsPaneWidth(controlsPaneWidth.value);
+  controlsPaneWidth.value = getConstrainedControlsPaneWidth(effectiveControlsPaneWidth.value + step);
 }
 
 function handleControlsPaneResizeKeydown(event) {
@@ -506,13 +532,22 @@ async function importThemeJson(event) {
     return;
   }
 
+  const importRevision = ++themeImportRevision;
+  event.target.value = '';
+
   try {
-    applySharedThemeState(await deserializeThemeFile(file));
+    const nextThemeState = await deserializeThemeFile(file);
+
+    if (importRevision !== themeImportRevision) {
+      return;
+    }
+
+    applySharedThemeState(nextThemeState);
     clearThemeUrlParam();
   } catch {
-    importErrorKey.value = 'status.themeJsonInvalid';
-  } finally {
-    event.target.value = '';
+    if (importRevision === themeImportRevision) {
+      importErrorKey.value = 'status.themeJsonInvalid';
+    }
   }
 }
 
@@ -541,11 +576,18 @@ function getStoredThemeMode(uiState) {
   return uiState.themeMode ?? uiState.previewMode ?? uiState.activePaletteMode;
 }
 
+function handleVisibilityChange() {
+  if (document.visibilityState === 'hidden') {
+    saveCurrentSession();
+  }
+}
+
 onMounted(() => {
-  window.addEventListener('resize', handleWindowResize);
   const preferredShellAppearance = getPreferredShellAppearance();
 
   shellAppearance.value = preferredShellAppearance;
+  window.addEventListener('pagehide', saveCurrentSession);
+  document.addEventListener('visibilitychange', handleVisibilityChange);
 
   const themeParam = new URLSearchParams(window.location.search).get(themeUrlParam);
 
@@ -553,6 +595,7 @@ onMounted(() => {
     try {
       applySharedThemeState(decodeThemeFromUrlParam(themeParam));
       clearThemeUrlParam();
+      saveCurrentSession();
       return;
     } catch {
       clearThemeUrlParam();
@@ -565,16 +608,24 @@ onMounted(() => {
   if (session) {
     applyThemeState(session.themeState);
     applyFieldLocks(session.fieldLocks);
-    controlsPaneWidth.value = getConstrainedControlsPaneWidth(session.uiState.sidebarWidth);
+    controlsPaneWidth.value = constrainControlsPaneWidth(session.uiState.sidebarWidth);
     folderNameEdited.value = session.uiState.folderNameEdited;
     themeMode.value =
       getStoredThemeMode(session.uiState) === 'dark' && themeState.meta.supportsDarkMode ? 'dark' : 'light';
     shellAppearance.value = session.uiState.shellAppearance;
   }
+
+  lastSavedSessionSnapshot = JSON.stringify(getCurrentSession());
+});
+
+onBeforeUnmount(() => {
+  invalidateThemeImport();
+  saveCurrentSession();
+  window.removeEventListener('pagehide', saveCurrentSession);
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleWindowResize);
   clearTimeout(shareFeedbackTimeout);
   globalThis.document?.documentElement.removeAttribute('data-color-scheme');
 });
@@ -583,19 +634,7 @@ watch(
   [themeState, fieldLocks, controlsPaneWidth, folderNameEdited, themeMode, shellAppearance],
   () => {
     clearTimeout(sessionSaveTimeout);
-
-    if (shouldSkipNextSessionSave) {
-      shouldSkipNextSessionSave = false;
-      return;
-    }
-
-    sessionSaveTimeout = setTimeout(() => {
-      saveSession({
-        themeState,
-        fieldLocks,
-        uiState: getUiState(),
-      });
-    }, sessionSaveDelay);
+    sessionSaveTimeout = setTimeout(saveCurrentSession, sessionSaveDelay);
   },
   { deep: true }
 );
@@ -609,7 +648,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
     <link v-if="googleFontsPreviewUrl" rel="stylesheet" :href="googleFontsPreviewUrl" />
   </Teleport>
 
-  <main ref="appElement" class="app" :style="appStyle">
+  <main class="app" :style="appStyle">
     <header class="app__topbar">
       <div class="app__brand">
         <h1 class="app__header-title hb-text hb-text_typography_header-2">{{ t('app.name') }}</h1>
@@ -682,7 +721,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
       </div>
     </header>
 
-    <div class="app__workspace">
+    <div ref="workspaceElement" class="app__workspace">
       <aside class="app__controls-pane">
         <div class="app__controls-scroll">
           <div class="app__theme-actions">
@@ -741,6 +780,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
       </aside>
 
       <div
+        ref="paneResizerElement"
         class="app__pane-resizer"
         role="separator"
         tabindex="0"
@@ -748,7 +788,7 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
         aria-orientation="vertical"
         :aria-valuemin="controlsPaneMinWidth"
         :aria-valuemax="effectiveControlsPaneMaxWidth"
-        :aria-valuenow="Math.round(controlsPaneWidth)"
+        :aria-valuenow="effectiveControlsPaneWidth"
         @pointerdown="startControlsPaneResize"
         @pointermove="handleControlsPaneResize"
         @pointerup="stopControlsPaneResize"
@@ -764,15 +804,6 @@ watch(effectiveShellAppearance, setDocumentColorScheme, { immediate: true });
 </template>
 
 <style>
-:root {
-  --app-layer-floating: 10;
-  --app-layer-modal: 20;
-}
-
-[data-reka-popper-content-wrapper] {
-  z-index: var(--app-layer-floating) !important;
-}
-
 body {
   margin: 0;
   font-family: system-ui, sans-serif;

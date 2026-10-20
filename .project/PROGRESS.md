@@ -11,9 +11,9 @@ The audit remediation is complete. Main is `8f5c722` after PR #8 (2026-10-19).
 that revision. No new versioned release was created during audit closeout.
 Package version remains `0.8.0`; subsequent changes belong to `Unreleased`.
 
-This is the status of merged main. The local working checkout was still older
-`develop` at `29fb10c` when these documents were consolidated; no application
-checkout synchronization is implied. Verify the actual revision before new work.
+Local `develop` was synchronized with main `8f5c722` on 2026-10-20 before
+the dependency refresh. Audit documentation closeout is preserved separately
+in commit `eb5b4c8`. Application sources match that merged main baseline.
 
 ## Implemented
 
